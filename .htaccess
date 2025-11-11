@@ -1,0 +1,23 @@
+RewriteEngine On
+
+# disable TRACK and TRACE http methods. 'RewriteEngine On' is required!
+RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)
+RewriteRule .* - [F]
+
+RewriteRule download/(.*)\.html index.php?controller=pjFront&action=pjActionDownload&id=$1 [L]
+
+Options -Indexes
+ServerSignature Off
+<ifModule mod_headers.c>
+	Header unset X-Powered-By
+</ifModule>
+
+<IfModule php5_module>
+	php_value session.cookie_httponly true
+</IfModule>
+
+<FilesMatch "\.(ttf|otf|woff|eot|woff2|woff2)$">
+  <IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+  </IfModule>
+</FilesMatch>

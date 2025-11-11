@@ -1,0 +1,6 @@
+START TRANSACTION;
+
+ALTER TABLE `bookings` ADD COLUMN `locale_id` int(10) DEFAULT '1';
+
+
+COMMIT;

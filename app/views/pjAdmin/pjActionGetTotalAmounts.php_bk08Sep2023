@@ -1,0 +1,4 @@
+<p class="bold b10 align_right"><?php __('lblTotalReservations');?>: <?php echo pjUtil::formatCurrencySign(number_format($tpl['amount']['total'], 2), $tpl['option_arr']['o_currency']);?></p>
+<p class="bold b10 align_right"><?php __('lblConfirmedReservations');?>: <?php echo pjUtil::formatCurrencySign(number_format($tpl['amount']['confirmed'], 2), $tpl['option_arr']['o_currency']);?></p>
+<p class="bold b10 align_right"><?php __('lblPassedOnReservations');?>: <?php echo pjUtil::formatCurrencySign(number_format($tpl['amount']['passed_on'], 2), $tpl['option_arr']['o_currency']);?></p>
+<p class="bold b10 align_right"><?php __('lblCancelledReservations');?>: <?php echo pjUtil::formatCurrencySign(number_format($tpl['amount']['cancelled'], 2), $tpl['option_arr']['o_currency']);?></p> 

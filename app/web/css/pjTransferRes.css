@@ -1,0 +1,234 @@
+@CHARSET "UTF-8";
+/* fallback */
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/materialicons/v103/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -moz-font-feature-settings: 'liga';
+  -moz-osx-font-smoothing: grayscale;
+}
+/******Form**********/
+.main .trFieldRequired{
+	border: 1px solid #CC2262;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+.main input[disabled],
+.main select[disabled]{
+	background-color: #ededed;
+	opacity: 0.4;
+    filter: alpha(opacity=40);
+}
+.main .trCheckErrorMsg{
+	color: #CC2262;
+	font-size: 14px;
+	display: none;
+}
+.main em.trError{
+	display: block;
+	color: #CC2262;
+}
+.main .advanced-search em.trError{
+    color: #fff;
+}
+.main .advanced-search .trCheckErrorMsg{
+    color: #8b0000;
+}
+/***********Buttons**********/
+.main .trButtonDisable,
+.main .trButtonDisable:HOVER {
+	border: 2px solid #c1c1c0;
+	background-color: #d6d5d3;
+	color: #abaaaa;
+	cursor: default;
+}
+/********************* paginator **********************/
+.tr-paginator{
+    list-style: none outside none;
+    margin: 0px;
+    overflow: hidden;
+    padding: 0px;
+}
+.tr-paginator li{
+	display: inline;
+	overflow: hidden;
+}
+.tr-paginator li:before{
+    content:""
+}
+.tr-paginator li.dot span{
+	display: block;
+	float: left;
+	height: 33px;
+	line-height: 33px;
+	margin-right: 4px;
+}
+.tr-paginator li a{
+	display: block;
+	float: left;
+	overflow: hidden;
+	margin-right: 6px;
+	height: 33px;
+	color: #1b191c;
+	line-height: 30px;
+	padding: 0px 12px 0px 12px;
+	background-color: #ffde06;
+    border: 2px solid #e8ba04;
+    text-decoration: none;
+    -moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+}
+
+.tr-paginator li a.current{
+	background-color: #f5f6f8;
+	color: #323232;
+}
+
+.information { display: none;}
+
+.crossed-out-price {
+	text-decoration: line-through;
+}
+/*
+.advanced-search {
+	border: none;
+}
+
+/*.advanced-search .form-group {*/
+	/*float: none;*/
+/*}*/
+/*
+.advanced-search .form-group i {
+	position: absolute;
+	color: #555;
+	margin-top: 15px;
+	margin-left: 10px;
+	font-size: 20pt;
+	z-index: 10;
+}
+.advanced-search .form-group input,
+.advanced-search .form-group .selector {
+	padding-left: 45px;
+	color: #333;
+}
+
+.advanced-search .form-group .select2-selection__rendered {
+	padding-left: 30px;
+}
+*/
+/*.advanced-search .form-group .select2-selection__arrow{*/
+	/*display: none;*/
+/*}*/
+/*
+.advanced-search .selector > span:before {
+	content: '';
+	position: absolute;
+	top: 21px;
+	right: 15px;
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 7px 7px 0 7px;
+	border-color: #ccc transparent transparent transparent;
+}
+
+.advanced-search .btn {
+	margin-top: 0 !important;
+	background: #fff !important;
+	color: #555 !important;
+	text-align: left;
+}
+
+.advanced-search .btn span {
+	margin-left: 50px;
+}
+
+.icon-origin,
+.icon-destination,
+.icon-datepicker,
+.icon-search {
+	position: absolute;
+	z-index: 10;
+	width: 35px;
+	height: 35px;
+	margin-top: 10px !important;
+}
+
+.icon-origin {
+	background: url([WEB_URL]img/frontend/origin.svg) no-repeat left center;
+	background-size: 25px;
+}
+
+.icon-destination {
+	background: url([WEB_URL]img/frontend/destination.svg) no-repeat left center;
+	background-size: 25px;
+}
+
+.icon-datepicker {
+	background: url([WEB_URL]img/frontend/datepicker.svg) no-repeat left center;
+	background-size: 25px;
+}
+
+.icon-search {
+	background: url([WEB_URL]img/frontend/search.svg) no-repeat left center;
+	background-size: 25px;
+}
+*/
+.select2-results__option {
+	position: relative;
+}
+
+.select2-results__option span > span {
+	margin-left: 10px;
+}
+.select2-results__option .material-icons{
+	vertical-align: top;
+	font-size: 27px;
+	width: 25px;
+}
+
+.image-airport,
+.image-train,
+.image-skiing,
+.image-city {
+	width: 35px;
+	height: 35px;
+	position: absolute;
+}
+
+.image-airport {
+	background: url([WEB_URL]img/frontend/airport.svg) no-repeat left center;
+	background-size: 25px;
+}
+
+.image-train {
+	background: url([WEB_URL]img/frontend/railway-station.svg) no-repeat left center;
+	background-size: 25px;
+}
+
+.image-skiing {
+	background: url([WEB_URL]img/frontend/ski.svg) no-repeat left center;
+	background-size: 25px;
+}
+
+.image-city {
+	background: url([WEB_URL]img/frontend/town.svg) no-repeat left center;
+	background-size: 25px;
+}
