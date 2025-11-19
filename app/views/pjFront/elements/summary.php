@@ -8,7 +8,11 @@ $payment_methods = __('payment_methods', true);
 			<div class="progress-bar" style="width:100%"></div>
 		</div> 
 		<div class="alert alert-success d-flex align-items-center">
-			<?php if ($hours < 24 || $tpl['arrivalNotice'] > 0 || $tpl['arr']['price_by_distance'] == 'T') { ?>
+			<?php if ((int)$tpl['arr']['paid_via_payment_link'] == 1) { ?>
+    			<div class="vc_message_box vc_message_box-standard vc_message_box-square vc_color-alert-success"><div class="vc_message_box-icon"><i class="fas fa-check-circle"></i></div><h2 id="booking_gtm"><?php echo str_replace('{ReferenceNumber}', $tpl['arr']['uuid'], __('front_step_booking_summary_2', true)); ?></h2>
+	           	<br/>
+				<p><?php echo str_replace('{ReferenceNumber}', $tpl['arr']['uuid'], __('front_step_booking_summary_2_desc', true)); ?></p></div>
+        	<?php } elseif ($hours < 24 || $tpl['arrivalNotice'] > 0 || $tpl['arr']['price_by_distance'] == 'T') { ?>
 				<i class="fa-solid fa-circle-check"></i><span class="alert-desc"><span class="alert-title"><?php echo str_replace('{ReferenceNumber}', $tpl['arr']['uuid'], __('front_step_booking_summary_1', true));?></span><br/><?php __('front_step_booking_summary_1_desc');?></span>
 			<?php } else { ?>
 				<i class="fa-solid fa-circle-check"></i><span class="alert-desc"><span class="alert-title"><?php echo str_replace('{ReferenceNumber}', $tpl['arr']['uuid'], __('front_step_booking_summary', true));?></span><br/><?php __('front_step_booking_summary_desc');?></span>

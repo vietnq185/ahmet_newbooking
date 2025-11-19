@@ -70,6 +70,11 @@ class pjAppController extends pjController
 	{
 		return $this->getRoleId() == 2;
 	}
+	
+	public function isInvoiceReady()
+	{
+	    return $this->isAdmin();
+	}
     
 	public static function setTimezone($timezone="UTC")
     {
@@ -728,7 +733,7 @@ class pjAppController extends pjController
 				->send(pjAppController::getEmailBody($message));
 			}
 		}
-		if ($option_arr['o_admin_email_payment'] == 1 && $opt == 'payment')
+		if ($option_arr['o_admin_email_payment'] == 1 && (int)$booking_arr['paid_via_payment_link'] == 1 && $opt == 'payment')
 		{
 			$lang_message = $pjMultiLangModel->reset()->select('t1.*')
                 ->where('t1.model','pjOption')
@@ -1459,6 +1464,205 @@ class pjAppController extends pjController
             $point_lng >= $lng_min &&
             $point_lng <= $lng_max
             );
+    }
+    
+    protected function pjActionGenerateInvoice($order_id)
+    {
+        if (!isset($order_id) || (int) $order_id <= 0)
+        {
+            return array('status' => 'ERR', 'code' => 400, 'text' => 'ID is not set ot invalid.');
+        }
+        $arr = pjBookingModel::factory()->reset()
+        ->select("t1.*, t2.content as fleet, IF (t1.pickup_type='server', t3.content, t1.pickup_address) AS location, IF(t1.dropoff_type='server', CONCAT_WS(' - ', t6.content, t4.content), t1.dropoff_address) AS dropoff")
+        ->join('pjMultiLang', "t2.model='pjFleet' AND t2.foreign_id=t1.fleet_id AND t2.field='fleet' AND t2.locale=t1.locale_id", 'left outer')
+        ->join('pjMultiLang', "t3.model='pjLocation' AND t3.foreign_id=t1.location_id AND t3.field='pickup_location' AND t3.locale=t1.locale_id", 'left outer')
+        ->join('pjMultiLang', "t4.model='pjAreaCoord' AND t4.foreign_id=t1.dropoff_place_id AND t4.field='place_name' AND t4.locale=t1.locale_id", 'left outer')
+        ->join('pjAreaCoord', "t5.id=t1.dropoff_place_id", 'left')
+        ->join('pjMultiLang', "t6.model='pjArea' AND t6.foreign_id=t5.area_id AND t6.field='name' AND t6.locale=t1.locale_id", 'left outer')
+        ->find($order_id)
+        ->getData();
+        
+        if (empty($arr))
+        {
+            return array('status' => 'ERR', 'code' => 404, 'text' => 'Booking not found.');
+        }
+        $invoice_tax_arr = pjInvoiceTaxModel::factory()->where('t1.is_default', 1)->limit(1)->findAll()->getDataIndex(0);
+        $tax = $tax_percentage = 0;
+        $tax_id = ':NULL';
+        if ($invoice_tax_arr) {
+            $tax_percentage = $invoice_tax_arr['tax'];
+            $tax_id = $invoice_tax_arr['id'];
+        }
+        
+        $items = array();
+        $car_info_arr = array();
+        $car_info_arr[] = __('front_vehicle', true).': '.pjSanitize::html($arr['fleet']);
+        $car_info_arr[] = __('front_date', true).': '.date($this->option_arr['o_date_format'].', '.$this->option_arr['o_time_format'], strtotime($arr['booking_date']));
+        if (!empty($arr['return_date'])) {
+            $car_info_arr[] = __('booking_return_on', true).': '.date($this->option_arr['o_date_format'].', '.$this->option_arr['o_time_format'], strtotime($arr['return_date']));
+        }
+        $car_info_arr[] = __('front_cart_from', true).': '.pjSanitize::html($arr['location']);
+        $car_info_arr[] = __('front_cart_to', true).': '.pjSanitize::html($arr['dropoff']);
+        
+        $total_extra_price = $arr['extra_price'];
+        $return_arr = array();
+        if(!empty($arr['return_date'])) {
+            $return_arr = pjBookingModel::factory()->reset()
+            ->where('return_id', $arr['id'])
+            ->findAll()
+            ->getDataIndex(0);
+            if ($return_arr) {
+                $total_extra_price += $return_arr['extra_price'];
+            }
+        }
+        
+        $sub_total_before_tax = $this->getPriceBeforeTax($arr['sub_total'], $tax_percentage);
+        $tax = round((float)$arr['sub_total'] - (float)$sub_total_before_tax, 2, PHP_ROUND_HALF_UP);
+        $items[] = array(
+            'name' => __('front_invoice_booking_details', true),
+            'description' => implode("\r\n", $car_info_arr),
+            'qty' => 1,
+            'unit_price' => (float)$arr['sub_total'] - (float)$total_extra_price,
+            'amount' => (float)$arr['sub_total'] - (float)$total_extra_price,
+            'tax_id' => $tax_id
+        );
+        
+        $extra_arr = pjBookingExtraModel::factory()->reset()
+        ->select('t1.*, t3.content as name, t4.content as info, t5.price')
+        ->join('pjBooking', 't2.id=t1.booking_id', 'inner')
+        ->join('pjMultiLang', "t3.model='pjExtra' AND t3.foreign_id=t1.extra_id AND t3.field='name' AND t3.locale=t2.locale_id", 'left outer')
+        ->join('pjMultiLang', "t4.model='pjExtra' AND t4.foreign_id=t1.extra_id AND t4.field='info' AND t4.locale=t2.locale_id", 'left outer')
+        ->join('pjExtra', 't5.id=t1.extra_id', 'inner')
+        ->where('t1.booking_id', $arr['id'])
+        ->findAll()
+        ->getData();
+        if ($extra_arr) {
+            foreach($extra_arr as $extra)
+            {
+                $items[] = array(
+                    'name' => $extra['quantity'].' x '.pjSanitize::html(strip_tags($extra['name'])),
+                    'description' => $extra['info'],
+                    'qty' => $extra['quantity'],
+                    'unit_price' => $extra['price'],
+                    'amount' => $extra['quantity'] * $extra['price']
+                );
+            }
+        }
+        
+        if ($return_arr) {
+            $return_extra_arr = pjBookingExtraModel::factory()->reset()
+            ->select('t1.*, t3.content as name, t4.content as info, t5.price')
+            ->join('pjBooking', 't2.id=t1.booking_id', 'inner')
+            ->join('pjMultiLang', "t3.model='pjExtra' AND t3.foreign_id=t1.extra_id AND t3.field='name' AND t3.locale=t2.locale_id", 'left outer')
+            ->join('pjMultiLang', "t4.model='pjExtra' AND t4.foreign_id=t1.extra_id AND t4.field='info' AND t4.locale=t2.locale_id", 'left outer')
+            ->join('pjExtra', 't5.id=t1.extra_id', 'inner')
+            ->where('t1.booking_id', $return_arr['id'])
+            ->findAll()
+            ->getData();
+            if ($return_extra_arr) {
+                foreach($return_extra_arr as $extra)
+                {
+                    $items[] = array(
+                        'name' => $extra['quantity'].' x '.pjSanitize::html(strip_tags($extra['name'])).' ('.__('front_invoice_return', true).')',
+                        'description' => $extra['info'],
+                        'qty' => $extra['quantity'],
+                        'unit_price' => $extra['price'],
+                        'amount' => $extra['quantity'] * $extra['price']
+                    );
+                }
+            }
+        }
+        
+        if ((float)$arr['credit_card_fee'] > 0) {
+            $items[] = array(
+                'name' => __('front_invoice_credit_card_fee', true),
+                'description' => '',
+                'qty' => 1,
+                'unit_price' => (float)$arr['credit_card_fee'],
+                'amount' => (float)$arr['credit_card_fee']
+            );
+        }
+        
+        $map = array(
+            'confirmed' => 'paid',
+            'cancelled' => 'cancelled',
+            'in_progress' => 'not_paid',
+            'passed_on' => 'not_paid',
+            'pending' => 'not_paid'
+        );
+        if ($arr['status'] == 'confirmed' && !in_array($arr['payment_method'], array('creditcard_later', 'cash'))) {
+            $paid_deposit = (float)$arr['deposit'];
+            $amount_due = (float)$arr['total'] - $paid_deposit;
+        } else {
+            $paid_deposit = 0;
+            $amount_due = (float)$arr['total'];
+        }
+        $response = $this->requestAction(
+            array(
+                'controller' => 'pjInvoice',
+                'action' => 'pjActionCreate',
+                'params' => array(
+                    'key' => md5($this->option_arr['private_key'] . PJ_SALT),
+                    'uuid' => pjUtil::uuid(),
+                    'order_id' => $arr['uuid'],
+                    'foreign_id' => $this->getForeignId(),
+                    'issue_date' => ':CURDATE()',
+                    'due_date' => ':CURDATE()',
+                    'created' => ':NOW()',
+                    //'modified' => ':NULL',
+                    'status' => @$map[$arr['status']],
+                    'subtotal' => $sub_total_before_tax,
+                    'discount' => $arr['discount'],
+                    'voucher_code' => $arr['voucher_code'],
+                    'tax' => $tax,
+                    //'shipping' => $arr['credit_card_fee'],
+                    'total' => $arr['total'],
+                    'paid_deposit' => $paid_deposit,
+                    'amount_due' => $amount_due,
+                    'payment_method' => $arr['payment_method'],
+                    'currency' => $this->option_arr['o_currency'],
+                    'notes' => $arr['c_notes'],
+                    'b_billing_address' => $arr['c_address'],
+                    'b_name' => $arr['c_fname'].' '.$arr['c_lname'],
+                    'b_address' => $arr['c_address'],
+                    'b_street_address' => '',
+                    'b_city' => $arr['c_city'],
+                    'b_state' => $arr['c_state'],
+                    'b_zip' => $arr['c_zip'],
+                    'b_country' => $arr['c_country'],
+                    'b_phone' => $arr['c_dialing_code'].$arr['c_phone'],
+                    'b_email' => $arr['c_email'],
+                    'b_url' => '',
+                    's_shipping_address' => $arr['c_destination_address'],
+                    's_name' => $arr['c_fname'].' '.$arr['c_lname'],
+                    's_address' => $arr['c_destination_address'],
+                    's_street_address' => '',
+                    's_city' => $arr['c_city'],
+                    's_state' => $arr['c_state'],
+                    's_zip' => $arr['c_zip'],
+                    's_country' => $arr['c_country'],
+                    's_phone' => $arr['c_dialing_code'].$arr['c_phone'],
+                    's_email' => $arr['c_email'],
+                    's_url' => '',
+                    'items' => $items
+                )
+            ),
+            array('return')
+            );
+        return $response;
+    }
+    
+    public static function getPriceBeforeTax($priceAfterTax, $taxPercent=21) {
+        if ($priceAfterTax <= 0) {
+            return $priceAfterTax;
+        }
+        if ($taxPercent > 0) {
+            $priceBeforeTax = $priceAfterTax / (1 + $taxPercent / 100);
+            
+            return round($priceBeforeTax, 2, PHP_ROUND_HALF_UP);
+        } else {
+            return round($priceAfterTax, 2, PHP_ROUND_HALF_UP);
+        }
     }
 }
 ?>

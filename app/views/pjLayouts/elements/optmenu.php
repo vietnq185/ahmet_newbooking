@@ -17,6 +17,12 @@ $active = " ui-tabs-active ui-state-active";
 			?><li class="ui-state-default ui-corner-top<?php echo $_GET['controller'] != 'pjSms' ? NULL : $active; ?>"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjSms&amp;action=pjActionIndex"><?php __('plugin_sms_menu_sms'); ?></a></li><?php
 		} 
 		?>
+		<?php
+		if ($controller->isAdmin() && pjObject::getPlugin('pjInvoice') !== NULL)
+	    {
+    		?><li class="ui-state-default ui-corner-top<?php echo $_GET['controller'] != 'pjInvoice' ? NULL : $active; ?>"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjInvoice&amp;action=pjActionIndex"><?php __('plugin_invoice_menu_invoices'); ?></a></li><?php
+		} 
+		?>
 	</ul>
 </div>
 <?php

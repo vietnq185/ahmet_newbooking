@@ -2434,6 +2434,11 @@ class pjFront extends pjAppController
 			$STORE = @$_SESSION[$this->defaultStore][$this->defaultIndex];
 			$departureData = @$_SESSION[$this->defaultForm][$this->defaultIndex]['departure'];
 			$returnData = @$_SESSION[$this->defaultForm][$this->defaultIndex]['return'];
+			
+			if (!$search_post || !$STORE || !isset($_SESSION[$this->defaultForm])) {
+			    pjAppController::jsonResponse(array('code' => 102, 'text' => ''));
+			}
+			
             $passengerData = $_POST;
 			$pjBookingModel = pjBookingModel::factory();
 			
@@ -2843,6 +2848,8 @@ class pjFront extends pjAppController
                     ))
                     ->insert();
 
+                $invoice_arr = $this->pjActionGenerateInvoice($id);
+                    
 				$bookingDate = new DateTime($arr['booking_date']);
 				$arrivalNotice = pjArrivalNoticeModel::factory()
 					->reset()
@@ -2861,13 +2868,14 @@ class pjFront extends pjAppController
 						pjAppController::pjActionConfirmSend($this->option_arr, $arr, PJ_SALT, 'confirm', $this->getLocaleId());
 					}
 				}
+				
+				if ($arr['payment_method'] == 'saferpay' && !empty($saferpay_cature_id)) {
+				    pjAppController::pjActionConfirmSend($this->option_arr, $arr, PJ_SALT, 'payment', $this->getLocaleId());
+				}
 				if ($arr['status'] == 'confirmed') {
 					$resp = pjApiSync::syncBooking($id, 'create', $this->option_arr);
 					if (isset($return_id) && (int)$return_id > 0) {
 						$resp = pjApiSync::syncBooking($return_id, 'create', $this->option_arr);
-					}
-					if ($arr['payment_method'] == 'saferpay') {
-						pjAppController::pjActionConfirmSend($this->option_arr, $arr, PJ_SALT, 'payment', $this->getLocaleId());
 					}
 				}
 				unset($_SESSION[$this->defaultStore][$this->defaultIndex]);
@@ -3063,9 +3071,12 @@ class pjFront extends pjAppController
 				
 				pjAppController::pjActionConfirmSend($this->option_arr, $booking_arr, PJ_SALT, 'payment', $booking_arr['locale_id']);
 				
-				$resp = pjApiSync::syncBooking($response['transaction_id'], 'create', $this->option_arr);
-				if (isset($return_id) && (int)$return_id > 0) {
-					$resp = pjApiSync::syncBooking($return_id, 'create', $this->option_arr);
+				$arr = $pjBookingModel->reset()->find($response['transaction_id'])->getData();
+				if ($arr['status'] == 'confirmed') {
+    				$resp = pjApiSync::syncBooking($response['transaction_id'], 'create', $this->option_arr);
+    				if (isset($return_id) && (int)$return_id > 0) {
+    					$resp = pjApiSync::syncBooking($return_id, 'create', $this->option_arr);
+    				}
 				}
 			} elseif (!$response) {
 				$this->log('Authorization failed');
@@ -3142,9 +3153,12 @@ class pjFront extends pjAppController
 				
 			pjAppController::pjActionConfirmSend($this->option_arr, $booking_arr, PJ_SALT, 'payment', $booking_arr['locale_id']);
 			
-			$resp = pjApiSync::syncBooking($booking_arr['id'], 'create', $this->option_arr);
-			if (isset($return_id) && (int)$return_id > 0) {
-				$resp = pjApiSync::syncBooking($return_id, 'create', $this->option_arr);
+			$arr = $pjBookingModel->reset()->find($booking_arr['id'])->getData();
+			if ($arr['status'] == 'confirmed') {
+    			$resp = pjApiSync::syncBooking($booking_arr['id'], 'create', $this->option_arr);
+    			if (isset($return_id) && (int)$return_id > 0) {
+    				$resp = pjApiSync::syncBooking($return_id, 'create', $this->option_arr);
+    			}
 			}
 		} elseif (!$response) {
 			$this->log('Authorization failed');
@@ -3573,8 +3587,10 @@ class pjFront extends pjAppController
 	                            $data_update_arr['total'] = $total;
 	                            $data_update_arr['payment_method'] = 'saferpay';
 	                            $data_update_arr['credit_card_fee'] = $cc_fee;
+	                            $data_update_arr['paid_via_payment_link'] = 1;
+	                        } else { 
+	                           $data_update_arr['status'] = $this->option_arr['o_payment_status'];
 	                        }
-	                        $data_update_arr['status'] = $this->option_arr['o_payment_status'];
 	                        $data_update_arr['txn_id'] = $transaction_id;
 	                        $data_update_arr['processed_on'] = date('Y-m-d H:i:s');
 	                        
@@ -3612,25 +3628,27 @@ class pjFront extends pjAppController
 	                        ->find($booking_arr['id'])
 	                        ->getData();
 	                        
-	                        $bookingDate = new DateTime($arr['booking_date']);
-	                        $arrivalNotice = pjArrivalNoticeModel::factory()
-	                        ->reset()
-	                        ->where('t1.date_from <=', $bookingDate->format('Y-m-d'))
-	                        ->where('t1.date_to >=', $bookingDate->format('Y-m-d'))
-	                        ->findCount()
-	                        ->getData();
-	                        
-	                        $now = date('Y-m-d H:i:s');
-	                        $diff = strtotime($arr['booking_date']) - strtotime($now);
-	                        $hours = $diff / (60 * 60);
-	                        if ($hours < 24 || $arrivalNotice > 0 || $arr['price_by_distance'] == 'T') {
-	                            pjAppController::pjActionConfirmSend($this->option_arr, $arr, PJ_SALT, 'arrival', $arr['locale_id']);
-	                        } else {
-	                            pjAppController::pjActionConfirmSend($this->option_arr, $arr, PJ_SALT, 'confirm', $arr['locale_id']);
+	                        if (!in_array($booking_arr['payment_method'], array('cash','creditcard_later'))) {
+    	                        $bookingDate = new DateTime($arr['booking_date']);
+    	                        $arrivalNotice = pjArrivalNoticeModel::factory()
+    	                        ->reset()
+    	                        ->where('t1.date_from <=', $bookingDate->format('Y-m-d'))
+    	                        ->where('t1.date_to >=', $bookingDate->format('Y-m-d'))
+    	                        ->findCount()
+    	                        ->getData();
+    	                        
+    	                        $now = date('Y-m-d H:i:s');
+    	                        $diff = strtotime($arr['booking_date']) - strtotime($now);
+    	                        $hours = $diff / (60 * 60);
+    	                        if ($hours < 24 || $arrivalNotice > 0 || $arr['price_by_distance'] == 'T') {
+    	                            pjAppController::pjActionConfirmSend($this->option_arr, $arr, PJ_SALT, 'arrival', $arr['locale_id']);
+    	                        } else {
+    	                            pjAppController::pjActionConfirmSend($this->option_arr, $arr, PJ_SALT, 'confirm', $arr['locale_id']);
+    	                        }
 	                        }
 	                        
+	                        pjAppController::pjActionConfirmSend($this->option_arr, $arr, PJ_SALT, 'payment', $arr['locale_id']);
 	                        if ($arr['status'] == 'confirmed') {
-	                            pjAppController::pjActionConfirmSend($this->option_arr, $arr, PJ_SALT, 'payment', $arr['locale_id']);	                        
 	                            $resp = pjApiSync::syncBooking($arr['id'], 'create', $this->option_arr);
     	                        if (isset($return_id) && (int)$return_id > 0) {
     	                            $resp = pjApiSync::syncBooking($return_id, 'create', $this->option_arr);
@@ -3943,7 +3961,7 @@ class pjFront extends pjAppController
 	                }
 	                $this->set('country_arr', $country_arr);
 	
-	                if (in_array($booking_arr['payment_method'], array('cash','creditcard_later')) && $booking_arr['status'] == 'pending') {
+	                if (in_array($booking_arr['payment_method'], array('cash','creditcard_later')) && in_array($booking_arr['status'], array('pending','confirmed'))) {
 	                    $cc_fee = 0;
 	                    $total = round((float)$booking_arr['total'] - (float)$booking_arr['credit_card_fee']);
 	                    if ((float)$this->option_arr['o_saferpay_fee'] > 0) {

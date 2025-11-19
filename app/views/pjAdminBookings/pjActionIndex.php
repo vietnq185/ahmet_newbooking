@@ -18,7 +18,15 @@ if (isset($tpl['status']))
 	$statuses = __('booking_statuses', true, false);
 	$week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['option_arr']['o_week_start'], range(0,6)) ? (int) $tpl['option_arr']['o_week_start'] : 0;
 	$jqDateFormat = pjUtil::jqDateFormat($tpl['option_arr']['o_date_format']);
-	
+	?>
+	<div class="ui-tabs ui-widget ui-widget-content ui-corner-all b10">
+    	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+    		<li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionIndex"><?php __('menuReservations'); ?></a></li>
+    		<li class="ui-state-default ui-corner-top"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjInvoice&amp;action=pjActionInvoices"><?php __('plugin_invoice_menu_invoices'); ?></a></li>
+    	</ul>
+    
+    </div>
+	<?php 
 	pjUtil::printNotice(__('infoReservationListTitle', true, false), __('infoReservationListDesc', true, false)); 
 	?>
 	

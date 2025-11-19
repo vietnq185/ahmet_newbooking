@@ -147,6 +147,14 @@ $payment_methods_desc = __('payment_methods_desc', true);
                     <button type="submit" class="btn medium color right"><?php __('front_btn_book_now'); ?></button>
                 </div>
             </form>
+            
+            <div class="pjCrBookingSesstionExpired vc_message_box vc_message_box-standard vc_message_box-square vc_color-alert-warning" style="display: none;">
+            	<div class="vc_message_box-icon"><i class="fas fa-check-circle"></i></div>
+            	<h2 id="booking_gtm"><?php __('front_booking_sesstion_expired_title'); ?></h2>
+	           	<br/>
+				<p><?php __('front_booking_sesstion_expired_desc'); ?></p>
+				<p align="center"><button type="button" class="btn medium color right pjCrRestartBooking" style="float: none;"><?php __('front_btn_restart_booking'); ?></button></p>
+			</div>
         <?php else: ?>
             <div class="trSystemMessage">
                 <?php __('front_error'); ?>

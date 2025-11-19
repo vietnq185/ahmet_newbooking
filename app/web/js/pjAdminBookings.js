@@ -776,6 +776,8 @@ var jQuery_1_8_2 = jQuery_1_8_2 || $.noConflict();
 			}
 			$dialogDeleteNameSign.data('id', $(this).attr('data-id')).dialog('open');
 			return false;
+		}).on("click", ".btnCreateInvoice", function () {
+			$("#frmCreateInvoice").trigger("submit");
 		});
 		
 		function getDropoff($location_id, $pickup_id='') {
@@ -1160,6 +1162,75 @@ var jQuery_1_8_2 = jQuery_1_8_2 || $.noConflict();
 				}
 			});
 		}
+        
+        if ($("#grid_invoices").length > 0 && datagrid) {
+        	function formatTotal(val, obj) {
+    			return obj.total_formated;
+    		}
+        	
+        	function formatDefault (str) {
+    			return myLabel[str] || str;
+    		}
+    		
+    		function formatId (str) {
+    			return ['<a href="index.php?controller=pjInvoice&action=pjActionUpdate&id=', str, '">#', str, '</a>'].join("");
+    		}
+    		
+    		function formatCreated(str) {
+    			if (str === null || str.length === 0) {
+    				return myLabel.empty_datetime;
+    			}
+    			
+    			if (str === '0000-00-00 00:00:00') {
+    				return myLabel.invalid_datetime;
+    			}
+    			
+    			if (str.match(/\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}/) !== null) {
+    				var x = str.split(" "),
+    					date = x[0],
+    					time = x[1],
+    					dx = date.split("-"),
+    					tx = time.split(":"),
+    					y = dx[0],
+    					m = parseInt(dx[1], 10) - 1,
+    					d = dx[2],
+    					hh = tx[0],
+    					mm = tx[1],
+    					ss = tx[2];
+    				return $.datagrid.formatDate(new Date(y, m, d, hh, mm, ss), pjGrid.jsDateFormat + ", hh:mm:ss");
+    			}
+    		}
+    		
+    		var $grid_invoices = $("#grid_invoices").datagrid({
+				buttons: [{type: "edit", url: "index.php?controller=pjInvoice&action=pjActionUpdate&id={:id}", title: "Edit"},
+				          {type: "delete", url: "index.php?controller=pjInvoice&action=pjActionDelete&id={:id}", title: "Delete"}],
+				columns: [
+				    {text: myLabel.num, type: "text", sortable: true, editable: false, renderer: formatId},
+				    {text: myLabel.order_id, type: "text", sortable: true, editable: false},
+				    {text: myLabel.issue_date, type: "date", sortable: true, editable: false, renderer: $.datagrid._formatDate, dateFormat: pjGrid.jsDateFormat},
+				    {text: myLabel.due_date, type: "date", sortable: true, editable: false, renderer: $.datagrid._formatDate, dateFormat: pjGrid.jsDateFormat},
+				    {text: myLabel.created, type: "text", sortable: true, editable: false, renderer: formatCreated},
+				    {text: myLabel.status, type: "text", sortable: true, editable: false, renderer: formatDefault},	
+				    {text: myLabel.total, type: "text", sortable: true, editable: false, align: "right", renderer: formatTotal}
+				],
+				dataUrl: "index.php?controller=pjInvoice&action=pjActionGetInvoices&q=" + $frmUpdateBooking.find("input[name='uuid']").val(),
+				dataType: "json",
+				fields: ['id', 'order_id', 'issue_date', 'due_date', 'created', 'status', 'total'],
+				paginator: {
+					actions: [
+					   {text: myLabel.delete_title, url: "index.php?controller=pjInvoice&action=pjActionDeleteBulk", render: true, confirmation: myLabel.delete_body}
+					],
+					gotoPage: true,
+					paginate: true,
+					total: true,
+					rowCount: true
+				},
+				select: {
+					field: "id",
+					name: "record[]"
+				}
+			});
+        }
         
 	});
 })(jQuery_1_8_2);

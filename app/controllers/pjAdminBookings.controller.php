@@ -712,6 +712,8 @@ class pjAdminBookings extends pjAdmin
                         }
                     }
 
+                    $invoice_arr = $this->pjActionGenerateInvoice($id);
+                    
                     if($data['driver_id'] != ':NULL' && $this->option_arr['o_email_driver'] == 1)
                     {
                         $driver = pjDriverModel::factory()->select('email')->find($data['driver_id'])->getData();
@@ -1322,10 +1324,16 @@ class pjAdminBookings extends pjAdmin
 				
 				pjUtil::redirect(PJ_INSTALL_URL. "index.php?controller=pjAdminBookings&action=pjActionIndex&err=$err");
 			}else{
-                // TODO: If it comes from the calendar in Dashboard and if the ID is for a return booking (without UUID etc) we should redirect to the first booking
-				$arr = pjBookingModel::factory()
-					->find($_GET['id'])
-					->getData();
+			    $pjBookingModel = pjBookingModel::factory();
+			    // TODO: If it comes from the calendar in Dashboard and if the ID is for a return booking (without UUID etc) we should redirect to the first booking
+			    if (isset($_REQUEST['id']) && (int) $_REQUEST['id'] > 0)
+			    {
+			        $pjBookingModel->where('t1.id', $_REQUEST['id']);
+			    } elseif (isset($_GET['uuid']) && !empty($_GET['uuid'])) {
+			        $pjBookingModel->where('t1.uuid', $_GET['uuid']);
+			    }
+			    
+			    $arr = $pjBookingModel->limit(1)->findAll()->getDataIndex(0);
 
 				if(count($arr) <= 0)
 				{
@@ -1455,6 +1463,54 @@ class pjAdminBookings extends pjAdmin
 				    ->where('t1.status', 'T')
 				    ->orderBy("name ASC")
 				    ->findAll()->getData());
+				
+				//$invoice_arr = $this->pjActionGenerateInvoice($arr['id']);
+				
+				$booking_arr = pjBookingModel::factory()->reset()
+				->select("t1.*, t2.content as fleet, IF (t1.pickup_type='server', t3.content, t1.pickup_address) AS location, IF(t1.dropoff_type='server', CONCAT_WS(' - ', t6.content, t4.content), t1.dropoff_address) AS dropoff")
+				->join('pjMultiLang', "t2.model='pjFleet' AND t2.foreign_id=t1.fleet_id AND t2.field='fleet' AND t2.locale=t1.locale_id", 'left outer')
+				->join('pjMultiLang', "t3.model='pjLocation' AND t3.foreign_id=t1.location_id AND t3.field='pickup_location' AND t3.locale=t1.locale_id", 'left outer')
+				->join('pjMultiLang', "t4.model='pjAreaCoord' AND t4.foreign_id=t1.dropoff_place_id AND t4.field='place_name' AND t4.locale=t1.locale_id", 'left outer')
+				->join('pjAreaCoord', "t5.id=t1.dropoff_place_id", 'left')
+				->join('pjMultiLang', "t6.model='pjArea' AND t6.foreign_id=t5.area_id AND t6.field='name' AND t6.locale=t1.locale_id", 'left outer')
+				->find($arr['id'])
+				->getData();
+				
+				$booking_extra_arr = pjBookingExtraModel::factory()->reset()
+				->select('t1.*, t3.content as name, t4.content as info, t5.price')
+				->join('pjBooking', 't2.id=t1.booking_id', 'inner')
+				->join('pjMultiLang', "t3.model='pjExtra' AND t3.foreign_id=t1.extra_id AND t3.field='name' AND t3.locale=t2.locale_id", 'left outer')
+				->join('pjMultiLang', "t4.model='pjExtra' AND t4.foreign_id=t1.extra_id AND t4.field='info' AND t4.locale=t2.locale_id", 'left outer')
+				->join('pjExtra', 't5.id=t1.extra_id', 'inner')
+				->where('t1.booking_id', $arr['id'])
+				->findAll()
+				->getData();
+				$this->set('booking_arr', $booking_arr);
+				$this->set('booking_extra_arr', $booking_extra_arr);
+				
+				$return_booking_extra_arr = array();
+				if ($return_arr) {
+				    $return_booking_extra_arr = pjBookingExtraModel::factory()->reset()
+				    ->select('t1.*, t3.content as name, t4.content as info, t5.price')
+				    ->join('pjBooking', 't2.id=t1.booking_id', 'inner')
+				    ->join('pjMultiLang', "t3.model='pjExtra' AND t3.foreign_id=t1.extra_id AND t3.field='name' AND t3.locale=t2.locale_id", 'left outer')
+				    ->join('pjMultiLang', "t4.model='pjExtra' AND t4.foreign_id=t1.extra_id AND t4.field='info' AND t4.locale=t2.locale_id", 'left outer')
+				    ->join('pjExtra', 't5.id=t1.extra_id', 'inner')
+				    ->where('t1.booking_id', $return_arr['id'])
+				    ->findAll()
+				    ->getData();
+				}
+				$this->set('return_booking_extra_arr', $return_booking_extra_arr);
+				
+				$invoice_tax_arr = pjInvoiceTaxModel::factory()->where('t1.is_default', 1)->limit(1)->findAll()->getDataIndex(0);
+				$tax = $tax_percentage = 0;
+				$tax_id = ':NULL';
+				if ($invoice_tax_arr) {
+				    $tax_percentage = $invoice_tax_arr['tax'];
+				    $tax_id = $invoice_tax_arr['id'];
+				}
+				$this->set('tax_percentage', $tax_percentage);
+				$this->set('tax_id', $tax_id);
 
 				$this->appendJs('select2.full.min.js', PJ_THIRD_PARTY_PATH . 'select2/js/');
 				$this->appendCss('select2.min.css', PJ_THIRD_PARTY_PATH . 'select2/css/');

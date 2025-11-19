@@ -301,8 +301,12 @@
 					<div id="trBookingMsg_<?php echo $index?>" style="display: none;">
 	                    <div class="alert alert-info"></div>
 	                </div>
-	                
 				</form>
+				
+				<div class="pjCrBookingSesstionExpired alert alert-warning" role="alert" style="margin-top: 40px;display: none;">
+                  <span class="alert-title" style="font-size: 16px; font-weight: 600;"><i class="fa fa-info-circle me-2"></i> <?php __('front_booking_sesstion_expired_title');?></span><br/><?php __('front_booking_sesstion_expired_desc');?>
+                  <p align="center"><button type="button" class="btn btn-primary pjCrRestartBooking"><?php __('front_btn_restart_booking'); ?></button></p>
+                </div>
 			</div>
 			<div class="col-md-4 col-12">
 				<?php include_once PJ_VIEWS_PATH . 'pjFront/elements/cart.php'; ?>

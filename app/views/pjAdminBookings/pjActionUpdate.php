@@ -22,7 +22,7 @@ if (isset($tpl['status']))
 	$date_time = pjUtil::formatDate(date('Y-m-d', strtotime($tpl['arr']['booking_date'])), 'Y-m-d', $tpl['option_arr']['o_date_format']) . ' ' . pjUtil::formatTime(date('H:i:s', strtotime($tpl['arr']['booking_date'])), 'H:i:s', $tpl['option_arr']['o_time_format']);
 
     $is_airport = $tpl['arr']['pickup_is_airport'];
-	
+    $statuses = __('plugin_invoice_statuses', true);
 	pjUtil::printNotice(__('infoUpdateBookingTitle', true, false), __('infoUpdateBookingDesc', true, false)); 
 	?>
 
@@ -32,7 +32,8 @@ if (isset($tpl['status']))
 			<ul>
 				<li><a href="#tabs-1"><?php __('lblBookingDetails');?></a></li>
 				<?php if (empty($_GET['copy'])) { ?>
-					<li><a href="#tabs-2"><?php __('tabLog');?></a></li>
+					<li><a href="#tabs-2"><?php __('tabInvoices');?></a></li>
+					<li><a href="#tabs-3"><?php __('tabLog');?></a></li>
 				<?php } ?>
 			</ul>
 		
@@ -868,7 +869,21 @@ if (isset($tpl['status']))
 			</form>
 		</div>
 		<?php if (empty($_GET['copy'])) { ?>
-    		<div id="tabs-2">
+			<div id="tabs-2">
+    			<?php
+				if (pjObject::getPlugin('pjInvoice') !== NULL)
+				{
+					?>
+					
+					<input type="button" class="pj-button btnCreateInvoice" value="<?php __('booking_create_invoice'); ?>" />
+					
+					<div id="grid_invoices" class="t10 b10"></div>
+				
+					<?php
+				}
+				?>
+    		</div>
+    		<div id="tabs-3">
     			<div id="grid_history" class="pj-grid-bookings"></div>
     		</div>
     	<?php } ?>
@@ -877,6 +892,136 @@ if (isset($tpl['status']))
 	<div id="dialogDeleteNameSign" title="<?php __('lblDeleteNameSign'); ?>" style="display: none">
 		<?php __('lblDeleteNameSignDesc'); ?>
 	</div>
+	
+	<?php
+	if (pjObject::getPlugin('pjInvoice') !== NULL)
+	{
+	    $map = array(
+	        'confirmed' => 'paid',
+	        'cancelled' => 'cancelled',
+	        'in_progress' => 'not_paid',
+	        'passed_on' => 'not_paid',
+	        'pending' => 'not_paid'
+	    );
+	    $arr = $tpl['booking_arr'];
+	    $return_arr = $tpl['return_arr'];
+	    if ($arr['status'] == 'confirmed' && !in_array($arr['payment_method'], array('creditcard_later', 'cash'))) {
+	        $paid_deposit = (float)$arr['deposit'];
+	        $amount_due = (float)$arr['total'] - $paid_deposit;
+	    } else {
+	        $paid_deposit = 0;
+	        $amount_due = (float)$arr['total'];
+	    }
+	    
+	    $total_extra_price = $arr['extra_price'];
+	    if ($return_arr) {
+	        $total_extra_price += $return_arr['extra_price'];
+	    }
+	    
+	    $sub_total_before_tax = pjAppController::getPriceBeforeTax($arr['sub_total'], $tpl['tax_percentage']);
+	    $tax = round((float)$arr['sub_total'] - (float)$sub_total_before_tax, 2, PHP_ROUND_HALF_UP);
+	    $idx = 0;
+		?>
+		<form action="<?php echo PJ_INSTALL_URL; ?>index.php" method="get" target="_blank" style="display: inline" id="frmCreateInvoice">
+			<input type="hidden" name="controller" value="pjInvoice" />
+			<input type="hidden" name="action" value="pjActionCreateInvoice" />
+			<input type="hidden" name="tmp" value="<?php echo md5(uniqid(rand(), true)); ?>" />
+			<input type="hidden" name="uuid" value="<?php echo pjUtil::uuid(); ?>" />
+			<input type="hidden" name="order_id" value="<?php echo pjSanitize::html($arr['uuid']); ?>" />
+			<input type="hidden" name="issue_date" value="<?php echo date('Y-m-d'); ?>" />
+			<input type="hidden" name="due_date" value="<?php echo date('Y-m-d'); ?>" />
+			<input type="hidden" name="status" value="<?php echo @$map[$arr['status']]; ?>" />
+			<input type="hidden" name="subtotal" value="<?php echo $sub_total_before_tax; ?>" />
+			<input type="hidden" name="discount" value="<?php echo $arr['discount']; ?>" />
+			<input type="hidden" name="voucher_code" value="<?php echo $arr['voucher_code']; ?>" />
+			<input type="hidden" name="tax" value="<?php echo $tax; ?>" />
+			<input type="hidden" name="shipping" value="0.00" />
+			<input type="hidden" name="total" value="<?php echo $arr['total']; ?>" />
+			<input type="hidden" name="paid_deposit" value="<?php echo $paid_deposit;?>" />
+			<input type="hidden" name="amount_due" value="<?php echo $amount_due;?>" />
+			<input type="hidden" name="currency" value="<?php echo pjSanitize::html($tpl['option_arr']['o_currency']); ?>" />
+			<input type="hidden" name="notes" value="<?php echo pjSanitize::html($arr['c_notes']); ?>" />
+			<input type="hidden" name="b_billing_address" value="<?php echo pjSanitize::html($arr['c_address']); ?>" />
+			<input type="hidden" name="b_name" value="<?php echo pjSanitize::html($arr['c_fname'].' '.$arr['c_lname']); ?>" />
+			<input type="hidden" name="b_address" value="<?php echo pjSanitize::html($arr['c_address']); ?>" />
+			<input type="hidden" name="b_street_address" value="" />
+			<input type="hidden" name="b_city" value="<?php echo pjSanitize::html($arr['c_city']); ?>" />
+			<input type="hidden" name="b_state" value="<?php echo pjSanitize::html($arr['c_state']); ?>" />
+			<input type="hidden" name="b_zip" value="<?php echo pjSanitize::html($arr['c_zip']); ?>" />
+			<input type="hidden" name="b_country" value="<?php echo pjSanitize::html($arr['c_country']); ?>" />
+			<input type="hidden" name="b_phone" value="<?php echo pjSanitize::html($arr['c_dialing_code'].$arr['c_phone']); ?>" />
+			<input type="hidden" name="b_email" value="<?php echo pjSanitize::html($arr['c_email']); ?>" />
+			<input type="hidden" name="b_url" value="" />
+			<input type="hidden" name="s_shipping_address" value="<?php echo $arr['c_destination_address']; ?>" />
+			<input type="hidden" name="s_name" value="<?php echo pjSanitize::html($arr['c_fname'].' '.$arr['c_lname']); ?>" />
+			<input type="hidden" name="s_address" value="<?php echo pjSanitize::html($arr['c_destination_address']); ?>" />
+			<input type="hidden" name="s_street_address" value="" />
+			<input type="hidden" name="s_city" value="<?php echo pjSanitize::html($arr['c_city']); ?>" />
+			<input type="hidden" name="s_state" value="<?php echo pjSanitize::html($arr['c_state']); ?>" />
+			<input type="hidden" name="s_zip" value="<?php echo pjSanitize::html($arr['c_zip']); ?>" />
+			<input type="hidden" name="s_phone" value="<?php echo pjSanitize::html($arr['c_dialing_code'].$arr['c_phone']); ?>" />
+			<input type="hidden" name="s_email" value="<?php echo pjSanitize::html($arr['c_email']); ?>" />
+			<input type="hidden" name="s_url" value="" />
+			
+			<?php
+			$items = array();
+			$car_info_arr = array();
+			$car_info_arr[] = __('front_vehicle', true).': '.pjSanitize::html($arr['fleet']);
+			$car_info_arr[] = __('front_date', true).': '.date($tpl['option_arr']['o_date_format'].', '.$tpl['option_arr']['o_time_format'], strtotime($arr['booking_date']));
+			if (!empty($arr['return_date'])) {
+			    $car_info_arr[] = __('booking_return_on', true).': '.date($tpl['option_arr']['o_date_format'].', '.$tpl['option_arr']['o_time_format'], strtotime($arr['return_date']));
+			}
+			$car_info_arr[] = __('front_cart_from', true).': '.pjSanitize::html($arr['location']);
+			$car_info_arr[] = __('front_cart_to', true).': '.pjSanitize::html($arr['dropoff']);
+			?>
+			<input type="hidden" name="items[<?php echo $idx; ?>][name]" value="<?php __('front_invoice_booking_details', true); ?>" />
+			<input type="hidden" name="items[<?php echo $idx; ?>][description]" value="<?php echo implode("\r\n", $car_info_arr); ?>" />
+			<input type="hidden" name="items[<?php echo $idx; ?>][qty]" value="1" />
+			<input type="hidden" name="items[<?php echo $idx; ?>][unit_price]" value="<?php echo $arr['sub_total'] - (float)$total_extra_price; ?>" />
+			<input type="hidden" name="items[<?php echo $idx; ?>][amount]" value="<?php echo $arr['sub_total'] - (float)$total_extra_price; ?>" />
+			<input type="hidden" name="items[<?php echo $idx; ?>][tax_id]" value="<?php echo $tpl['tax_id']; ?>" />
+			<?php 
+			if ($tpl['booking_extra_arr']) {
+			    foreach($tpl['booking_extra_arr'] as $extra)
+			    {
+			        $idx++;
+			        ?>
+			        <input type="hidden" name="items[<?php echo $idx; ?>][name]" value="<?php echo $extra['quantity'].' x '.pjSanitize::html(strip_tags($extra['name'])); ?>" />
+        			<input type="hidden" name="items[<?php echo $idx; ?>][description]" value="<?php echo pjSanitize::html($extra['info']); ?>" />
+        			<input type="hidden" name="items[<?php echo $idx; ?>][qty]" value="<?php echo $extra['quantity'];?>" />
+        			<input type="hidden" name="items[<?php echo $idx; ?>][unit_price]" value="<?php echo $extra['price'];?>" />
+        			<input type="hidden" name="items[<?php echo $idx; ?>][amount]" value="<?php echo $extra['quantity'] * $extra['price'];?>" />
+			        <?php
+			    }
+			}
+			if ($tpl['return_booking_extra_arr']) {
+			    foreach($tpl['return_booking_extra_arr'] as $extra)
+			    {
+			        $idx++;
+			        ?>
+			        <input type="hidden" name="items[<?php echo $idx; ?>][name]" value="<?php echo $extra['quantity'].' x '.pjSanitize::html(strip_tags($extra['name'])).' ('.__('front_invoice_return', true).')'; ?>" />
+        			<input type="hidden" name="items[<?php echo $idx; ?>][description]" value="<?php echo pjSanitize::html($extra['info']); ?>" />
+        			<input type="hidden" name="items[<?php echo $idx; ?>][qty]" value="<?php echo $extra['quantity'];?>" />
+        			<input type="hidden" name="items[<?php echo $idx; ?>][unit_price]" value="<?php echo $extra['price'];?>" />
+        			<input type="hidden" name="items[<?php echo $idx; ?>][amount]" value="<?php echo $extra['quantity'] * $extra['price'];?>" />
+			        <?php
+			    }
+			}
+			if ((float)$arr['credit_card_fee'] > 0) {
+			    $idx++;
+			    ?>
+			    <input type="hidden" name="items[<?php echo $idx; ?>][name]" value="<?php __('front_invoice_credit_card_fee', true); ?>" />
+    			<input type="hidden" name="items[<?php echo $idx; ?>][description]" value="" />
+    			<input type="hidden" name="items[<?php echo $idx; ?>][qty]" value="1" />
+    			<input type="hidden" name="items[<?php echo $idx; ?>][unit_price]" value="<?php echo (float)$extra['credit_card_fee'];?>" />
+    			<input type="hidden" name="items[<?php echo $idx; ?>][amount]" value="<?php echo (float)$extra['credit_card_fee'];?>" />
+			    <?php 
+			}
+			?>
+		</form>
+		<?php
+	}
+	?>
 	
 	<script type="text/javascript">
 	var myLabel = myLabel || {};
@@ -891,12 +1036,33 @@ if (isset($tpl['status']))
 	myLabel.btnCancel = "<?php __('btnCancel');?>";
 
 	var pjGrid = pjGrid || {};
+	pjGrid.jqDateFormat = "<?php echo pjUtil::jqDateFormat($tpl['option_arr']['o_date_format']); ?>";
+	pjGrid.jsDateFormat = "<?php echo pjUtil::jsDateFormat($tpl['option_arr']['o_date_format']); ?>";
 	pjGrid.queryString = "&booking_id=<?php echo $tpl['arr']['id'];?>";
 	myLabel.h_content = "<?php __('lblBokingHistoryContent', false, true); ?>";
 	myLabel.h_by = "<?php __('lblBokingHistoryBy', false, true); ?>";
 	myLabel.h_created = "<?php __('lblBokingHistoryCreated', false, true); ?>";
 	myLabel.delete_selected = "<?php __('delete_selected', false, true); ?>";
 	myLabel.delete_confirmation = "<?php __('delete_confirmation', false, true); ?>";
+
+	myLabel.num = "<?php __('plugin_invoice_i_num'); ?>";
+	myLabel.order_id = "<?php __('plugin_invoice_i_order_id'); ?>";
+	myLabel.issue_date = "<?php __('plugin_invoice_i_issue_date'); ?>";
+	myLabel.due_date = "<?php __('plugin_invoice_i_due_date'); ?>";
+	myLabel.created = "<?php __('plugin_invoice_i_created'); ?>";
+	myLabel.status = "<?php __('plugin_invoice_i_status'); ?>";
+	myLabel.total = "<?php __('plugin_invoice_i_total'); ?>";
+	myLabel.delete_title = "<?php __('plugin_invoice_i_delete_title'); ?>";
+	myLabel.delete_body = "<?php __('plugin_invoice_i_delete_body'); ?>";
+	myLabel.paid = "<?php echo $statuses['paid']; ?>";
+	myLabel.not_paid = "<?php echo $statuses['not_paid']; ?>";
+	myLabel.cancelled = "<?php echo $statuses['cancelled']; ?>";
+	myLabel.empty_date = "<?php __('gridEmptyDate'); ?>";
+	myLabel.invalid_date = "<?php __('gridInvalidDate'); ?>";
+	myLabel.empty_datetime = "<?php __('gridEmptyDatetime'); ?>";
+	myLabel.invalid_datetime = "<?php __('gridInvalidDatetime'); ?>";
+	myLabel.currency = "<?php echo $tpl['option_arr']['o_currency']; ?>";
+	myLabel.currencysign = "<?php echo pjUtil::getCurrencySign($tpl['option_arr']['o_currency'], false); ?>";
 	</script>
 	<?php
 }
