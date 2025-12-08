@@ -15,6 +15,7 @@ if (isset($tpl['status']))
         $bodies = __('error_bodies', true);
         pjUtil::printNotice(@$titles[$_GET['err']], @$bodies[$_GET['err']]);
     }
+    include_once PJ_VIEWS_PATH . 'pjLayouts/elements/optmenu.php';
     $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['option_arr']['o_week_start'], range(0,6)) ? (int) $tpl['option_arr']['o_week_start'] : 0;
     $jqDateFormat = pjUtil::jqDateFormat($tpl['option_arr']['o_date_format']);
     $vt = __('voucher_types', true);

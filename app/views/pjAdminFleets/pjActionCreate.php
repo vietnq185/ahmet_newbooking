@@ -9,6 +9,7 @@ if (isset($tpl['status']))
 			break;
 	}
 } else {
+    include_once PJ_VIEWS_PATH . 'pjLayouts/elements/optmenu.php';
     $days = __('days', true);
 	$days[7] = $days[0];
 	unset($days[0]);

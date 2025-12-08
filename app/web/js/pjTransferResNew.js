@@ -534,6 +534,7 @@
                      }, 500);
                      */
                     self.pageLoaded.call(self);
+                    pjQ.$('#loading-overlay').css('display', 'none');
                 }
             }).fail(function () {
                 self.enableButtons.call(self);

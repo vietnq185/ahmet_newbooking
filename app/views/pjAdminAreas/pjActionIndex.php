@@ -15,6 +15,7 @@ if (isset($tpl['status']))
 		$bodies = __('error_bodies', true);
 		pjUtil::printNotice(@$titles[$_GET['err']], @$bodies[$_GET['err']]);
 	}
+	include_once PJ_VIEWS_PATH . 'pjLayouts/elements/optmenu.php';
 	$filter = __('filter', true, false);
 	?>
 	<?php pjUtil::printNotice(__('infoAreasTitle', true, false), __('infoAreasBody', true, false)); ?>

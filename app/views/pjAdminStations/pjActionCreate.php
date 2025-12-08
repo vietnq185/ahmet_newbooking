@@ -9,6 +9,7 @@ if (isset($tpl['status']))
 			break;
 	}
 } else {
+    include_once PJ_VIEWS_PATH . 'pjLayouts/elements/optmenu.php';
 	pjUtil::printNotice(__('infoAddStationTitle', true, false), __('infoAddStationBody', true, false));
 	$index = 'tr_' . rand(1, 999999);
 	?>

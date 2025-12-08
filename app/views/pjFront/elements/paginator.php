@@ -16,7 +16,7 @@
 								
 			if ($page > 1)
 			{
-				?><li><a class="tr-prev tr-page-clickable" href="#" rev="<?php echo $page - 1; ?>"><i class="fa fa-angle-double-left"></i></a></li><?php
+				?><li><a class="tr-prev tr-page-clickable" href="#" rev="<?php echo $page - 1; ?>"><i class="fad fa-angle-double-left"></i></a></li><?php
 			}
 			?><?php 
 			if ($lastpage < 7 + ($stages * 2))
@@ -91,7 +91,7 @@
 				}	
 			}
 			if ($page < $counter - 1){
-				 ?><li><a class="tr-next tr-page-clickable" href="#" rev="<?php echo $page + 1; ?>"><i class="fa fa-angle-double-right"></i></a></li><?php
+				 ?><li><a class="tr-next tr-page-clickable" href="#" rev="<?php echo $page + 1; ?>"><i class="fad fa-angle-double-right"></i></a></li><?php
 			}
 			?>
 		</ul>

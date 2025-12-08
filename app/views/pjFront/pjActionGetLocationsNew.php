@@ -1,8 +1,8 @@
 <?php $index = pjObject::escapeString($_GET['index']); ?>
 <div class="form-group">
 	<div class="input-group">
-		<span class="input-group-addon">
-			<span class="fa-solid fa-location-pin" aria-hidden="true"></span>
+		<span class="input-group-addon text-blue">
+			<span class="fad fa-map-marker" aria-hidden="true"></span>
 		</span>
 		<select name="search_dropoff_id" id="trDropoffId_<?php echo $index;?>" class="form-control select2 required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>">
 		    <option value=""><?php __('front_to', false, false); ?></option>

@@ -16,6 +16,7 @@ if (isset($tpl['status']))
 		
 		pjUtil::printNotice(@$titles[$_GET['err']], @$bodies[$_GET['err']]);
 	}
+	include_once PJ_VIEWS_PATH . 'pjLayouts/elements/optmenu.php';
 	$days = __('days', true);
 	$days[7] = $days[0];
 	unset($days[0]);

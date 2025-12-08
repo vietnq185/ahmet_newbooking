@@ -9,6 +9,7 @@ if (isset($tpl['status']))
             break;
     }
 } else {
+    include_once PJ_VIEWS_PATH . 'pjLayouts/elements/optmenu.php';
     pjUtil::printNotice(__('infoAddVoucherTitle', true, false), __('infoAddVoucherBody', true, false));
 
     $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['option_arr']['o_week_start'], range(0,6)) ? (int) $tpl['option_arr']['o_week_start'] : 0;

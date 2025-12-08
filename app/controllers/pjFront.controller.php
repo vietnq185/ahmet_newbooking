@@ -166,6 +166,7 @@ class pjFront extends pjAppController
 
 	public function afterFilter()
 	{		
+	    $_GET['hide'] = 1;
 		if (!isset($_GET['hide']) || (isset($_GET['hide']) && (int) $_GET['hide'] !== 1) &&
 			in_array($_GET['action'], array('pjActionSearch', 'pjActionSearchNew', 'pjActionServices', 'pjActionExtras', 'pjActionDeparture', 'pjActionReturn', 'pjActionPassenger', 'pjActionCheckout', 'pjActionSummary', 'pjActionPayment')))
 		{
@@ -320,9 +321,14 @@ class pjFront extends pjAppController
 			array('file' => "theme-$theme.css", 'path' => PJ_CSS_PATH),
             array('file' => 'select2.min.css', 'path' => $dm->getPath('pj_select2')),
             array('file' => 'tooltipster.bundle.min.css', 'path' => PJ_LIBS_PATH.'pjQ/tooltipster/css/'),
-            array('file' => 'pjTransferResNewLayout.css', 'path' => PJ_CSS_PATH),
-			array('file' => 'https://fonts.googleapis.com/css?family=Raleway:400,500,600,700|Montserrat:400,700')
+            //array('file' => 'pjTransferResNewLayout.css', 'path' => PJ_CSS_PATH),
+		    array('file' => 'https://fonts.googleapis.com/css?family=Raleway:400,500,600,700|Montserrat:400,700', 'path' => '')
 		);
+		if ($_SERVER['HTTP_HOST'] == 'localhost' || isset($_GET['original'])) {
+		    $arr[] = array('file' => 'pjTransferResNewLayout_local.css', 'path' => PJ_CSS_PATH);
+		} else {
+		    $arr[] = array('file' => 'pjTransferResNewLayout.css', 'path' => PJ_CSS_PATH);
+		}
 		header("Content-Type: text/css; charset=utf-8");
 		foreach ($arr as $item)
 		{
@@ -923,11 +929,11 @@ class pjFront extends pjAppController
 						->getData();
 					foreach ($dropoff_place_arr as $k => $v) {
 						if ($v['icon'] == 'airport') {
-			    			$icon = 'fa-solid fa-plane-up';
+			    			$icon = 'fad fa-plane-departure';
 			    		} elseif ($v['icon'] == 'train') {
-			    			$icon = 'fa-solid fa-train-subway';
+			    			$icon = 'fad fa-subway';
 			    		} else {
-			    			$icon = 'fa-solid fa-location-pin';
+			    			$icon = 'fad fa-map-marker';
 			    		}	
 			    		$dropoff_place_arr[$k]['icon'] = $icon;
 			    		$dropoff_place_arr[$k]['text'] = $v['place_name'];
@@ -947,11 +953,11 @@ class pjFront extends pjAppController
 				->findAll()->getData();
 			foreach ($pickup_arr as $k => $v) {
 				if ($v['icon'] == 'airport') {
-	    			$icon = 'fa-solid fa-plane-up';
+	    			$icon = 'fad fa-plane-departure';
 	    		} elseif ($v['icon'] == 'train') {
-	    			$icon = 'fa-solid fa-train-subway';
+	    			$icon = 'fad fa-subway';
 	    		} else {
-	    			$icon = 'fa-solid fa-location-pin';
+	    			$icon = 'fad fa-map-marker';
 	    		}	
 	    		$pickup_arr[$k]['icon'] = $icon;
 	    		$pickup_arr[$k]['text'] = $v['pickup_location'];
@@ -1030,11 +1036,11 @@ class pjFront extends pjAppController
 						->getData();
 					foreach ($dropoff_place_arr as $k => $v) {
 						if ($v['icon'] == 'airport') {
-			    			$icon = 'fa-solid fa-plane-up';
+			    			$icon = 'fad fa-plane-departure';
 			    		} elseif ($v['icon'] == 'train') {
-			    			$icon = 'fa-solid fa-train-subway';
+			    			$icon = 'fad fa-subway';
 			    		} else {
-			    			$icon = 'fa-solid fa-location-pin';
+			    			$icon = 'fad fa-map-marker';
 			    		}	
 			    		$dropoff_place_arr[$k]['icon'] = $icon;
 			    		$dropoff_place_arr[$k]['text'] = $v['place_name'];
@@ -1054,11 +1060,11 @@ class pjFront extends pjAppController
 				->findAll()->getData();
 			foreach ($pickup_arr as $k => $v) {
 				if ($v['icon'] == 'airport') {
-	    			$icon = 'fa-solid fa-plane-up';
+	    			$icon = 'fad fa-plane-departure';
 	    		} elseif ($v['icon'] == 'train') {
-	    			$icon = 'fa-solid fa-train-subway';
+	    			$icon = 'fad fa-subway';
 	    		} else {
-	    			$icon = 'fa-solid fa-location-pin';
+	    			$icon = 'fad fa-map-marker';
 	    		}	
 	    		$pickup_arr[$k]['icon'] = $icon;
 	    		$pickup_arr[$k]['text'] = $v['pickup_location'];
@@ -1409,7 +1415,48 @@ class pjFront extends pjAppController
             $departure_arr = isset($_SESSION[$this->defaultForm][$this->defaultIndex]['departure']) ? $_SESSION[$this->defaultForm][$this->defaultIndex]['departure'] : array();
             $_SESSION[$this->defaultForm][$this->defaultIndex]['departure'] = array_merge($departure_arr, $_POST);
             $this->updateCart();
-            $resp['code'] = 200;
+            
+            if (isset($_GET['submit'])) {
+                $error_arr = array();
+                $departureData = @$_SESSION[$this->defaultForm][$this->defaultIndex]['departure'];
+                $search_post = $this->_get('search');
+                
+                $_date = pjUtil::formatDate($search_post['date'], $this->option_arr['o_date_format']);
+                $time = '';
+                if (isset($departureData['pickup_time'])) {
+                    $time = date('H:i:s', strtotime($departureData['pickup_time']));
+                } elseif (isset($departureData['arrival_time'])) {
+                    $time = date('H:i:s', strtotime($departureData['arrival_time']));
+                }
+                $booking_date = $_date . ' ' . $time;
+                if (strtotime($booking_date) < time()) {
+                    $error_arr[] = __('front_label_first_transfer', true).': '.__('front_invalid_time', true);
+                }
+                if (isset($_POST['has_return']) && $_POST['has_return'] == 1) {
+                    $returnData = @$_SESSION[$this->defaultForm][$this->defaultIndex]['return'];
+                    $_return_date = pjUtil::formatDate($returnData['return_date'], $this->option_arr['o_date_format']);
+                    if (isset($returnData['return_pickup_time'])) {
+                        $_return_time = date('H:i:s', strtotime($returnData['return_pickup_time']));
+                    } elseif (isset($returnData['return_time'])) {
+                        $_return_time = date('H:i:s', strtotime($returnData['return_time']));
+                    }
+                    $return_date = $_return_date . ' ' . $_return_time;
+                    if (strtotime($return_date) < time()) {
+                        $error_arr[] = __('front_label_return_transfer', true).': '.__('front_invalid_time', true);
+                    }
+                }
+                
+                if ($error_arr) {
+                    $resp['code'] = 201;
+                    $resp['text'] = implode("<br/>", $error_arr);
+                }
+                else {
+                    $resp['code'] = 200;
+                }
+            } else {
+                $resp['code'] = 200;
+            }
+            
             $resp['is_return'] = $is_return;
 
             pjAppController::jsonResponse($resp);
@@ -1904,11 +1951,11 @@ class pjFront extends pjAppController
 					}
 					foreach ($dropoff_place_arr as $k => $v) {
 						if ($v['icon'] == 'airport') {
-			    			$icon = 'fa-solid fa-plane-up';
+			    			$icon = 'fad fa-plane-departure';
 			    		} elseif ($v['icon'] == 'train') {
-			    			$icon = 'fa-solid fa-train-subway';
+			    			$icon = 'fad fa-subway';
 			    		} else {
-			    			$icon = 'fa-solid fa-location-pin';
+			    			$icon = 'fad fa-map-marker';
 			    		}
 			    		$dropoff_place_arr[$k]['icon'] = $icon;
 			    		$dropoff_place_arr[$k]['text'] = $v['place_name'];
@@ -1972,11 +2019,11 @@ class pjFront extends pjAppController
 					}
 					foreach ($dropoff_place_arr as $k => $v) {
 						if ($v['icon'] == 'airport') {
-			    			$icon = 'fa-solid fa-plane-up';
+			    			$icon = 'fad fa-plane-departure';
 			    		} elseif ($v['icon'] == 'train') {
-			    			$icon = 'fa-solid fa-train-subway';
+			    			$icon = 'fad fa-subway';
 			    		} else {
-			    			$icon = 'fa-solid fa-location-pin';
+			    			$icon = 'fad fa-map-marker';
 			    		}
 			    		$dropoff_place_arr[$k]['icon'] = $icon;
 			    		$dropoff_place_arr[$k]['text'] = $v['place_name'];
@@ -2473,11 +2520,22 @@ class pjFront extends pjAppController
             }
             $data['booking_date'] = $_date . ' ' . $time;
             
+            $region = $dropoff_region = '';
             if ($search_post['pickup_type'] == 'google') {
             	$data['pickup_address'] = strip_tags($search_post['custom_pickup_data']['adr_address']);
             } else {
             	$data['pickup_address'] = ':NULL';
+            	$pickup_arr = pjLocationModel::factory()->find($search_post['pickup_id'])->getData();
+            	$region = $pickup_arr['region'];
             }
+            if ($search_post['dropoff_type'] == 'server') {
+                $dropoff_arr = pjDropoffModel::factory()->find($dropoff_id)->getData();
+                $dropoff_region = $dropoff_arr['region'];
+            }
+            
+            $data['region'] = $region;
+            $data['dropoff_region'] = $dropoff_region;
+            
             $data['pickup_lat'] = $search_post['pickup_lat'];
             $data['pickup_lng'] = $search_post['pickup_lng'];
             $data['pickup_is_airport'] = $search_post['pickup_is_airport'];
@@ -2832,6 +2890,8 @@ class pjFront extends pjAppController
                     }
                     $data['pickup_is_airport'] = $search_post['dropoff_is_airport'];
 					$data['dropoff_is_airport'] = $search_post['pickup_is_airport'];
+					$data['region'] = $dropoff_region;
+					$data['dropoff_region'] = $region;
 					$return_id = $pjBookingModel->reset()->setAttributes($data)->insert()->getInsertId();
 				}
 
@@ -2848,7 +2908,7 @@ class pjFront extends pjAppController
                     ))
                     ->insert();
 
-                $invoice_arr = $this->pjActionGenerateInvoice($id);
+                //$invoice_arr = $this->pjActionGenerateInvoice($id);
                     
 				$bookingDate = new DateTime($arr['booking_date']);
 				$arrivalNotice = pjArrivalNoticeModel::factory()
@@ -2869,9 +2929,11 @@ class pjFront extends pjAppController
 					}
 				}
 				
-				if ($arr['payment_method'] == 'saferpay' && !empty($saferpay_cature_id)) {
+				//If the customer pays online during the booking process, they should not receive a payment confirmation — only when we send them a payment link.
+				/* if ($arr['payment_method'] == 'saferpay' && !empty($saferpay_cature_id)) {
 				    pjAppController::pjActionConfirmSend($this->option_arr, $arr, PJ_SALT, 'payment', $this->getLocaleId());
-				}
+				} */
+				
 				if ($arr['status'] == 'confirmed') {
 					$resp = pjApiSync::syncBooking($id, 'create', $this->option_arr);
 					if (isset($return_id) && (int)$return_id > 0) {
@@ -3395,17 +3457,17 @@ class pjFront extends pjAppController
 		    	$arr = json_decode($pjHttp->getResponse(), true);
 		    	if (isset($arr['predictions']) && count($arr['predictions']) > 0) {
 			    	foreach ($arr['predictions'] as $v) {
-			    		$icon = 'fa-solid fa-location-pin';
+			    		$icon = 'fad fa-map-marker';
 			    		if (in_array('airport', $v['types'])) {
-			    			$icon = 'fa-solid fa-plane-up';
+			    			$icon = 'fad fa-plane-departure';
 			    		} elseif (in_array('restaurant', $v['types'])) {
-			    			$icon = 'fa-solid fa-utensils';
+			    			$icon = 'fad fa-utensils';
 			    		} elseif (in_array('store', $v['types'])) {
-			    			$icon = 'fa-solid fa-bag-shopping';
+			    			$icon = 'fad fa-shopping-bag';
 			    		} elseif (in_array('train_station', $v['types'])) {
-			    			$icon = 'fa-solid fa-train-subway';
+			    			$icon = 'fad fa-subway';
 			    		} elseif (in_array('university', $v['types']) || in_array('school', $v['types'])) {
-			    			$icon = 'fa-solid fa-graduation-cap';
+			    			$icon = 'fad fa-graduation-cap';
 			    		}
 			    		$data_google[] = array(
 			    			'id' => 'google~::~'.$v['place_id'].'~::~',

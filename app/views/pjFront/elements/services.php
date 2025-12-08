@@ -8,16 +8,16 @@
 			if ($diff >= 24) {
 				?>
 				<div class="alert alert-success d-flex align-items-center">
-					<i class="fa-solid fa-circle-check"></i><span class="alert-desc"><span class="alert-title"><?php __('front_free_cancellation_title')?></span><?php echo sprintf(__('front_free_cancellation_desc', true), date('j', $next_day_ts).' '.@$months[date('n', $next_day_ts)].' '.date('Y', $next_day_ts));?></span>   		
+					<i class="fad fa-check-circle"></i><span class="alert-desc"><span class="alert-title"><?php __('front_free_cancellation_title')?></span><?php echo sprintf(__('front_free_cancellation_desc', true), date('j', $next_day_ts).' '.@$months[date('n', $next_day_ts)].' '.date('Y', $next_day_ts));?></span>   		
 				</div>
 			<?php } else { ?>
 				<div class="alert alert-success d-flex align-items-center">
-					<i class="fa-solid fa-circle-check"></i><span class="alert-desc"><span class="alert-title"><?php __('front_free_cancellation_title')?></span><?php __('front_free_cancellation_desc_1');?></span>   		
+					<i class="fad fa-check-circle"></i><span class="alert-desc"><span class="alert-title"><?php __('front_free_cancellation_title')?></span><?php __('front_free_cancellation_desc_1');?></span>   		
 				</div>
 			<?php } ?>
 		<?php } else { ?>
 			<div class="alert alert-success d-flex align-items-center">
-				<i class="fa-solid fa-circle-check"></i><span class="alert-desc"><span class="alert-title"><?php __('front_free_cancellation_title')?></span><?php __('front_free_cancellation_msg');?></span>   		
+				<i class="fad fa-check-circle"></i><span class="alert-desc"><span class="alert-title"><?php __('front_free_cancellation_title')?></span><?php __('front_free_cancellation_msg');?></span>   		
 			</div>
 		<?php } ?>
 		<div class="pjSbVehicles">
@@ -98,14 +98,14 @@
 		                            	<?php } ?>
 		                            </div>
 		                            <div class="row text-blue">
-		                            	<div class="col-sm-6"><i class="fa-solid fa-user" aria-hidden="true"></i> <?php echo str_replace('{NUMBER}', $v['passengers'], __('front_max_passengers', true, false)) ?></div>
-		                            	<div class="col-sm-6"><i class="fa-solid fa-suitcase"></i> <?php echo str_replace('{NUMBER}', $v['luggage'], __('front_max_suitcases', true, false)) ?></div>
+		                            	<div class="col-sm-6"><i class="fad fa-user" aria-hidden="true"></i> <?php echo str_replace('{NUMBER}', $v['passengers'], (int)$v['passengers'] > 8 ? __('front_max_passengers_over_8', true, false) : __('front_max_passengers', true, false)) ?></div>
+		                            	<div class="col-sm-6"><i class="fad fa-suitcase"></i> <?php echo str_replace('{NUMBER}', $v['luggage'], __('front_max_suitcases', true, false)) ?></div>
 		                            </div>
 		                            <ul>
-		                            	<li><i class="fa-solid fa-credit-card"></i> <a href="javascript:void(0);" class="pjSbVehicleTipInfo" title="<?php echo pjSanitize::html($tpl['o_no_credit_card_fees_info']);?>"><?php __('front_no_credit_card_fee');?></a></li>
-		                            	<li><i class="fa-solid fa-clock"></i> <a href="javascript:void(0);" class="pjSbVehicleTipInfo"  title="<?php echo pjSanitize::html($tpl['o_free_waiting_time_info']);?>"><?php __('front_free_wt');?></a></li>
-		                            	<li><i class="fa-solid fa-sign-hanging"></i> <a href="javascript:void(0);" class="pjSbVehicleTipInfo" title="<?php echo pjSanitize::html($tpl['o_meet_greet_service_info']);?>"><?php __('front_meet_freet_service');?></a></li>
-		                            	<li><i class="fa-solid fa-clock-rotate-left"></i> <?php echo str_replace('{NUMBER}', round($STORE['search']['duration']/60), __('front_estimated_time', true, false)); ?></li>
+		                            	<li><i class="fad fa-credit-card"></i> <a href="javascript:void(0);" class="pjSbVehicleTipInfo" title="<?php echo pjSanitize::html($tpl['o_no_credit_card_fees_info']);?>"><?php __('front_no_credit_card_fee');?></a></li>
+		                            	<li><i class="fad fa-clock"></i> <a href="javascript:void(0);" class="pjSbVehicleTipInfo"  title="<?php echo pjSanitize::html($tpl['o_free_waiting_time_info']);?>"><?php __('front_free_wt');?></a></li>
+		                            	<li><i class="fad fa-sign"></i> <a href="javascript:void(0);" class="pjSbVehicleTipInfo" title="<?php echo pjSanitize::html($tpl['o_meet_greet_service_info']);?>"><?php __('front_meet_freet_service');?></a></li>
+		                            	<li><i class="fad fa-history"></i> <?php echo str_replace('{NUMBER}', round($STORE['search']['duration']/60), __('front_estimated_time', true, false)); ?></li>
 		                            	<li class="pjSbVehicleMoreInfoButton"><a href="javascript:void(0);" class="pjSbVehicleMoreInfo"><?php __('front_button_more_info');?></a></li>
 		                            </ul>
 								</div>
@@ -114,7 +114,7 @@
 					</div>
 					<div class="col-lg-3 col-md-12 col-sm-12 pjSbPriceData text-center">
 						<?php if($tpl['no_date_selected']) { ?>
-							<div class="selectdate text-red"><i class="fa-solid fa-calendar-day"></i><br/><?php __('front_price_not_available_text')?></div>
+							<div class="selectdate text-red"><i class="fad fa-calendar-alt"></i><br/><?php __('front_price_not_available_text')?></div>
 							<a href="javascript:void(0);" class="btn btn-primary trChooseDateButton"><?php __('front_btn_choose_date', false, false);?></a>
 						<?php } elseif ((float)$price <= 0 || $allow_book == 0){ ?>
 							<a href="<?php echo $tpl['option_arr']['i18n'][$controller->getLocaleId()]['o_link_to_inquiry_form'];?>" class="btn btn-primary trSendInquiryButton" data-allow_book="0" data-id="<?php echo $v['id'];?>"><span><?php __('front_btn_send_inquiry');?></span></a>
@@ -132,7 +132,7 @@
 								<div class="price"><?php echo number_format($price, 2, ',', ' ');?> <small><?php echo $tpl['option_arr']['o_currency']; ?></small></div>
 								<div><?php echo $is_return == 0 ? __('front_total_oneway_price', true) : __('front_total_roundtrip_price', true);?></div>
 								<div class="text-green">
-                                    <i class="fa-solid fa-circle-check"></i> <?php __('front_badget_free_cancellation');?>
+                                    <i class="fad fa-check-circle"></i> <?php __('front_badget_free_cancellation');?>
                            		</div>
 							</div>
 							<a href="<?php echo $allow_book == 0 ? $tpl['option_arr']['i18n'][$controller->getLocaleId()]['o_link_to_inquiry_form'] : 'javascript:void(0);';?>" class="btn btn-primary trChooseVehicleButton" data-is_return="<?php echo $is_return;?>" data-allow_book="<?php echo $allow_book;?>" data-id="<?php echo $v['id'];?>"><i class="fas fa-check-circle" aria-hidden="true"></i> <span><?php echo $allow_book == 0 ? __('front_button_price_inquiry', true, false) : __('front_btn_select', true, false);?></span></a>
@@ -141,7 +141,7 @@
 				</div>
 				<?php if ($is_return == 0 && (float)$v['return_discount'] > 0) { ?>
 					<div class="return-discount-info">
-						<i class="fa-solid fa-circle-info"></i> <?php echo sprintf(__('front_return_discount_info', true), (float)$v['return_discount'].'%');?>
+						<i class="fad fa-info-circle"></i> <?php echo sprintf(__('front_return_discount_info', true), (float)$v['return_discount'].'%');?>
 					</div>
 				<?php } ?>
 				<div class="pjSbVehicleFullDesc" style="display: none;">
@@ -155,7 +155,7 @@
 							<div class="col-md-6 col-sm-12">
 								<table width="100%" cellpadding="0" cellspacing="0">
 									<tr>
-										<td width="50"><i class="fa-solid fa-plane-circle-exclamation"></i></td>
+										<td width="50"><i class="fad fa-exclamation-circle"></i></td>
 										<td><div class="fw-bold mb-3"><?php __('front_vehicle_services_1_info_title');?></div><?php __('front_vehicle_services_1_info_desc');?></td>
 									</tr>
 								</table>
@@ -163,7 +163,7 @@
 							<div class="col-md-6 col-sm-12">
 								<table width="100%" cellpadding="0" cellspacing="0">
 									<tr>
-										<td width="50"><i class="fa-solid fa-sign-hanging"></i></td>
+										<td width="50"><i class="fad fa-sign"></i></td>
 										<td><div class="fw-bold mb-3"><?php __('front_vehicle_services_2_info_title');?></div><?php __('front_vehicle_services_2_info_desc');?></td>
 									</tr>
 								</table>
@@ -173,7 +173,7 @@
 							<div class="col-md-6 col-sm-12">
 								<table width="100%" cellpadding="0" cellspacing="0">
 									<tr>
-										<td width="50"><i class="fa-solid fa-credit-card"></i></i></td>
+										<td width="50"><i class="fad fa-credit-card"></i></i></td>
 										<td><div class="fw-bold mb-3"><?php __('front_vehicle_services_3_info_title');?></div><?php __('front_vehicle_services_3_info_desc');?></td>
 									</tr>
 								</table>
@@ -181,14 +181,14 @@
 							<div class="col-md-6 col-sm-12">
 								<table width="100%" cellpadding="0" cellspacing="0">
 									<tr>
-										<td width="50"><i class="fa-solid fa-square-phone"></i></td>
+										<td width="50"><i class="fad fa-phone-square"></i></td>
 										<td><div class="fw-bold mb-3"><?php __('front_vehicle_services_4_info_title');?></div><?php __('front_vehicle_services_4_info_desc');?></td>
 									</tr>
 								</table>
 							</div>
 						</div>
 					</div>
-					<div class="text-end"><a href="javascript:void(0)" class="pjSbVehicleLessInfo"><i class="fa-solid fa-circle-xmark"></i></a></div>
+					<div class="text-end"><a href="javascript:void(0)" class="pjSbVehicleLessInfo"><i class="fad fa-times-circle"></i></a></div>
 				</div>
 			</div>
 			<?php
@@ -197,11 +197,11 @@
 		</div>
 	<?php } else { ?>
 		<div class="alert alert-info d-flex align-items-center">
-			<i class="fa-solid fa-circle-check"></i><span class="alert-desc"><span class="alert-title"><?php __('front_fleets_empty_title')?></span><?php __('front_fleets_empty_desc');?></span>   		
+			<i class="fad fa-check-circle"></i><span class="alert-desc"><span class="alert-title"><?php __('front_fleets_empty_title')?></span><?php __('front_fleets_empty_desc');?></span>   		
 		</div>
 	<?php } ?>
 <?php } else { ?>
 	<div class="alert alert-info d-flex align-items-center">
-		<i class="fa-solid fa-circle-check"></i><span class="alert-desc"><span class="alert-title"><?php __('front_search_fleets_error_title')?></span><?php __('front_search_fleets_error_desc');?></span>   		
+		<i class="fad fa-check-circle"></i><span class="alert-desc"><span class="alert-title"><?php __('front_search_fleets_error_title')?></span><?php __('front_search_fleets_error_desc');?></span>   		
 	</div>
 <?php } ?>

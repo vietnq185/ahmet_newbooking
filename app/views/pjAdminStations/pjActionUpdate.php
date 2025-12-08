@@ -9,7 +9,7 @@ if (isset($tpl['status']))
 			break;
 	}
 } else {
-	
+    include_once PJ_VIEWS_PATH . 'pjLayouts/elements/optmenu.php';
 	pjUtil::printNotice(__('infoUpdateStationTitle', true, false), __('infoUpdateStationBody', true, false));
 	?>
 	<form action="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminStations&amp;action=pjActionUpdate" method="post" id="frmUpdateStation" class="form pj-form">

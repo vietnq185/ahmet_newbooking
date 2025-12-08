@@ -16,6 +16,7 @@ if (isset($tpl['status']))
 		$bodies_text = str_replace("{SIZE}", ini_get('post_max_size'), @$bodies[$_GET['err']]);
 		pjUtil::printNotice(@$titles[$_GET['err']], $bodies_text);
 	}
+	include_once PJ_VIEWS_PATH . 'pjLayouts/elements/optmenu.php';
 	$u_statarr = __('u_statarr', true);
 	
 	pjUtil::printNotice(__('infoFleetsTitle', true, false), __('infoFleetsDesc', true, false));

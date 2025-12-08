@@ -73,7 +73,7 @@ class pjAppController extends pjController
 	
 	public function isInvoiceReady()
 	{
-	    return $this->isAdmin();
+	    return $this->isAdmin() || $this->isEditor();
 	}
     
 	public static function setTimezone($timezone="UTC")
@@ -275,8 +275,30 @@ class pjAppController extends pjController
 	
 	public function getTokens($option_arr, $booking_arr, $salt, $locale_id)
 	{
-        $name_titles = __('personal_titles', true, false);
-        $payment_methods = __('payment_methods', true, false);
+	    $fields = pjMultiLangModel::factory()
+	    ->select('t1.content, t2.key')
+	    ->join('pjField', "t2.id=t1.foreign_id", 'inner')
+	    ->where('t1.locale', $locale_id)
+	    ->where('t1.model', 'pjField')
+	    ->where('t1.field', 'title')
+	    ->where('(t2.key LIKE "personal_titles_ARRAY_%" OR t2.key LIKE "payment_methods_ARRAY_%")')
+	    ->findAll()
+	    ->getDataPair('key', 'content');
+	    $language_labels = array();
+	    foreach ($fields as $key => $value)
+	    {
+	        if (strpos($key, '_ARRAY_') !== false)
+	        {
+	            list($prefix, $suffix) = explode("_ARRAY_", $key);
+	            if (!isset($language_labels[$prefix]))
+	            {
+	                $language_labels[$prefix] = array();
+	            }
+	            $language_labels[$prefix][$suffix] = $value;
+	        }
+	    }
+	    $name_titles = $language_labels['personal_titles'];
+	    $payment_methods = $language_labels['payment_methods'];
 
 		$country = NULL;
 		if (isset($booking_arr['c_country']) && !empty($booking_arr['c_country']))
@@ -458,7 +480,7 @@ class pjAppController extends pjController
 	
 	public static function replaceTokens($booking_arr, $tokens, $message)
     {
-        if(!empty($booking_arr) && !empty($tokens))
+        if(!empty($booking_arr) && !empty($tokens) && !empty($message))
         {
             $is_airport = $booking_arr['pickup_is_airport'];
 			if ($is_airport == 0 && $booking_arr['dropoff_is_airport'] == 0) {
@@ -779,7 +801,14 @@ class pjAppController extends pjController
 				);
 				$params['number'] = $admin_phone;
 				$this->requestAction(array('controller' => 'pjSms', 'action' => 'pjActionSend', 'params' => $params), array('return'));*/
-                $this->messagebirdSendSMS(array($admin_phone), $message, $option_arr);
+                $result = $this->messagebirdSendSMS(array($admin_phone), $message, $option_arr);
+                if ($result) {
+                    $data_log = array(
+                        'booking_id' => $booking_arr['id'],
+                        'action' => $message
+                    );
+                    pjBookingHistoryModel::factory()->setAttributes($data_log)->insert();
+                }
 			}
 		}
 
@@ -857,7 +886,14 @@ class pjAppController extends pjController
 				$params['number'] = $admin_phone;
 				$this->requestAction(array('controller' => 'pjSms', 'action' => 'pjActionSend', 'params' => $params), array('return'));*/
                 
-                $this->messagebirdSendSMS(array($admin_phone), $message, $option_arr);
+                $result = $this->messagebirdSendSMS(array($admin_phone), $message, $option_arr);
+                if ($result) {
+                    $data_log = array(
+                        'booking_id' => $booking_arr['id'],
+                        'action' => $message
+                    );
+                    pjBookingHistoryModel::factory()->setAttributes($data_log)->insert();
+                }
 			}
 		}
 	
@@ -935,7 +971,14 @@ class pjAppController extends pjController
 				$params['number'] = $admin_phone;
 				$this->requestAction(array('controller' => 'pjSms', 'action' => 'pjActionSend', 'params' => $params), array('return'));*/
                 
-                $this->messagebirdSendSMS(array($admin_phone), $message, $option_arr);
+                $result = $this->messagebirdSendSMS(array($admin_phone), $message, $option_arr);
+                if ($result) {
+                    $data_log = array(
+                        'booking_id' => $booking_arr['id'],
+                        'action' => $message
+                    );
+                    pjBookingHistoryModel::factory()->setAttributes($data_log)->insert();
+                }
 			}
 		}
 		
@@ -1650,6 +1693,102 @@ class pjAppController extends pjController
             array('return')
             );
         return $response;
+    }
+    
+    public function getInquiryTokens($option_arr, $params, $locale_id)
+    {
+        $fields = pjMultiLangModel::factory()
+        ->select('t1.content, t2.key')
+        ->join('pjField', "t2.id=t1.foreign_id", 'inner')
+        ->where('t1.locale', $locale_id)
+        ->where('t1.model', 'pjField')
+        ->where('t1.field', 'title')
+        ->where('(t2.key LIKE "personal_titles_ARRAY_%")')
+        ->findAll()
+        ->getDataPair('key', 'content');
+        $language_labels = array();
+        foreach ($fields as $key => $value)
+        {
+            if (strpos($key, '_ARRAY_') !== false)
+            {
+                list($prefix, $suffix) = explode("_ARRAY_", $key);
+                if (!isset($language_labels[$prefix]))
+                {
+                    $language_labels[$prefix] = array();
+                }
+                $language_labels[$prefix][$suffix] = $value;
+            }
+        }
+        $name_titles = $language_labels['personal_titles'];
+        
+        $total = pjUtil::formatCurrencySign(number_format($params['total'], 2), $option_arr['o_currency']);
+        $booking_date = $booking_time = NULL;
+        if (isset($params['booking_date']) && !empty($params['booking_date']))
+        {
+            $_date = $params['booking_date'];
+            if(count(explode(" ", $_date)) == 3)
+            {
+                list($date, $time, $period) = explode(" ", $_date);
+                $time = pjUtil::formatTime($time . ' ' . $period, $option_arr['o_time_format']);
+            }else{
+                list($date, $time) = explode(" ", $_date);
+                $time = pjUtil::formatTime($time, $option_arr['o_time_format']);
+            }
+            $booking_datetime = pjUtil::formatDate($date, $option_arr['o_date_format']) . ' ' . $time;
+            $tm = strtotime($booking_datetime);
+            $booking_date = date($option_arr['o_date_format'], $tm);
+            $booking_time = date($option_arr['o_time_format'], $tm);
+        }
+        $return_date = $return_time = NULL;
+        if (isset($params['has_return']) && isset($params['return_date']) && !empty($params['return_date']))
+        {
+            if(count(explode(" ", $params['return_date'])) == 3)
+            {
+                list($return_date, $return_time, $return_period) = explode(" ", $params['return_date']);
+                $return_time = pjUtil::formatTime($return_time . ' ' . $return_period, $option_arr['o_time_format']);
+            }else{
+                list($return_date, $return_time) = explode(" ", $params['return_date']);
+                $return_time = pjUtil::formatTime($return_time, $option_arr['o_time_format']);
+            }
+            $return_datetime = pjUtil::formatDate($return_date, $option_arr['o_date_format']) . ' ' . $return_time;
+            $tm = strtotime($return_datetime);
+            $return_date = date($option_arr['o_date_format'], $tm);
+            $return_time = date($option_arr['o_time_format'], $tm);
+        }
+        
+        $duration = @$params['duration'];
+        $distance = @$params['distance'];
+        
+        $replace = array(
+            '{Title}'       => isset($name_titles[$params['c_title']])? $name_titles[$params['c_title']]: '',
+            '{FirstName}'   => pjSanitize::clean(@$params['c_fname']),
+            '{LastName}'    => pjSanitize::clean(@$params['c_lname']),
+            '{Email}'       => pjSanitize::clean(@$params['c_email']),
+            '{Phone}'       => pjSanitize::clean(@$params['c_dialing_code'] . @$params['c_phone']),
+            '{QA}'   => pjSanitize::clean(@$params['qa']),
+            
+            '{Date}'        => $booking_date,
+            '{Time}'        => $booking_time,
+            '{From}'        => pjSanitize::clean(@$params['location']),
+            '{To}'          => pjSanitize::clean(@$params['dropoff']),
+            
+            '{Passengers}'  => @$params['passengers'],
+            '{Fleet}'       => pjSanitize::clean(@$params['fleet']),
+            '{Duration}'    => $duration,
+            '{Distance}'    => $distance,
+            
+            '{ReturnDate}'      => $return_date,
+            '{ReturnTime}'      => $return_time,
+            '{ReturnFrom}'      => pjSanitize::clean(@$params['dropoff']),
+            '{ReturnTo}'        => pjSanitize::clean(@$params['location']),
+            '{PassengersReturn}'               => pjSanitize::clean(@$params['passengers_return']),
+            
+            '{Total}'           => $total
+        );
+        
+        $search = array_keys($replace);
+        
+        return compact('search', 'replace');
     }
     
     public static function getPriceBeforeTax($priceAfterTax, $taxPercent=21) {

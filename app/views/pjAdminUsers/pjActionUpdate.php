@@ -9,7 +9,7 @@ if (isset($tpl['status']))
 			break;
 	}
 } else {
-	
+    include_once PJ_VIEWS_PATH . 'pjLayouts/elements/optmenu.php';
 	pjUtil::printNotice(__('infoUpdateUserTitle', true, false), __('infoUpdateUserDesc', true, false));
 	?>
 	

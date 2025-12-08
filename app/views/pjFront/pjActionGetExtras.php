@@ -1,6 +1,6 @@
 <h3><?php __('front_extras'); ?></h3>
 <div class="alert alert-warning d-flex align-items-center" role="alert">
-	<i class="fa-solid fa-circle-info"></i><span class="alert-desc"><?php __('front_extras_info');?></span>   		
+	<i class="fad fa-info-circle"></i><span class="alert-desc"><?php __('front_extras_info');?></span>   		
 </div>
 <ul>
 <?php
@@ -39,7 +39,7 @@ foreach($tpl['extra_arr'] as $extra) {
 				<div class="pjSbSpinLeft">
 					<a href="javascript:void(0);" class="pjSbSpin" data-type="minus" data-min="0" data-id="<?php echo $extra['id'];?>">
 						<span class="input-group-addon text-blue">
-							<span class="fa-solid fa-circle-minus" aria-hidden="true"></span>
+							<span class="fad fa-minus-circle" aria-hidden="true"></span>
 						</span>		
 					</a>
 				</div>			
@@ -47,7 +47,7 @@ foreach($tpl['extra_arr'] as $extra) {
 				<div class="pjSbSpinRight">
 					<a href="javascript:void(0);" class="pjSbSpin" data-type="plus" data-max="<?php echo $max_qty;?>" data-id="<?php echo $extra['id'];?>">
 						<span class="input-group-addon text-blue">
-							<span class="fa-solid fa-circle-plus" aria-hidden="true"></span>
+							<span class="fad fa-plus-circle" aria-hidden="true"></span>
 						</span>		
 					</a>
 				</div>
@@ -60,7 +60,7 @@ foreach($tpl['extra_arr'] as $extra) {
 					<div class="pjSbSpinLeft">
 						<a href="javascript:void(0);" class="pjSbSpin" data-type="minus" data-min="0" data-id="<?php echo $extra['id'];?>">
 							<span class="input-group-addon text-blue">
-								<span class="fa-solid fa-circle-minus" aria-hidden="true"></span>
+								<span class="fad fa-minus-circle" aria-hidden="true"></span>
 							</span>		
 						</a>
 					</div>			
@@ -68,7 +68,7 @@ foreach($tpl['extra_arr'] as $extra) {
 					<div class="pjSbSpinRight">
 						<a href="javascript:void(0);" class="pjSbSpin" data-type="plus" data-max="<?php echo $max_qty;?>" data-id="<?php echo $extra['id'];?>">
 							<span class="input-group-addon text-blue">
-								<span class="fa-solid fa-circle-plus" aria-hidden="true"></span>
+								<span class="fad fa-plus-circle" aria-hidden="true"></span>
 							</span>		
 						</a>
 					</div>

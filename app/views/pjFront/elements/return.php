@@ -7,7 +7,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 ?>
 <div id="pjSbReturnCalendarLocale" style="display: none;" data-months="<?php echo implode("_", $months);?>" data-days="<?php echo implode("_", $short_days);?>" data-fday="<?php echo $week_start;?>"></div>
 <div class="pjSbReturnInfo pjSbBox">
-	<div class="text-end text-danger"><a href="javascript:void(0);" class="trSetTransferTypeButton pjSbRemoveReturnTransfer text-danger" data-is_return="0"><?php __('front_remove_return_transfer');?>&nbsp;&nbsp;<i class="fa-solid fa-circle-xmark"></i></a></div>
+	<div class="text-end text-danger"><a href="javascript:void(0);" class="trSetTransferTypeButton pjSbRemoveReturnTransfer text-danger" data-is_return="0"><?php __('front_remove_return_transfer');?>&nbsp;&nbsp;<i class="fad fa-times-circle"></i></a></div>
 	<h3><?php __('front_booking_details_return'); ?></h3>
 	<div><?php __('front_your_transfer_from');?>: <span class="fw-bold"><?php echo pjSanitize::clean($tpl['cart']['dropoff_location_name']);?></span></div><br/>
 	<?php if(!$STORE['search']['is_airport'] && $STORE['search']['dropoff_is_airport'] == 0) { ?>
@@ -17,9 +17,9 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 					<label class="control-label"><?php __('front_pickup_date'); ?></label>
 					<div class="input-group pjSbBookingDetailReturnDate">
 						<span class="input-group-addon">
-							<span class="fa-solid fa-calendar-days" aria-hidden="true"></span>
+							<span class="fad fa-calendar-alt" aria-hidden="true"></span>
 						</span>				
-						<input type="text" placeholder="<?php __('front_pickup_date', false, true); ?>" id="trReturnDate_<?php echo $index?>" name="return_date" readonly value="<?php echo isset($FORM['return_date']) ? htmlspecialchars($FORM['return_date']) : null; ?>" class="form-control hasDatepicker required" data-min="<?php echo htmlspecialchars($STORE['search']['date']) ?>" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
+						<input type="text" placeholder="<?php __('front_pickup_date', false, true); ?>" id="trReturnDate_<?php echo $index?>" name="return_date" readonly value="<?php echo isset($FORM['return_date']) ? htmlspecialchars($FORM['return_date']) : htmlspecialchars($STORE['search']['date']); ?>" class="form-control hasDatepicker required" data-min="<?php echo htmlspecialchars($STORE['search']['date']) ?>" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 					</div>
 					<small><?php __('front_verify_return_transfer_date'); ?></small>
 				</div><!-- /.form-group -->
@@ -31,7 +31,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 						<div class="pjSbSpinLeft">
 							<a href="javascript:void(0);" class="pjSbSpin" data-type="minus" data-min="<?php echo (int)$tpl['fleet']['min_passengers'];?>">
 								<span class="input-group-addon text-blue">
-									<span class="fa-solid fa-circle-minus" aria-hidden="true"></span>
+									<span class="fad fa-minus-circle" aria-hidden="true"></span>
 								</span>		
 							</a>
 						</div>			
@@ -39,7 +39,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 						<div class="pjSbSpinRight">
 							<a href="javascript:void(0);" class="pjSbSpin" data-type="plus" data-max="<?php echo (int)$tpl['fleet']['passengers'];?>">
 								<span class="input-group-addon text-blue">
-									<span class="fa-solid fa-circle-plus" aria-hidden="true"></span>
+									<span class="fad fa-plus-circle" aria-hidden="true"></span>
 								</span>		
 							</a>
 						</div>
@@ -54,7 +54,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 					<label class="control-label"><?php __('front_pickup_time'); ?></label>
 					<div class="input-group pjSbBookingDetailsReturnPickupTime" data-label_done="<?php __('front_label_done'); ?>">
 						<span class="input-group-addon">
-							<span class="fa-solid fa-clock" aria-hidden="true"></span>
+							<span class="fad fa-clock" aria-hidden="true"></span>
 						</span>				
 						<input type="text" placeholder="<?php __('front_pickup_time', false, true); ?>" name="return_pickup_time" id="return_pickup_time" readonly value="<?php echo isset($FORM['return_pickup_time']) ? pjSanitize::html($FORM['return_pickup_time']) : null; ?>" class="form-control hasTimepick required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 					</div>
@@ -66,7 +66,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 					<label class="control-label"><?php __('front_pickup_address'); ?></label>
 					<div class="input-group">
 						<span class="input-group-addon">
-							<span class="fa-solid fa-location-pin" aria-hidden="true"></span>
+							<span class="fad fa-map-marker" aria-hidden="true"></span>
 						</span>				
 						<input type="text" placeholder="<?php __('front_pickup_address', false, true); ?>" name="return_c_address" id="return_c_address" value="<?php echo isset($FORM['return_c_address']) ? pjSanitize::clean($FORM['return_c_address']) : '';?>" class="form-control required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 					</div>
@@ -76,7 +76,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 		</div>
 		<div><?php __('front_going_to');?>: <span class="fw-bold"><?php echo pjSanitize::clean($tpl['cart']['pickup_location_name']);?></span></div><br/>
 		<div class="alert alert-warning d-flex align-items-center">
-			<i class="fa-solid fa-circle-info"></i>
+			<i class="fad fa-info-circle"></i>
 			<span class="alert-desc">
 			<?php 
 			if (isset($STORE['search']['is_airport']) && $STORE['search']['is_airport'] == 1) {
@@ -93,7 +93,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 					<label class="control-label"><?php __('front_dropoff_address'); ?></label>
 					<div class="input-group">
 						<span class="input-group-addon">
-							<span class="fa-solid fa-location-pin" aria-hidden="true"></span>
+							<span class="fad fa-map-marker" aria-hidden="true"></span>
 						</span>				
 						<input type="text" placeholder="<?php __('front_dropoff_address', false, true); ?>" name="return_c_destination_address" id="return_c_destination_address" value="<?php echo isset($FORM['return_c_destination_address']) ? stripslashes($FORM['return_c_destination_address']) : '';?>" class="form-control required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 					</div>
@@ -118,9 +118,9 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 						<label class="control-label"><?php __('front_pickup_date'); ?></label>
 						<div class="input-group pjSbBookingDetailReturnDate">
 							<span class="input-group-addon">
-								<span class="fa-solid fa-calendar-days" aria-hidden="true"></span>
+								<span class="fad fa-calendar-alt" aria-hidden="true"></span>
 							</span>				
-							<input type="text" placeholder="<?php __('front_pickup_date', false, true); ?>" id="trReturnDate_<?php echo $index?>" name="return_date" readonly value="<?php echo isset($FORM['return_date']) ? htmlspecialchars($FORM['return_date']) : null; ?>" class="form-control hasDatepicker required" data-min="<?php echo htmlspecialchars($STORE['search']['date']) ?>" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
+							<input type="text" placeholder="<?php __('front_pickup_date', false, true); ?>" id="trReturnDate_<?php echo $index?>" name="return_date" readonly value="<?php echo isset($FORM['return_date']) ? htmlspecialchars($FORM['return_date']) : htmlspecialchars($STORE['search']['date']); ?>" class="form-control hasDatepicker required" data-min="<?php echo htmlspecialchars($STORE['search']['date']) ?>" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 						</div>
 						<small><?php __('front_verify_return_transfer_date'); ?></small>
 					</div><!-- /.form-group -->
@@ -132,7 +132,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 							<div class="pjSbSpinLeft">
 								<a href="javascript:void(0);" class="pjSbSpin" data-type="minus" data-min="<?php echo (int)$tpl['fleet']['min_passengers'];?>">
 									<span class="input-group-addon text-blue">
-										<span class="fa-solid fa-circle-minus" aria-hidden="true"></span>
+										<span class="fad fa-minus-circle" aria-hidden="true"></span>
 									</span>		
 								</a>
 							</div>			
@@ -140,7 +140,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 							<div class="pjSbSpinRight">
 								<a href="javascript:void(0);" class="pjSbSpin" data-type="plus" data-max="<?php echo (int)$tpl['fleet']['passengers'];?>">
 									<span class="input-group-addon text-blue">
-										<span class="fa-solid fa-circle-plus" aria-hidden="true"></span>
+										<span class="fad fa-plus-circle" aria-hidden="true"></span>
 									</span>		
 								</a>
 							</div>
@@ -150,7 +150,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 				</div>
 			</div>
 			<div class="alert alert-warning d-flex align-items-center">
-				<i class="fa-solid fa-circle-info"></i>
+				<i class="fad fa-info-circle"></i>
 				<span class="alert-desc">
 				<?php 
 				if (isset($STORE['search']['is_airport']) && $STORE['search']['is_airport'] == 1) {
@@ -167,7 +167,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 						<label class="control-label"><?php __('front_pickup_time'); ?></label>
 						<div class="input-group pjSbBookingDetailsReturnPickupTime" data-label_done="<?php __('front_label_done'); ?>">
 							<span class="input-group-addon">
-								<span class="fa-solid fa-clock" aria-hidden="true"></span>
+								<span class="fad fa-clock" aria-hidden="true"></span>
 							</span>				
 							<input type="text" placeholder="<?php __('front_pickup_time', false, true); ?>" name="return_pickup_time" id="return_pickup_time" readonly value="<?php echo isset($FORM['return_pickup_time']) ? pjSanitize::html($FORM['return_pickup_time']) : null; ?>" class="form-control hasTimepick required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 						</div>
@@ -179,7 +179,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 						<label class="control-label"><?php __('front_address'); ?></label>
 						<div class="input-group">
 							<span class="input-group-addon">
-								<span class="fa-solid fa-location-pin" aria-hidden="true"></span>
+								<span class="fad fa-map-marker" aria-hidden="true"></span>
 							</span>				
 							<input type="text" placeholder="<?php __('front_pickup_address', false, true); ?>" name="return_c_address" id="return_c_address" value="<?php echo isset($FORM['return_c_address']) ? pjSanitize::html($FORM['return_c_address']) : null; ?>" class="form-control required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 						</div>
@@ -194,7 +194,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 						<label class="control-label"><?php __('front_flight_departure_time'); ?></label>
 						<div class="input-group pjSbBookingDetailsReturnFlightDepartureTime" data-label_done="<?php __('front_label_done'); ?>">
 							<span class="input-group-addon">
-								<span class="fa-solid fa-clock" aria-hidden="true"></span>
+								<span class="fad fa-clock" aria-hidden="true"></span>
 							</span>				
 							<input type="text" placeholder="<?php __('front_flight_departure_time', false, true); ?>" name="return_c_departure_flight_time" id="return_c_departure_flight_time" readonly value="<?php echo isset($FORM['return_c_departure_flight_time']) ? pjSanitize::html($FORM['return_c_departure_flight_time']) : null; ?>" class="form-control hasTimepick required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 						</div>
@@ -218,9 +218,9 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 						<label class="control-label"><?php __('front_pickup_date'); ?></label>
 						<div class="input-group pjSbBookingDetailReturnDate">
 							<span class="input-group-addon">
-								<span class="fa-solid fa-calendar-days" aria-hidden="true"></span>
+								<span class="fad fa-calendar-alt" aria-hidden="true"></span>
 							</span>				
-							<input type="text" placeholder="<?php __('front_pickup_date', false, true); ?>" id="trReturnDate_<?php echo $index?>" name="return_date" readonly value="<?php echo isset($FORM['return_date']) ? htmlspecialchars($FORM['return_date']) : null; ?>" class="form-control hasDatepicker required" data-min="<?php echo htmlspecialchars($STORE['search']['date']) ?>" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
+							<input type="text" placeholder="<?php __('front_pickup_date', false, true); ?>" id="trReturnDate_<?php echo $index?>" name="return_date" readonly value="<?php echo isset($FORM['return_date']) ? htmlspecialchars($FORM['return_date']) : htmlspecialchars($STORE['search']['date']); ?>" class="form-control hasDatepicker required" data-min="<?php echo htmlspecialchars($STORE['search']['date']) ?>" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 						</div>
 						<small><?php __('front_verify_return_transfer_date'); ?></small>
 					</div><!-- /.form-group -->
@@ -232,7 +232,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 							<div class="pjSbSpinLeft">
 								<a href="javascript:void(0);" class="pjSbSpin" data-type="minus" data-min="<?php echo (int)$tpl['fleet']['min_passengers'];?>">
 									<span class="input-group-addon text-blue">
-										<span class="fa-solid fa-circle-minus" aria-hidden="true"></span>
+										<span class="fad fa-minus-circle" aria-hidden="true"></span>
 									</span>		
 								</a>
 							</div>			
@@ -240,7 +240,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 							<div class="pjSbSpinRight">
 								<a href="javascript:void(0);" class="pjSbSpin" data-type="plus" data-max="<?php echo (int)$tpl['fleet']['passengers'];?>">
 									<span class="input-group-addon text-blue">
-										<span class="fa-solid fa-circle-plus" aria-hidden="true"></span>
+										<span class="fad fa-plus-circle" aria-hidden="true"></span>
 									</span>		
 								</a>
 							</div>
@@ -251,7 +251,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 			</div>
 			<?php if ($STORE['search']['dropoff_is_airport'] == 1) { ?>
 				<div class="alert alert-success d-flex align-items-center">
-					<i class="fa-solid fa-circle-check"></i><span class="alert-desc"><?php __('front_stress_free');?></span>   		
+					<i class="fad fa-check-circle"></i><span class="alert-desc"><?php __('front_stress_free');?></span>   		
 				</div>
 			<?php } ?>
 			<div class="row">
@@ -260,7 +260,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 						<label class="control-label"><?php __('front_flight_time'); ?></label>
 						<div class="input-group pjSbBookingDetailsReturnTime" data-label_done="<?php __('front_label_done'); ?>">
 							<span class="input-group-addon">
-								<span class="fa-solid fa-clock" aria-hidden="true"></span>
+								<span class="fad fa-clock" aria-hidden="true"></span>
 							</span>				
 							<input type="text" placeholder="<?php __('front_arrival_time', false, true); ?>" name="return_time" id="return_time" readonly value="<?php echo isset($FORM['return_time']) ? pjSanitize::html($FORM['return_time']) : null; ?>" class="form-control hasTimepick required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 						</div>
@@ -272,7 +272,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 						<label class="control-label"><?php __('front_flight_number'); ?></label>
 						<div class="input-group pjSbArrivalTime">
 							<span class="input-group-addon">
-								<span class="fa-solid fa-plane-arrival" aria-hidden="true"></span>
+								<span class="fad fa-plane-arrival" aria-hidden="true"></span>
 							</span>				
 							<input type="text" placeholder="OS2055" name="return_c_flight_number" id="return_c_flight_number" value="<?php echo isset($FORM['return_c_flight_number']) ? pjSanitize::html($FORM['return_c_flight_number']) : null; ?>" class="form-control" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 						</div>
@@ -284,7 +284,7 @@ $week_start = isset($tpl['option_arr']['o_week_start']) && in_array((int) $tpl['
 						<label class="control-label"><?php __('front_airline_company'); ?></label>
 						<div class="input-group">
 							<span class="input-group-addon">
-								<span class="fa-solid fa-plane-circle-check" aria-hidden="true"></span>
+								<span class="fad fa-check-circle" aria-hidden="true"></span>
 							</span>				
 							<input type="text" placeholder="Austrian" name="return_c_airline_company" id="return_c_airline_company" value="<?php echo isset($FORM['return_c_airline_company']) ? pjSanitize::html($FORM['return_c_airline_company']) : null; ?>" class="form-control" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 						</div>

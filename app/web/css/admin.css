@@ -345,7 +345,7 @@ span.left{
 	line-height: 37px;
 	text-decoration: none;
 	text-shadow: 1px 1px 1px #fff;
-	padding: 5px 4px 5px 4px;
+	padding: 5px 10px 5px 10px;
 	border-right: 1px solid #fff;
 }
 .menu li.last-child a{
@@ -361,7 +361,7 @@ span.left{
 	display: block;
     float: left;
     height: 30px;
-    margin: 3px 0 0 0;
+    margin: 3px 5px 0 0;
     width: 30px;
 }
 .menu-dashboard{background: url(../img/backend/menu-dashboard.png) 0 -30px no-repeat}
@@ -1206,4 +1206,156 @@ table#compare_table td input{
   	display: inline-block;
 	height: auto;
 	vertical-align: middle;
+}
+
+
+
+.action-container {
+    width: 380px; /* Chiều rộng cố định cho ví dụ */
+    padding: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    font-family: Arial, sans-serif;
+}
+
+/* HEADER GROUP (Phần có thể nhấp chuột) */
+.collapse-header {
+    font-weight: 600;
+    cursor: pointer;
+    padding: 10px;
+    margin-top: 5px;
+    background-color: #f5f5f5; /* Màu nền nhẹ cho header */
+    border-radius: 4px;
+    color: #333; /* Màu chữ tối */
+    transition: background-color 0.15s ease-in-out;
+}
+.collapse-header:hover {
+    background-color: #eaeaea;
+}
+
+/* ICON MŨI TÊN CHỈ THỊ */
+.collapse-header .arrow-icon {
+    float: right;
+    transition: transform 0.3s ease-in-out;
+    margin-right: 5px;
+    font-size: 1.1rem;
+    color: #007bff; /* Màu xanh nổi bật */
+}
+/* Class được thêm bằng jQuery khi mở */
+.collapse-header.active .arrow-icon {
+    transform: rotate(90deg); /* Xoay mũi tên khi mở */
+}
+
+/* LIÊN KẾT BÊN TRONG COLLAPSE */
+.action-content {
+    /* Mặc định nội dung sẽ ẩn, trừ nhóm mở ban đầu */
+    display: none; 
+    overflow: hidden; /* Quan trọng cho hiệu ứng slide */
+}
+
+.action-link {
+    display: block;
+    padding: 6px 15px; /* Thêm padding bên trái để căn chỉnh */
+    font-size: 0.95rem;
+    color: #495057; 
+    text-decoration: none;
+    transition: background-color 0.1s;
+}
+.action-link:hover {
+    background-color: #e6f7ff; /* Nền xanh nhạt khi hover */
+    color: #007bff;
+}
+
+
+
+.pj-status-container .chosen-container .chosen-results li {
+    color: inherit !important; 
+}
+.pj-status-container .chosen-container .chosen-results li.active-result {
+    padding: 8px 10px;
+    font-weight: 500; 
+    transition: background-color 0.15s;
+}
+.bs-loader-outer{
+	position: relative;
+}
+.bs-loader{
+	display: none;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	z-index: 9999;
+	background: url("../img/backend/pj-preloader.gif") no-repeat scroll center center rgba(153, 153, 153, 0.3);
+    left: 0;
+    position: absolute;
+    top: 0px;
+}
+.pj-status-container .chosen-container .chosen-results li {
+    color: inherit !important; 
+}
+.pj-status-container .chosen-container .chosen-results li.active-result {
+    padding: 8px 10px;
+    font-weight: 500; 
+    transition: background-color 0.15s;
+}
+
+/* Lớp màu nền hover (Pending - Orange) */
+.pj-status-container .chosen-container .chosen-results li.is-pending:hover {
+    background-color: #FEEBC3; /* Tông màu cam nhạt */
+}
+/* Lớp màu nền hover (In Progress - Red) */
+.pj-status-container .chosen-container .chosen-results li.is-progress:hover {
+    background-color: #FEE2E2; /* Tông màu đỏ nhạt */
+}
+/* Lớp màu nền hover (Confirmed - Green) */
+.pj-status-container .chosen-container .chosen-results li.is-confirmed:hover {
+    background-color: #D1FAE5; /* Tông màu xanh lá nhạt */
+}
+/* Lớp màu nền hover (Cancelled - Grey) */
+.pj-status-container .chosen-container .chosen-results li.is-cancelled:hover {
+    background-color: #E5E7EB; /* Tông màu xám nhạt */
+}
+
+/* Đảm bảo phần tử đã chọn có font-weight nổi bật */
+.pj-status-container .chosen-container-single .chosen-single span {
+    font-weight: bold;
+}
+/* Buộc màu chữ hiển thị cho phần tử đã chọn */
+.pj-status-container .chosen-container-single .chosen-single span {
+    color: inherit !important;
+}
+.pj-status-container .chzn-container .chzn-results .highlighted {
+	 background-color: #ccc; /* Tông màu xám nhạt */
+	background-image: unset;
+}
+
+.pj-status-container .chzn-results .is-pending{
+	color: #F97316;
+}
+.pj-status-container .chzn-results .is-progress{
+	color: #EF4444;
+}
+.pj-status-container .chzn-results .is-confirmed{
+	color: #10B981;
+}
+.pj-status-container .chzn-results .is-cancelled{
+	color: #6B7280;
+}
+
+.pj-status-container .chzn-single.is-pending{
+	background: #F97316;
+	color: #ffffff;
+}
+.pj-status-container .chzn-single.is-progress{
+	background: #EF4444;
+	color: #ffffff;
+}
+.pj-status-container .chzn-single.is-confirmed{
+	background: #10B981;
+	color: #ffffff;
+}
+.pj-status-container .chzn-single.is-cancelled{
+	background: #6B7280;
+	color: #ffffff;
 }

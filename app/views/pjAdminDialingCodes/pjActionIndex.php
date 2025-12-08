@@ -15,7 +15,7 @@ if (isset($tpl['status']))
 		$bodies = __('error_bodies', true);
 		pjUtil::printNotice(@$titles[$_GET['err']], @$bodies[$_GET['err']]);
 	}
-
+	include_once PJ_VIEWS_PATH . 'pjLayouts/elements/optmenu.php';
 	pjUtil::printNotice(__('infoDialingCodesTitle', true, false), __('infoDialingCodesBody', true, false));
 	?>
 	<div class="b10">

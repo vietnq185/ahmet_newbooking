@@ -32,7 +32,7 @@ if (isset($tpl['status']))
 			<ul>
 				<li><a href="#tabs-1"><?php __('lblBookingDetails');?></a></li>
 				<?php if (empty($_GET['copy'])) { ?>
-					<li><a href="#tabs-2"><?php __('tabInvoices');?></a></li>
+					<li style="display: <?php echo pjObject::getPlugin('pjInvoice') !== NULL ? '' : 'none';?>"><a href="#tabs-2"><?php __('tabInvoices');?></a></li>
 					<li><a href="#tabs-3"><?php __('tabLog');?></a></li>
 				<?php } ?>
 			</ul>
@@ -109,32 +109,7 @@ if (isset($tpl['status']))
 						<label class="title"><?php __('lblDistance'); ?>:</label>
 						<label id="tr_distance" class="content"><?php echo !empty($tpl['arr']['distance']) ? $tpl['arr']['distance'] . ' ' . strtolower(__('lblKm', true, false)) : null; ?></label>
 					</p>
-					<p>
-						<label class="title" style="width: 100%;"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionPrint&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblPrintReservation'); ?></a></label>
-					</p>
-                    <p>
-                        <label class="title" style="width: 100%;"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionEmailPaymentConfirmation&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblSendPaymentConfirmation'); ?></a></label>
-                    </p>
-                    <p>
-                        <label class="title" style="width: 100%;"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionEmailPaymentLink&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblSendPaymentLink'); ?></a></label>
-                    </p>
-                    <p>
-                        <label class="title" style="width: 100%;"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionEmailCancellation&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblSendCancellationEmail'); ?></a></label>
-                    </p>
-                    <p>
-                        <label class="title" style="width: 100%;"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionEmailReminder&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblRemindClientViaEmail'); ?></a></label>
-                    </p>
-                    <p>
-                        <label class="title" style="width: 100%;"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionSmsReminder&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblRemindClientViaSMS'); ?></a></label>
-                    </p>
-                    <?php if(!empty($tpl['arr']['return_date'])): ?>
-                    <p>
-                        <label class="title" style="width: 100%;"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionEmailReturnReminder&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblRemindClientForReturnViaEmail'); ?></a></label>
-                    </p>
-                    <p>
-                        <label class="title" style="width: 100%;"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionSmsReturnReminder&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblRemindClientForReturnViaSMS'); ?></a></label>
-                    </p> 
-                    <?php endif; ?>
+                    
                     <p style="display: none;">
                         <label class="title"><?php __('lblDriver'); ?>:</label>
                         <select name="driver_id" id="driver_id" class="pj-form-field w300">
@@ -144,9 +119,7 @@ if (isset($tpl['status']))
                             <?php endforeach; ?>
                         </select>
                     </p>
-                    <p>
-                        <label class="title" style="width: 100%;"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionEmailRating&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblSendRatingEmail'); ?></a></label>
-                    </p>
+                    
 					<?php if (empty($_GET['copy'])): ?>
 						<p>
 							<label class="title">
@@ -154,7 +127,9 @@ if (isset($tpl['status']))
 							</label>
 						</p>
 					<?php endif; ?>
-
+					<p>
+						<label class="title" style="width: 100%;"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionPrint&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblPrintReservation'); ?></a></label>
+					</p>
 					<?php if (!empty($tpl['return_arr'])): ?>
 						<p>
 							<label class="title" style="width: 100%;"><a href="<?php echo PJ_INSTALL_URL; ?>index.php?controller=pjAdminBookings&action=pjActionPrintSingle&details&record=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblPrintReservationDetailsSingle2'); ?></a></label>
@@ -163,12 +138,36 @@ if (isset($tpl['status']))
 							<label class="title" style="width: 100%;"><a href="<?php echo PJ_INSTALL_URL; ?>index.php?controller=pjAdminBookings&action=pjActionPrintSingle&details&record=<?php echo $tpl['return_arr']['id']; ?>" target="_blank"><?php __('lblPrintReservationDetailsSingle3'); ?></a></label>
 						</p>
 					<?php endif; ?>
-					
-					<?php foreach ($tpl['email_theme_arr'] as $et) { ?>
-                    	<p>
-                            <label class="title" style="width: 100%;"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionCustomEmail&amp;id=<?php echo $et['id'];?>&amp;booking_id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php echo pjSanitize::html($et['name']); ?></a></label>
-                        </p>
-                    <?php } ?>
+                    
+                    <div class="action-container">
+                        <div class="collapse-header" data-target="#bookingConfirmationsContent">
+                            <?php __('tabBookingConfirmations');?>
+                            <span class="arrow-icon">></span>
+                        </div>
+                        <div class="action-content" id="bookingConfirmationsContent">
+                            <a class="action-link" href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionEmailPaymentConfirmation&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblSendPaymentConfirmation'); ?></a>
+                            <a class="action-link" href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionEmailPaymentLink&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblSendPaymentLink'); ?></a>
+                            <a class="action-link" href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionEmailCancellation&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblSendCancellationEmail'); ?></a>
+                            <a class="action-link" href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionEmailReminder&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblRemindClientViaEmail'); ?></a>
+                            <a class="action-link" href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionSmsReminder&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblRemindClientViaSMS'); ?></a>
+                            <?php if(!empty($tpl['arr']['return_date'])): ?>
+                                <a class="action-link" href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionEmailReturnReminder&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblRemindClientForReturnViaEmail'); ?></a>
+                            	<a class="action-link" href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionSmsReturnReminder&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblRemindClientForReturnViaSMS'); ?></a>
+                            <?php endif; ?>
+                            <a class="action-link" href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionEmailRating&amp;id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php __('lblSendRatingEmail'); ?></a>
+                        </div>
+                		<?php if ($tpl['email_theme_arr']) { ?>
+                            <div class="collapse-header" data-target="#customerEmailsContent">
+                                <?php __('tabCustomerEmails');?>
+                                <span class="arrow-icon">></span>
+                            </div>
+                            <div class="action-content" id="customerEmailsContent">
+                                <?php foreach ($tpl['email_theme_arr'] as $et) { ?>
+                                	<a class="action-link" href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionCustomEmail&amp;type=email&amp;id=<?php echo $et['id'];?>&amp;booking_id=<?php echo $tpl['arr']['id']; ?>" target="_blank"><?php echo pjSanitize::html($et['name']); ?></a>
+                                <?php } ?>
+                            </div>
+                    	<?php } ?>
+                    </div>
 
 				</div>
 				<p>
@@ -459,35 +458,44 @@ if (isset($tpl['status']))
 						<input type="text" name="cc_code" id="cc_code" value="<?php echo pjSanitize::clean($tpl['arr']['cc_code']); ?>" class="pj-form-field w100" />
 					</span>
 				</p>
-				<div class="p">
-					<label class="title"><?php __('lblStatus'); ?></label>
-					<span class="inline-block">
-						<select name="status" id="status" class="pj-form-field w400 required">
-							<option value="">-- <?php __('lblChoose'); ?>--</option>
-							<?php
-							foreach (__('booking_statuses', true, false) as $k => $v)
-							{
-								?><option value="<?php echo $k; ?>"<?php echo $k == $tpl['arr']['status'] ? ' selected="selected"' : NULL; ?>><?php echo $v; ?></option><?php
-							}
-							?>
-						</select>
-					</span>
-				</div>
 				
-				<div class="p pjStatusReturnTrip trReturnDetails" style="display: <?php echo !empty($tpl['arr']['return_date']) ? null : 'none';?>">
-					<label class="title"><?php __('lblStatusReturnTrip'); ?></label>
-					<span class="inline-block">
-						<select name="status_return_trip" id="status_return_trip" class="pj-form-field w400 required">
-							<option value="">-- <?php __('lblChoose'); ?>--</option>
-							<?php
-							foreach (__('booking_statuses', true, false) as $k => $v)
-							{
-								?><option value="<?php echo $k; ?>"<?php echo $k == @$tpl['return_arr']['status'] ? ' selected="selected"' : NULL; ?>><?php echo $v; ?></option><?php
-							}
-							?>
-						</select>
-					</span>
-				</div>			
+				<div class="pj-status-container">
+    				<div class="p pj-status-color">
+    					<label class="title"><?php __('lblStatus'); ?></label>
+    					<span class="inline-block">
+    						<select name="status" id="status" data-placeholder="-- <?php __('lblChoose'); ?>--" class="pj-form-field w400 required chosen-select status-select">
+    							<option value="">-- <?php __('lblChoose'); ?>--</option>
+    							<?php
+    							foreach (__('booking_statuses', true, false) as $k => $v)
+    							{
+    							    if ($k == 'passed_on') {
+    							        continue;
+    							    }
+    								?><option value="<?php echo $k; ?>"<?php echo $k == $tpl['arr']['status'] ? ' selected="selected"' : NULL; ?>><?php echo $v; ?></option><?php
+    							}
+    							?>
+    						</select>
+    					</span>
+    				</div>
+				
+    				<div class="p pjStatusReturnTrip trReturnDetails pj-status-return-color" style="display: <?php echo !empty($tpl['arr']['return_date']) ? null : 'none';?>">
+    					<label class="title"><?php __('lblStatusReturnTrip'); ?></label>
+    					<span class="inline-block">
+    						<select name="status_return_trip" id="status_return_trip" data-placeholder="-- <?php __('lblChoose'); ?>--" class="pj-form-field w400 required chosen-select status-return-select">
+    							<option value="">-- <?php __('lblChoose'); ?>--</option>
+    							<?php
+    							foreach (__('booking_statuses', true, false) as $k => $v)
+    							{
+    							    if ($k == 'passed_on') {
+    							        continue;
+    							    }
+    								?><option value="<?php echo $k; ?>"<?php echo $k == @$tpl['return_arr']['status'] ? ' selected="selected"' : NULL; ?>><?php echo $v; ?></option><?php
+    							}
+    							?>
+    						</select>
+    					</span>
+    				</div>	
+    			</div>		
 
                 <div class="float_left" style="width: 50%;">
                     <?php foreach($tpl['extra_arr'] as $index => $extra): ?>

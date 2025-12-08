@@ -9,13 +9,11 @@ $payment_methods = __('payment_methods', true);
 		</div> 
 		<div class="alert alert-success d-flex align-items-center">
 			<?php if ((int)$tpl['arr']['paid_via_payment_link'] == 1) { ?>
-    			<div class="vc_message_box vc_message_box-standard vc_message_box-square vc_color-alert-success"><div class="vc_message_box-icon"><i class="fas fa-check-circle"></i></div><h2 id="booking_gtm"><?php echo str_replace('{ReferenceNumber}', $tpl['arr']['uuid'], __('front_step_booking_summary_2', true)); ?></h2>
-	           	<br/>
-				<p><?php echo str_replace('{ReferenceNumber}', $tpl['arr']['uuid'], __('front_step_booking_summary_2_desc', true)); ?></p></div>
+    			<i class="fad fa-check-circle"></i><span class="alert-desc"><span class="alert-title"><?php echo str_replace('{ReferenceNumber}', $tpl['arr']['uuid'], __('front_step_booking_summary_2', true));?></span><br/><?php echo str_replace('{ReferenceNumber}', $tpl['arr']['uuid'], __('front_step_booking_summary_2_desc', true)); ?></span>
         	<?php } elseif ($hours < 24 || $tpl['arrivalNotice'] > 0 || $tpl['arr']['price_by_distance'] == 'T') { ?>
-				<i class="fa-solid fa-circle-check"></i><span class="alert-desc"><span class="alert-title"><?php echo str_replace('{ReferenceNumber}', $tpl['arr']['uuid'], __('front_step_booking_summary_1', true));?></span><br/><?php __('front_step_booking_summary_1_desc');?></span>
+				<i class="fad fa-check-circle"></i><span class="alert-desc"><span class="alert-title"><?php echo str_replace('{ReferenceNumber}', $tpl['arr']['uuid'], __('front_step_booking_summary_1', true));?></span><br/><?php __('front_step_booking_summary_1_desc');?></span>
 			<?php } else { ?>
-				<i class="fa-solid fa-circle-check"></i><span class="alert-desc"><span class="alert-title"><?php echo str_replace('{ReferenceNumber}', $tpl['arr']['uuid'], __('front_step_booking_summary', true));?></span><br/><?php __('front_step_booking_summary_desc');?></span>
+				<i class="fad fa-check-circle"></i><span class="alert-desc"><span class="alert-title"><?php echo str_replace('{ReferenceNumber}', $tpl['arr']['uuid'], __('front_step_booking_summary', true));?></span><br/><?php __('front_step_booking_summary_desc');?></span>
 			<?php } ?>   		
 		</div>
 		<h5><?php __('front_step_passenger_details'); ?></h5>
@@ -230,7 +228,7 @@ $payment_methods = __('payment_methods', true);
 				case 'paypal':
 					?>
 					<div class="alert alert-success d-flex align-items-center">
-						<i class="fa-solid fa-circle-check"></i><span class="alert-desc"><?php echo $front_messages[1]; ?></span>		
+						<i class="fad fa-check-circle"></i><span class="alert-desc"><?php echo $front_messages[1]; ?></span>		
 					</div>
 					<?php
 					if (pjObject::getPlugin('pjPaypal') !== NULL)
@@ -241,7 +239,7 @@ $payment_methods = __('payment_methods', true);
 				case 'authorize':
 					?>
 					<div class="alert alert-success d-flex align-items-center">
-						<i class="fa-solid fa-circle-check"></i><span class="alert-desc"><?php echo $front_messages[2]; ?></span>		
+						<i class="fad fa-check-circle"></i><span class="alert-desc"><?php echo $front_messages[2]; ?></span>		
 					</div>
 					<?php
 					if (pjObject::getPlugin('pjAuthorize') !== NULL)
@@ -255,7 +253,7 @@ $payment_methods = __('payment_methods', true);
 						{
 							?>
 							<div class="alert alert-success d-flex align-items-center">
-								<i class="fa-solid fa-circle-check"></i><span class="alert-desc"><?php __('front_messages_ARRAY_10');?></span>		
+								<i class="fad fa-check-circle"></i><span class="alert-desc"><?php __('front_messages_ARRAY_10');?></span>		
 							</div>
 							<?php
 						}else{
@@ -265,7 +263,7 @@ $payment_methods = __('payment_methods', true);
 								$url = $paysafe['body']['RedirectUrl'];
 								?>
 								<div class="alert alert-success d-flex align-items-center">
-									<i class="fa-solid fa-circle-check"></i><span class="alert-desc"><span class="alert-title"><?php echo $front_messages[11];?></span><?php echo $front_messages[12]; ?></span>		
+									<i class="fad fa-check-circle"></i><span class="alert-desc"><span class="alert-title"><?php echo $front_messages[11];?></span><?php echo $front_messages[12]; ?></span>		
 								</div>
 								<div id="trSaferpayForm_<?php echo $_GET['index'];?>">
 									<iframe name="trSaferpay" id="trSaferpay_<?php echo $_GET['index'];?>" scrolling="no" src="<?php echo $url;?>" height="100%" width="100%" style="min-height: 760px;"></iframe>
@@ -273,7 +271,7 @@ $payment_methods = __('payment_methods', true);
 								<?php
 							} else { ?>
 								<div class="alert alert-warning d-flex align-items-center">
-									<i class="fa-solid fa-triangle-exclamation"></i>
+									<i class="fad fa-exclamation-triangle"></i>
 									<span class="alert-desc">
 										<?php echo $front_messages[7]; ?>
 										<?php 

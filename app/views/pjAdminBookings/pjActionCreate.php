@@ -308,35 +308,44 @@ if (isset($tpl['status']))
 						<input type="text" name="cc_code" id="cc_code" class="pj-form-field w100" />
 					</span>
 				</p>
-				<div class="p">
-					<label class="title"><?php __('lblStatus'); ?>:</label>
-					<span class="inline-block">
-						<select name="status" id="status" class="pj-form-field w400 required">
-							<option value="">-- <?php __('lblChoose'); ?>--</option>
-							<?php
-							foreach (__('booking_statuses', true, false) as $k => $v)
-							{
-								?><option value="<?php echo $k; ?>"><?php echo $v; ?></option><?php
-							}
-							?>
-						</select>
-					</span>
-				</div>
 				
-				<div class="p pjStatusReturnTrip trReturnDetails" style="display: none;">
-					<label class="title"><?php __('lblStatusReturnTrip'); ?></label>
-					<span class="inline-block">
-						<select name="status_return_trip" id="status_return_trip" class="pj-form-field w400 required">
-							<option value="">-- <?php __('lblChoose'); ?>--</option>
-							<?php
-							foreach (__('booking_statuses', true, false) as $k => $v)
-							{
-								?><option value="<?php echo $k; ?>"><?php echo $v; ?></option><?php
-							}
-							?>
-						</select>
-					</span>
-				</div>	
+				<div class="pj-status-container">
+    				<div class="p pj-status-color">
+    					<label class="title"><?php __('lblStatus'); ?>:</label>
+    					<span class="inline-block">
+    						<select name="status" id="status" data-placeholder="-- <?php __('lblChoose'); ?>--" class="pj-form-field w400 required chosen-select status-select">
+    							<option value="">-- <?php __('lblChoose'); ?>--</option>
+    							<?php
+    							foreach (__('booking_statuses', true, false) as $k => $v)
+    							{
+    							    if ($k == 'passed_on') {
+    							        continue;
+    							    }
+    								?><option value="<?php echo $k; ?>"><?php echo $v; ?></option><?php
+    							}
+    							?>
+    						</select>
+    					</span>
+    				</div>
+				
+    				<div class="p pjStatusReturnTrip trReturnDetails pj-status-return-color" style="display: none;">
+    					<label class="title"><?php __('lblStatusReturnTrip'); ?></label>
+    					<span class="inline-block">
+    						<select name="status_return_trip" id="status_return_trip" data-placeholder="-- <?php __('lblChoose'); ?>--" class="pj-form-field w400 required chosen-select status-return-select">
+    							<option value="">-- <?php __('lblChoose'); ?>--</option>
+    							<?php
+    							foreach (__('booking_statuses', true, false) as $k => $v)
+    							{
+    							    if ($k == 'passed_on') {
+    							        continue;
+    							    }
+    								?><option value="<?php echo $k; ?>"><?php echo $v; ?></option><?php
+    							}
+    							?>
+    						</select>
+    					</span>
+    				</div>	
+    			</div>
 
                 <div class="float_left" style="width: 50%;">
                     <?php foreach($tpl['extra_arr'] as $index => $extra): ?>

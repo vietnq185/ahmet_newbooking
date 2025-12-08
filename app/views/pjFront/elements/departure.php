@@ -18,7 +18,7 @@
 	                <input type="hidden" name="has_return" id="trIsReturn_<?php echo $index?>" value="<?php echo $STORE['is_return'];?>" />
 	                <?php if ($STORE['search']['is_airport']) { ?>
 						<div class="alert alert-success d-flex align-items-center">
-							<i class="fa-solid fa-circle-check"></i><span class="alert-desc"><?php __('front_stress_free');?></span>   		
+							<i class="fad fa-check-circle"></i><span class="alert-desc"><?php __('front_stress_free');?></span>   		
 						</div>
 					<?php } ?>
 					<div class="pjSbDepartureInfo pjSbBox">
@@ -30,7 +30,7 @@
 									<label class="control-label"><?php __('front_transfer_date'); ?></label>
 									<div class="input-group pjSbBookingDetailsTransferDate">
 										<span class="input-group-addon">
-											<span class="fa-solid fa-calendar-days" aria-hidden="true"></span>
+											<span class="fad fa-calendar-alt" aria-hidden="true"></span>
 										</span>				
 										<input type="text" placeholder="<?php __('front_select_transfer_date', false, true); ?>" id="trDateConfirm_<?php echo $index?>" name="date_confirm" readonly value="<?php echo isset($STORE['search']) && isset($STORE['search']['date']) ? htmlspecialchars($STORE['search']['date']) : null; ?>" class="form-control hasDatepicker required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 									</div>
@@ -44,7 +44,7 @@
 										<div class="pjSbSpinLeft">
 											<a href="javascript:void(0);" class="pjSbSpin" data-type="minus" data-min="<?php echo (int)$tpl['fleet']['min_passengers'];?>">
 												<span class="input-group-addon text-blue">
-													<span class="fa-solid fa-circle-minus" aria-hidden="true"></span>
+													<span class="fad fa-minus-circle" aria-hidden="true"></span>
 												</span>		
 											</a>
 										</div>			
@@ -52,7 +52,7 @@
 										<div class="pjSbSpinRight">
 											<a href="javascript:void(0);" class="pjSbSpin" data-type="plus" data-max="<?php echo (int)$tpl['fleet']['passengers'];?>">
 												<span class="input-group-addon text-blue">
-													<span class="fa-solid fa-circle-plus" aria-hidden="true"></span>
+													<span class="fad fa-plus-circle" aria-hidden="true"></span>
 												</span>		
 											</a>
 										</div>
@@ -64,7 +64,7 @@
 						
 						<div id="trDateConfirmMsg_<?php echo $index?>" style="display: none;">
 							<div class="alert alert-warning d-flex align-items-center">
-								<i class="fa-solid fa-circle-info"></i><span class="alert-desc"><?php __('front_date_change_message');?></span>
+								<i class="fad fa-info-circle"></i><span class="alert-desc"><?php __('front_date_change_message');?></span>
 							</div>
 						</div>
 						
@@ -75,7 +75,7 @@
 										<label class="control-label"><?php __('front_pickup_time'); ?></label>
 										<div class="input-group pjSbBookingDetailsPickupTime" data-label_done="<?php __('front_label_done'); ?>">
 											<span class="input-group-addon">
-												<span class="fa-solid fa-clock" aria-hidden="true"></span>
+												<span class="fad fa-clock" aria-hidden="true"></span>
 											</span>				
 											<input type="text" placeholder="<?php __('front_pickup_time', false, true); ?>" name="pickup_time" id="pickup_time" readonly value="<?php echo isset($FORM['pickup_time']) ? pjSanitize::html($FORM['pickup_time']) : null; ?>" class="form-control hasTimepick required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 										</div>
@@ -87,7 +87,7 @@
 										<label class="control-label"><?php __('front_pickup_address'); ?></label>
 										<div class="input-group">
 											<span class="input-group-addon">
-												<span class="fa-solid fa-location-pin" aria-hidden="true"></span>
+												<span class="fad fa-map-marker" aria-hidden="true"></span>
 											</span>				
 											<input type="text" placeholder="<?php __('front_pickup_address', false, true); ?>" name="c_address" id="c_address" value="<?php echo isset($FORM['c_address']) ? pjSanitize::clean($FORM['c_address']) : ($STORE['search']['pickup_type'] == 'google' ? stripslashes($tpl['cart']['pickup_location_name']) : $tpl['cart']['pickup_address']);?>" class="form-control required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 										</div>
@@ -97,7 +97,7 @@
 							</div>
 							<div><?php __('front_going_to');?>: <span class="fw-bold"><?php echo pjSanitize::clean($tpl['cart']['dropoff_location_name']);?></span></div><br/>
 							<div class="alert alert-warning d-flex align-items-center">
-								<i class="fa-solid fa-circle-info"></i>
+								<i class="fad fa-info-circle"></i>
 								<span class="alert-desc">
 								<?php
 								if ($STORE['search']['dropoff_is_airport'] == 0) { 
@@ -113,7 +113,7 @@
 										<label class="control-label"><?php __('front_dropoff_address'); ?></label>
 										<div class="input-group">
 											<span class="input-group-addon">
-												<span class="fa-solid fa-location-pin" aria-hidden="true"></span>
+												<span class="fad fa-map-marker" aria-hidden="true"></span>
 											</span>				
 											<input type="text" placeholder="<?php __('front_dropoff_address', false, true); ?>" name="c_destination_address" id="c_destination_address" value="<?php echo isset($FORM['c_destination_address']) ? stripslashes($FORM['c_destination_address']) : ($STORE['search']['dropoff_type'] == 'google' ? stripslashes($tpl['cart']['dropoff_location_name']) : '');?>" class="form-control required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 										</div>
@@ -138,7 +138,7 @@
 											<label class="control-label"><?php __('front_flight_time'); ?></label>
 											<div class="input-group pjSbBookingDetailsArrivalTime" data-label_done="<?php __('front_label_done'); ?>">
 												<span class="input-group-addon">
-													<span class="fa-solid fa-clock" aria-hidden="true"></span>
+													<span class="fad fa-clock" aria-hidden="true"></span>
 												</span>				
 												<input type="text" placeholder="<?php __('front_arrival_time', false, true); ?>" name="arrival_time" id="arrival_time" readonly value="<?php echo isset($FORM['arrival_time']) ? pjSanitize::html($FORM['arrival_time']) : null; ?>" class="form-control hasTimepick required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 											</div>
@@ -150,7 +150,7 @@
 											<label class="control-label"><?php __('front_flight_number'); ?></label>
 											<div class="input-group pjSbArrivalTime">
 												<span class="input-group-addon">
-													<span class="fa-solid fa-plane-arrival" aria-hidden="true"></span>
+													<span class="fad fa-plane-arrival" aria-hidden="true"></span>
 												</span>				
 												<input type="text" placeholder="OS2055" name="c_flight_number" id="c_flight_number" value="<?php echo isset($FORM['c_flight_number']) ? pjSanitize::html($FORM['c_flight_number']) : null; ?>" class="form-control" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 											</div>
@@ -162,7 +162,7 @@
 											<label class="control-label"><?php __('front_airline_company'); ?></label>
 											<div class="input-group">
 												<span class="input-group-addon">
-													<span class="fa-solid fa-plane-circle-check" aria-hidden="true"></span>
+													<span class="fad fa-check-circle" aria-hidden="true"></span>
 												</span>				
 												<input type="text" placeholder="Austrian" name="c_airline_company" id="c_airline_company" value="<?php echo isset($FORM['c_airline_company']) ? pjSanitize::html($FORM['c_airline_company']) : null; ?>" class="form-control" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 											</div>
@@ -172,7 +172,7 @@
 								</div>
 								<div><?php __('front_going_to');?>: <span class="fw-bold"><?php echo pjSanitize::clean(@$tpl['cart']['dropoff_location_name']);?></span></div><br/>
 								<div class="alert alert-warning d-flex align-items-center">
-									<i class="fa-solid fa-circle-info"></i>
+									<i class="fad fa-info-circle"></i>
 									<span class="alert-desc">
 									<?php
 									if ($STORE['search']['dropoff_is_airport'] == 0) { 
@@ -188,7 +188,7 @@
 											<label class="control-label"><?php __('front_destination_address'); ?></label>
 											<div class="input-group">
 												<span class="input-group-addon">
-													<span class="fa-solid fa-location-pin" aria-hidden="true"></span>
+													<span class="fad fa-map-marker" aria-hidden="true"></span>
 												</span>				
 												<input type="text" placeholder="<?php __('front_dropoff_address', false, true); ?>" name="c_destination_address" id="c_destination_address" value="<?php echo isset($FORM['c_destination_address']) ? pjSanitize::html($FORM['c_destination_address']) : null; ?>" class="form-control" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 											</div>
@@ -201,7 +201,7 @@
 											<label class="control-label"><?php __('front_hotel_pension'); ?></label>
 											<div class="input-group">
 												<span class="input-group-addon">
-													<span class="fa-solid fa-hotel" aria-hidden="true"></span>
+													<span class="fad fa-hotel" aria-hidden="true"></span>
 												</span>				
 												<input type="text" placeholder="<?php __('front_accommodation_name', false, true); ?>" name="c_hotel" id="c_hotel" value="<?php echo isset($FORM['c_hotel']) ? pjSanitize::html($FORM['c_hotel']) : null; ?>" class="form-control" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 											</div>
@@ -219,7 +219,7 @@
 								</div>
 							<?php } else { ?>
 								<div class="alert alert-warning d-flex align-items-center">
-									<i class="fa-solid fa-circle-info"></i>
+									<i class="fad fa-info-circle"></i>
 									<span class="alert-desc">
 									<?php
 									if ($STORE['search']['dropoff_is_airport'] == 0) { 
@@ -235,7 +235,7 @@
 											<label class="control-label"><?php __('front_pickup_time'); ?></label>
 											<div class="input-group pjSbBookingDetailsPickupTime" data-label_done="<?php __('front_label_done'); ?>">
 												<span class="input-group-addon">
-													<span class="fa-solid fa-clock" aria-hidden="true"></span>
+													<span class="fad fa-clock" aria-hidden="true"></span>
 												</span>				
 												<input type="text" placeholder="<?php __('front_pickup_time', false, true); ?>" name="pickup_time" id="pickup_time" readonly value="<?php echo isset($FORM['pickup_time']) ? pjSanitize::html($FORM['pickup_time']) : null; ?>" class="form-control hasTimepick required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 											</div>
@@ -249,7 +249,7 @@
 											<label class="control-label"><?php __('front_address'); ?></label>
 											<div class="input-group">
 												<span class="input-group-addon">
-													<span class="fa-solid fa-location-pin" aria-hidden="true"></span>
+													<span class="fad fa-map-marker" aria-hidden="true"></span>
 												</span>				
 												<input type="text" placeholder="<?php __('front_pickup_address', false, true); ?>" name="c_address" id="c_address" value="<?php echo isset($FORM['c_address']) ? pjSanitize::html($FORM['c_address']) : null; ?>" class="form-control" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 											</div>
@@ -262,7 +262,7 @@
 											<label class="control-label"><?php __('front_hotel_pension'); ?></label>
 											<div class="input-group">
 												<span class="input-group-addon">
-													<span class="fa-solid fa-hotel" aria-hidden="true"></span>
+													<span class="fad fa-hotel" aria-hidden="true"></span>
 												</span>				
 												<input type="text" placeholder="<?php __('front_accommodation_name', false, true); ?>" name="c_hotel" id="c_hotel" value="<?php echo isset($FORM['c_hotel']) ? pjSanitize::html($FORM['c_hotel']) : null; ?>" class="form-control" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 											</div>
@@ -277,7 +277,7 @@
 											<label class="control-label"><?php __('front_flight_departure_time'); ?></label>
 											<div class="input-group pjSbBookingDetailsFlightDepartureTime" data-label_done="<?php __('front_label_done'); ?>">
 												<span class="input-group-addon">
-													<span class="fa-solid fa-clock" aria-hidden="true"></span>
+													<span class="fad fa-clock" aria-hidden="true"></span>
 												</span>				
 												<input type="text" placeholder="<?php __('front_flight_departure_time', false, true); ?>" name="c_departure_flight_time" id="c_departure_flight_time" readonly value="<?php echo isset($FORM['c_departure_flight_time']) ? pjSanitize::html($FORM['c_departure_flight_time']) : null; ?>" class="form-control hasTimepick required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 											</div>
@@ -301,7 +301,7 @@
 					<div class="pjSbAlertAddReturnTransfer" style="display: <?php echo $STORE['is_return'] == 0 ? '' : 'none';?>">
 						<table width="100%" cellpadding="0" cellspacing="0">
 							<tr class="row">
-								<td class="col-lg-1 col-md-2 col-sm-2 col-2 align-middle"><i class="fa-solid fa-arrow-right-arrow-left"></i></td>
+								<td class="col-lg-1 col-md-2 col-sm-2 col-2 align-middle"><i class="fad fa-exchange"></i></td>
 								<td class="col-lg-7 col-md-6 col-sm-6 col-10 align-middle">
 									<?php 
 									if ($tpl['fleet']["return_discount_{$dayIndex}"] > 0) {
@@ -325,8 +325,11 @@
 					</div>
 					
 					<div class="row d-flex align-items-center">
-						<div class="col-sm-6 col-12"><a href="javascript:void(0);" class="pjSbBtnGoBack pjSbLoadFleets"><i class="fa-solid fa-circle-arrow-left"></i> <?php __('front_button_go_back');?></a></div>
+						<div class="col-sm-6 col-12"><a href="javascript:void(0);" class="pjSbBtnGoBack pjSbLoadFleets"><i class="fad fa-arrow-circle-left"></i> <?php __('front_button_go_back');?></a></div>
 						<div class="col-sm-6 col-12 text-end"><button type="submit" class="btn btn-primary"><?php __('front_btn_continue'); ?></button></div>
+					</div>
+					<div class="row trCheckErrorMsg" style="display: none;">
+						<div class="col-xs-12"><br/><div class="alert alert-danger"></div></div>
 					</div>
 				</form>
 			</div>
@@ -336,7 +339,7 @@
 		</div>
 	<?php } else { ?>
 		<div class="alert alert-warning d-flex align-items-center">
-			<i class="fa-solid fa-circle-info"></i><span class="alert-desc"><span class="alert-title"><?php __('front_error')?></span><?php __('front_search_fleets_error_desc');?></span>   		
+			<i class="fad fa-info-circle"></i><span class="alert-desc"><span class="alert-title"><?php __('front_error')?></span><?php __('front_search_fleets_error_desc');?></span>   		
 		</div>
 	<?php } ?>
 	

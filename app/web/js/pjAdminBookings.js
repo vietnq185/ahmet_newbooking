@@ -197,7 +197,6 @@ var jQuery_1_8_2 = jQuery_1_8_2 || $.noConflict();
 				                                                                                     {label: myLabel.pending, value: "pending"},
 				                                                                                     {label: myLabel.in_progress, value: "in_progress"}, 
 				                                                                                     {label: myLabel.confirmed, value: "confirmed"},
-				                                                                                     {label: myLabel.passed_on, value: "passed_on"},
 				                                                                                     {label: myLabel.cancelled, value: "cancelled"}
 				                                                                                     ], applyClass: "pj-status"}],
 				dataUrl: "index.php?controller=pjAdminBookings&action=pjActionGetBooking" + pjGrid.queryString,
@@ -229,6 +228,9 @@ var jQuery_1_8_2 = jQuery_1_8_2 || $.noConflict();
 					  var $row = $('[data-id="id_'+item.id+'"]');
 					  if (item.booking_color != '') {
 						  $row.find('td:first-child').css('border-left', '5px solid '+item.booking_color);
+					  }
+					  if (item.double_bookings > 0) {
+						  $row.find('td').css('background', '#fce8cd');
 					  }
 					});
 				}
@@ -1232,5 +1234,88 @@ var jQuery_1_8_2 = jQuery_1_8_2 || $.noConflict();
 			});
         }
         
+        $(document).ready(function() {
+            $('.collapse-header').on('click', function() {
+                var $header = $(this);
+                var targetId = $header.data('target');
+                var $content = $(targetId);
+
+                $content.slideToggle(300); 
+
+                $header.toggleClass('active');
+            });
+            
+            if (chosen) {
+	            const statusColors = {
+	                'pending': { code: '#F97316', class: 'is-pending' },      
+	                'in_progress': { code: '#EF4444', class: 'is-progress' }, 
+	                'confirmed': { code: '#10B981', class: 'is-confirmed' },  
+	                'cancelled': { code: '#6B7280', class: 'is-cancelled' }   
+	            };
+	            $(".status-select").chosen({
+	                width: "100%",
+	                disable_search_threshold: 10 
+	            });
+	            $(".status-return-select").chosen({
+	                width: "100%",
+	                disable_search_threshold: 10 
+	            });
+	            var $statusContainer = $('.pj-status-color');
+	            
+	            $statusContainer.find('.status-select option').each(function(index) {
+	                const option = $(this);
+	                const value = option.val();
+	                if (value && statusColors[value]) {
+	                    const colorData = statusColors[value];
+	                    $('#status_chzn_o_' + index).addClass(colorData.class);
+	                    if ($(this).hasClass('.result-selected')) {
+		                    const chosenSingle = $statusContainer.find('#status_chzn .chzn-single');
+		                    chosenSingle.addClass(colorData.class);
+	                    }
+	                }
+	            });
+	            
+	            $statusContainer.find('.status-select').on('change', function() {
+	                const selectedValue = $(this).val();
+	                const chosenSingleA = $statusContainer.find('#status_chzn .chzn-single');
+	                if (selectedValue && statusColors[selectedValue]) {
+	                    const colorData = statusColors[selectedValue];
+	                    chosenSingleA.removeClass('is-pending')
+		                	.removeClass('is-progress')
+		                	.removeClass('is-confirmed')
+		                	.removeClass('is-cancelled');
+	                    chosenSingleA.addClass(colorData.class);
+	                }
+	            }).trigger('change');
+	            
+	            // status return
+	            var $statusReturnContainer = $('.pj-status-return-color');
+	            $statusReturnContainer.find('.status-return-select option').each(function(index) {
+	                const option = $(this);
+	                const value = option.val();
+	                if (value && statusColors[value]) {
+	                    const colorData = statusColors[value];
+	                    $('#status_return_trip_chzn_o_' + index).addClass(colorData.class);
+	                    if ($(this).hasClass('.result-selected')) {
+		                    const chosenSingle = $statusContainer.find('#status_return_trip_chzn .chzn-single');
+		                    chosenSingle.addClass(colorData.class);
+	                    }
+	                }
+	            });
+	            
+	            $statusReturnContainer.find('.status-return-select').on('change', function() {
+	                const selectedValue = $(this).val();
+	                const chosenSingleA = $statusReturnContainer.find('#status_return_trip_chzn .chzn-single');
+	                if (selectedValue && statusColors[selectedValue]) {
+	                    const colorData = statusColors[selectedValue];
+	                    chosenSingleA.removeClass('is-pending')
+		                	.removeClass('is-progress')
+		                	.removeClass('is-confirmed')
+		                	.removeClass('is-cancelled');
+	                    chosenSingleA.addClass(colorData.class);
+	                }
+	            }).trigger('change');
+            }
+        });
 	});
 })(jQuery_1_8_2);

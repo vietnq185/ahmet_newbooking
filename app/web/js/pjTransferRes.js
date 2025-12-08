@@ -170,11 +170,13 @@
 					e.preventDefault();
 				}
 				var locale = pjQ.$(this).data("id");
-				self.opts.locale = locale;				
+				self.opts.locale = locale;	
+				pjQ.$('#loading-overlay').css('display', 'block');
 				pjQ.$.get([self.opts.folder, "index.php?controller=pjFront&action=pjActionLocale", "&session_id=", self.opts.session_id].join(""), {
 					"locale_id": locale
 				}).done(function (data) {
 					self.loadSearch.call(self);
+					pjQ.$('#loading-overlay').css('display', 'none');
 				}).fail(function () {
 					log("Deferred is rejected");
 				});
@@ -439,10 +441,12 @@
 	                        "fleet_id": fleet_id
 	                    };
 	                self.disableButtons.call(self);
+	                pjQ.$('#loading-overlay').css('display', 'block');
 	                pjQ.$.get([self.opts.folder, "index.php?controller=pjFront&action=pjActionAddFleet", "&session_id=", self.opts.session_id].join(""), params).done(function (data) {
 	                	self.loadDeparture.call(self, 1,0);
 	                }).fail(function () {
 	                    self.enableButtons.call(self);
+	                    pjQ.$('#loading-overlay').css('display', 'none');
 	                });
 					return false;
                 }
@@ -472,6 +476,7 @@
                         "is_return": $is_return
                     };
                 self.disableButtons.call(self);
+                //pjQ.$('#loading-overlay').css('display', 'block');
                 pjQ.$.post([self.opts.folder, "index.php?controller=pjFront&action=pjActionSaveDeparture", "&session_id=", self.opts.session_id].join(""), $form.serialize()).done(function (data) {
                 	pjQ.$.get([self.opts.folder, "index.php?controller=pjFront&action=pjActionSetTransferType", "&session_id=", self.opts.session_id].join(""), params).done(function (data) {
                         pjQ.$('.pjSbAlertAddReturnTransfer').hide();
@@ -488,20 +493,25 @@
                         self.loadDeparture.call(self, 0,1);
                     }).fail(function () {
                         self.enableButtons.call(self);
+                        //pjQ.$('#loading-overlay').css('display', 'none');
                     });
                 	self.enableButtons.call(self);
                 }).fail(function () {
                     self.enableButtons.call(self);
+                    //pjQ.$('#loading-overlay').css('display', 'none');
                 });
                 return false;
             }).on("change.tr", "#trExtrasForm_" + self.opts.index + ' select', function (e) {
                 self.disableButtons.call(self);
+                //pjQ.$('#loading-overlay').css('display', 'block');
                 pjQ.$.post([self.opts.folder, "index.php?controller=pjFront&action=pjActionUpdateExtras", "&session_id=", self.opts.session_id].join(""), pjQ.$('#trExtrasForm_' + self.opts.index).serialize()).done(function (data) {
                     pjQ.$('dd.trCartExtras').html(data.extras);
                     pjQ.$('.trCartExtras').toggle(data.extras !== undefined && data.extras !== null && data.extras.length > 0);
                     self.enableButtons.call(self);
+                    //pjQ.$('#loading-overlay').css('display', 'none');
                 }).fail(function () {
                     self.enableButtons.call(self);
+                    //pjQ.$('#loading-overlay').css('display', 'none');
                 });
             }).on("click.tr", "#trBtnExtras_" + self.opts.index, function (e) {
                 if (e && e.preventDefault) {
@@ -579,7 +589,7 @@
                         "voucher_code": voucher_code
                     };
                 self.disableButtons.call(self);
-
+                pjQ.$('#loading-overlay').css('display', 'block');
                 pjQ.$.get([self.opts.folder, "index.php?controller=pjFront&action=pjActionApplyCode", "&session_id=", self.opts.session_id].join(""), params).done(function (data) {
                     switch (parseInt(data.code, 10)) {
                         case 200:
@@ -602,8 +612,10 @@
                             }
                     }
                     self.enableButtons.call(self);
+                    pjQ.$('#loading-overlay').css('display', 'none');
                 }).fail(function () {
                     self.enableButtons.call(self);
+                    pjQ.$('#loading-overlay').css('display', 'none');
                 });
                 return false;
             }).on("change.tr", '#time_h, #time_m', function (e) {
@@ -863,6 +875,7 @@
                     e.preventDefault();
                 }
                 var $form = pjQ.$('#trPaymentForm_' + self.opts.index);
+                pjQ.$('#loading-overlay').css('display', 'block');
                 pjQ.$.post([self.opts.folder, "index.php?controller=pjFront&action=pjActionFinishBooking", "&session_id=", self.opts.session_id].join(""), $form.serialize()).done(function (data) {
                 	self.loadSummary.call(self, data.booking_id);
                 });
@@ -968,6 +981,7 @@
                     }, 500);
 					*/
                     self.pageLoaded.call(self);
+                    pjQ.$('#loading-overlay').css('display', 'none');
                 }
 			}).fail(function () {
 				self.enableButtons.call(self);
@@ -1190,6 +1204,7 @@
                     var $msg_container = $form.find('.trCheckErrorMsg');
                     $msg_container.find('.alert').html('');
                     $msg_container.hide();
+                    pjQ.$('#loading-overlay').css('display', 'block');
                     pjQ.$.post([self.opts.folder, "index.php?controller=pjFront&action=pjActionCheck", "&session_id=", self.opts.session_id].join(""), $form.serialize()).done(function (data) {
                     	if (data) 
 						{
@@ -1198,16 +1213,19 @@
 	                            	$msg_container.find('.alert').html(self.opts.messages.no_fleet);
 	                            	$msg_container.show().fadeOut(10000);
 	                                self.enableButtons.call(self);
+	                                pjQ.$('#loading-overlay').css('display', 'none');
 	                                break;
 	                            case 101:
 	                            	$msg_container.find('.alert').html(self.opts.messages.invalid_date);
 	                            	$msg_container.show().fadeOut(10000);
 	                                self.enableButtons.call(self);
+	                                pjQ.$('#loading-overlay').css('display', 'none');
 	                                break;
 	                            case 102:
 	                            	$msg_container.find('.alert').html(data.text);
 	                            	$msg_container.show().fadeOut(10000);
 	                                self.enableButtons.call(self);
+	                                pjQ.$('#loading-overlay').css('display', 'none');
 	                                break;
 	                            case 200:
 	                                self.page = 1;
@@ -1216,9 +1234,11 @@
 	                        }
 						} else {
 							 self.enableButtons.call(self);
+							 pjQ.$('#loading-overlay').css('display', 'none');
 						}
                     }).fail(function () {
                         self.enableButtons.call(self);
+                        pjQ.$('#loading-overlay').css('display', 'none');
                     });
                     return false;
                 }
@@ -1239,7 +1259,7 @@
                             };
             var $container = pjQ.$('#trBookingStep_Services_' + self.opts.index);
             $container.nextAll('[id^="trBookingStep_"]').empty();
-
+            pjQ.$('#loading-overlay').css('display', 'block');
             pjQ.$.get([this.opts.folder, "index.php?controller=pjFront&action=pjActionServices", "&session_id=", self.opts.session_id].join(""), params).done(function (data) {
                 $container.html(data);
                 self.enableButtons.call(self);
@@ -1252,8 +1272,13 @@
                 }
                 else
                 {
+                	console.log(22)
+                	pjQ.$('html, body').animate({
+                        scrollTop: pjQ.$('#trBookingStep_Services_' + index).offset().top
+                    }, 500);
                     self.pageLoaded.call(self);
                 }
+                pjQ.$('#loading-overlay').css('display', 'none');
 			}).fail(function () {
 				self.enableButtons.call(self);
 			});
@@ -1318,7 +1343,7 @@
                 };
             var $container = pjQ.$('#trBookingStep_TransferType_' + self.opts.index);
             $container.nextAll('[id^="trBookingStep_"]').empty();
-
+            pjQ.$('#loading-overlay').css('display', 'block');
             pjQ.$.get([this.opts.folder, "index.php?controller=pjFront&action=pjActionTransferType", "&session_id=", self.opts.session_id].join(""), params).done(function (data) {
                 $container.html(data);
 
@@ -1328,8 +1353,10 @@
                     scrollTop: $container.offset().top
                 }, 500);
                 self.enableButtons.call(self);
+                pjQ.$('#loading-overlay').css('display', 'none');
             }).fail(function () {
                 self.enableButtons.call(self);
+                pjQ.$('#loading-overlay').css('display', 'none');
             });
         },
         loadExtras: function () {
@@ -1341,7 +1368,7 @@
                 };
             var $container = pjQ.$('#trBookingStep_Extras_' +  + self.opts.index);
             $container.nextAll('[id^="trBookingStep_"]').empty();
-
+            pjQ.$('#loading-overlay').css('display', 'block');
             pjQ.$.get([this.opts.folder, "index.php?controller=pjFront&action=pjActionExtras", "&session_id=", self.opts.session_id].join(""), params).done(function (data) {
                 $container.html(data);
 
@@ -1351,8 +1378,10 @@
                     scrollTop: $container.offset().top
                 }, 500);
                 self.enableButtons.call(self);
+                pjQ.$('#loading-overlay').css('display', 'none');
             }).fail(function () {
                 self.enableButtons.call(self);
+                pjQ.$('#loading-overlay').css('display', 'none');
             });
         },
         loadDeparture: function (scrollToDeparture, scrollToReturn) {
@@ -1365,7 +1394,7 @@
                 };
             var $container = pjQ.$('#trBookingStep_Departure_' + self.opts.index);
             $container.nextAll('[id^="trBookingStep_"]').empty();
-
+            pjQ.$('#loading-overlay').css('display', 'block');
             pjQ.$.get([this.opts.folder, "index.php?controller=pjFront&action=pjActionDeparture", "&session_id=", self.opts.session_id].join(""), params).done(function (data) {
                 $container.html(data);
                 pjQ.$('.modal-dialog').css("z-index", "9999");
@@ -1381,8 +1410,10 @@
                 if ($is_return) {
                 	self.loadReturn.call(self, scrollToReturn);
                 }
+                pjQ.$('#loading-overlay').css('display', 'none');
             }).fail(function () {
                 self.enableButtons.call(self);
+                pjQ.$('#loading-overlay').css('display', 'none');
             });
         },
         bindDeparture: function(){
@@ -1594,17 +1625,28 @@
             $form.validate({
                 submitHandler: function (form) {
                     self.disableButtons.call(self);
+                    pjQ.$('#loading-overlay').css('display', 'block');
+                    var $checkoutMsgContainer = $form.find('.trCheckErrorMsg');
                     pjQ.$.post([self.opts.folder, "index.php?controller=pjFront&action=pjActionSaveDeparture&submit=1", "&session_id=", self.opts.session_id].join(""), $form.serialize()).done(function (data) {
                         switch (parseInt(data.code, 10)) {
                             case 200:
                             	self.loadPassenger.call(self);
                                 break;
+                            case 201:
+                            	pjQ.$('#loading-overlay').css('display', 'none');
+                            	self.enableButtons.call(self);
+                            	$checkoutMsgContainer.find('.alert-danger').html(data.text);
+                            	$checkoutMsgContainer.show().fadeOut(10000);
+                            	break;
                             default:
-                                $form.find('.trCheckErrorMsg').html(self.opts.messages.generic_error).show().fadeOut(3000);
+                            	$checkoutMsgContainer.html(self.opts.messages.generic_error).show().fadeOut(3000);
                                 self.enableButtons.call(self);
+                                pjQ.$('#loading-overlay').css('display', 'none');
+                                break;
                         }
                     }).fail(function () {
                         self.enableButtons.call(self);
+                        pjQ.$('#loading-overlay').css('display', 'none');
                     });
                     return false;
                 }
@@ -1620,7 +1662,7 @@
                 };
             var $container = pjQ.$('#trBookingStep_Return_' + self.opts.index);
             $container.nextAll('[id^="trBookingStep_"]').empty();
-
+            pjQ.$('#loading-overlay').css('display', 'block');
             pjQ.$.get([this.opts.folder, "index.php?controller=pjFront&action=pjActionReturn", "&session_id=", self.opts.session_id].join(""), params).done(function (data) {
                 $container.html(data);
                 pjQ.$('.modal-dialog').css("z-index", "9999");
@@ -1631,8 +1673,10 @@
 	                }, 500);
                 }
                 self.enableButtons.call(self);
+                pjQ.$('#loading-overlay').css('display', 'none');
             }).fail(function () {
                 self.enableButtons.call(self);
+                pjQ.$('#loading-overlay').css('display', 'none');
             });
         },
         bindReturn: function(){
@@ -1664,10 +1708,11 @@
 					allowInputToggle: true,
 					minDate: $min_date,
 					ignoreReadonly: true,
-					useCurrent: false,
+					useCurrent: true,
 					inline: true,
 					sideBySide: true
 				});
+            	
             	pjQ.$('#trBookingDetailsReturnDatePick_' + self.opts.index).on('dp.change', function (e) {
             		var $return_date = pjQ.$('#trBookingDetailsReturnDatePick_' + self.opts.index).data('date');
 					pjQ.$('.pjSbReturnInfo').find('input[name="return_date"]').val($return_date);
@@ -1841,11 +1886,14 @@
                     "hide": this.opts.hide,
                     "index": this.opts.index
                 };
+            //pjQ.$('#loading-overlay').css('display', 'block');
             pjQ.$.get([this.opts.folder, "index.php?controller=pjFront&action=pjActionCart", "&session_id=", self.opts.session_id].join(""), params).done(function (data) {
                 $obj.html(data);
                 self.enableButtons.call(self);
+                //pjQ.$('#loading-overlay').css('display', 'none');
             }).fail(function () {
                 self.enableButtons.call(self);
+                //pjQ.$('#loading-overlay').css('display', 'none');
             });
         },
         loadPassenger: function () {
@@ -1858,7 +1906,7 @@
                 };
             var $container = pjQ.$('#trBookingStep_Passenger_' + self.opts.index);
             $container.nextAll('[id^="trBookingStep_"]').empty();
-
+            pjQ.$('#loading-overlay').css('display', 'block');
             pjQ.$.get([this.opts.folder, "index.php?controller=pjFront&action=pjActionPassenger", "&session_id=", self.opts.session_id].join(""), params).done(function (data) {
                 $container.html(data);
 
@@ -1867,8 +1915,10 @@
                     scrollTop: $container.offset().top
                 }, 500);
                 self.enableButtons.call(self);
+                pjQ.$('#loading-overlay').css('display', 'none');
             }).fail(function () {
                 self.enableButtons.call(self);
+                pjQ.$('#loading-overlay').css('display', 'none');
             });
         },
         bindPassenger: function(){
@@ -1908,6 +1958,7 @@
                     $msg_container.find('.alert').html(self.opts.message_0);
                     $msg_container.css('display', 'block');
                     pjQ.$('.pjCrBookingSesstionExpired').hide();
+                    pjQ.$('#loading-overlay').css('display', 'block');
                     pjQ.$.post([self.opts.folder, "index.php?controller=pjFront&action=pjActionSaveBooking", "&session_id=", self.opts.session_id, "&index=", self.opts.index].join(""), $form.serialize()).done(function (data) {
                         if (!data.code) {
                             return;
@@ -1916,10 +1967,12 @@
                             case 100:
                                 $msg_container.find('.alert').html(self.opts.message_8);
                                 self.enableButtons.call(self);
+                                pjQ.$('#loading-overlay').css('display', 'none');
                                 break;
                             case 101:
                                 $msg_container.find('.alert').html(data.text);
                                 self.enableButtons.call(self);
+                                pjQ.$('#loading-overlay').css('display', 'none');
                                 break;
                             case 102:
                             	self.disableButtons.call(self);
@@ -1929,6 +1982,7 @@
                             	pjQ.$('html, body').animate({
                                     scrollTop: pjQ.$('.pjCrBookingSesstionExpired').offset().top
                                 }, 500);
+                            	pjQ.$('#loading-overlay').css('display', 'none');
                                 break;
                             case 200:
                             	if (data.payment_method == 'saferpay') {
@@ -1954,7 +2008,7 @@
 
             var $container = pjQ.$('#trBookingStep_Checkout_' + self.opts.index);
             $container.nextAll('[id^="trBookingStep_"]').empty();
-
+            pjQ.$('#loading-overlay').css('display', 'block');
 			pjQ.$.get([this.opts.folder, "index.php?controller=pjFront&action=pjActionCheckout", "&session_id=", self.opts.session_id].join(""), params).done(function (data) {
                 $container.html(data);
 
@@ -1965,8 +2019,10 @@
 			    }, 500);
 				self.bindCheckout.call(self);
                 self.enableButtons.call(self);
+                pjQ.$('#loading-overlay').css('display', 'none');
 			}).fail(function () {
 				self.enableButtons.call(self);
+				pjQ.$('#loading-overlay').css('display', 'none');
 			});
 		},
 		loadSummary: function (booking_id) {
@@ -1978,6 +2034,7 @@
 								"index": this.opts.index,
                                 "booking_id": booking_id
 							};
+			pjQ.$('#loading-overlay').css('display', 'block');
 			pjQ.$.get([this.opts.folder, "index.php?controller=pjFront&action=pjActionSummary", "&session_id=", self.opts.session_id].join(""), params).done(function (data) {
 				self.$container.replaceWith(data);
                 pjQ.$('html, body').animate({
@@ -2003,8 +2060,10 @@
     	                }, 500);
 	        		}, 3000);
                 }
+                pjQ.$('#loading-overlay').css('display', 'none');
 			}).fail(function () {
 				self.enableButtons.call(self);
+				pjQ.$('#loading-overlay').css('display', 'none');
 			});
 		},
 		loadPayment: function (booking_uuid) {
@@ -2016,6 +2075,7 @@
                     "index": this.opts.index,
                     "booking_uuid": booking_uuid
                 };
+            pjQ.$('#loading-overlay').css('display', 'block');
             pjQ.$.get([this.opts.folder, "index.php?controller=pjFront&action=pjActionPayment", "&session_id=", self.opts.session_id].join(""), params).done(function (data) {
             	self.$container.html(data);
             	if (pjQ.$('.pjSbPaymentWrap').length > 0) {
@@ -2031,8 +2091,10 @@
                 	pjQ.$("#trSaferpay_" + index).css("height", e.originalEvent.data.height + "px");
                 });
                 self.enableButtons.call(self);
+                pjQ.$('#loading-overlay').css('display', 'none');
             }).fail(function () {
                 self.enableButtons.call(self);
+                pjQ.$('#loading-overlay').css('display', 'none');
             });
         },
 		getLocations: function(){

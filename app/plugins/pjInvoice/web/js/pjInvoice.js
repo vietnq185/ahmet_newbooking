@@ -211,10 +211,21 @@ var jQuery_1_8_2 = jQuery_1_8_2 || $.noConflict();
 			}
 		}
 		
+		function onBeforeShow (obj) {
+			if (pjGrid.isAdmin) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 		if ($("#grid").length > 0 && datagrid) {
+			var $actions = [];
+			if (pjGrid.isAdmin) {
+				$actions.push({text: myLabel.delete_title, url: "index.php?controller=pjInvoice&action=pjActionDeleteBulk", render: true, confirmation: myLabel.delete_body});
+			}
 			var $grid = $("#grid").datagrid({
 				buttons: [{type: "edit", url: "index.php?controller=pjInvoice&action=pjActionUpdate&id={:id}", title: "Edit"},
-				          {type: "delete", url: "index.php?controller=pjInvoice&action=pjActionDelete&id={:id}", title: "Delete"},
+				          {type: "delete", url: "index.php?controller=pjInvoice&action=pjActionDelete&id={:id}", title: "Delete", beforeShow: onBeforeShow},
 				          {type: "menu", url: "#", text: '', items:[
 				                     {text: myLabel.view_invoice, target: "_blank", url: "index.php?controller=pjInvoice&action=pjActionView&id={:uuid}&uuid={:order_id}"},
 				                     {text: myLabel.print_invoice, target: "_blank", url: "index.php?controller=pjInvoice&action=pjActionPrint&id={:uuid}&uuid={:order_id}"},
@@ -238,9 +249,7 @@ var jQuery_1_8_2 = jQuery_1_8_2 || $.noConflict();
 				dataType: "json",
 				fields: ['order_id', 'issue_date', 'due_date', 'created', 'status', 'total'],
 				paginator: {
-					actions: [
-					   {text: myLabel.delete_title, url: "index.php?controller=pjInvoice&action=pjActionDeleteBulk", render: true, confirmation: myLabel.delete_body}
-					],
+					actions: $actions,
 					gotoPage: true,
 					paginate: true,
 					total: true,
@@ -401,7 +410,7 @@ var jQuery_1_8_2 = jQuery_1_8_2 || $.noConflict();
 				if (m !== null) {
 					data.id = m[1];
 				}
-				m = href.match(/uuid=(PNK-[A-Z]{2}\d{10})/);
+				m = href.match(/uuid=(\d{10})/);
 				if (m !== null) {
 					data.uuid = m[1];
 				}

@@ -16,6 +16,35 @@ if(strpos($tpl['option_arr']['o_time_format'], 'A') > -1)
 }
 ?>
 <div id="pjWrapperShuttleBookingSearch">
+    <div id="loading-overlay">
+        <!-- Backdrop làm mờ -->
+        <div class="loading-backdrop"></div> 
+        
+        <!-- Container chứa nhiều spinners, căn giữa -->
+        <div class="spinner-container">
+            <!-- Growing Spinners với các màu khác nhau -->
+            
+            <div class="spinner-grow text-light-grey" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            
+            <div class="spinner-grow text-light-grey" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            
+            <div class="spinner-grow text-light-grey" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            
+            <div class="spinner-grow text-light-grey" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            
+            <div class="spinner-grow text-light-grey" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
 	<div id="pjSbContainer_<?php echo $index; ?>" class="container-fluid pjSbContainer"></div>
 </div>
 <script type="text/javascript">
@@ -162,11 +191,9 @@ if(strpos($tpl['option_arr']['o_time_format'], 'A') > -1)
     							loadScript("<?php echo PJ_INSTALL_URL . $dm->getPath('pj_bootstrap_datetimepicker'); ?>pjQuery.bootstrap-datetimepicker.min.js", function () {
 	                                loadScript("<?php echo PJ_INSTALL_URL . $dm->getPath('pj_select2'); ?>pjQuery.select2.full.js", function () {
 	                                    loadScript("<?php echo PJ_INSTALL_URL . $dm->getPath('uniform'); ?>jquery.uniform.min.js", function () {
-	                                    	 loadScript("https://kit.fontawesome.com/b28ae88bfd.js", function () {
-		                                        loadScript("<?php echo PJ_INSTALL_URL . PJ_JS_PATH; ?>pjTransferResNew.js", function () {
-		                                            TransferResNew_<?php echo $index; ?> = new TransferResNew(options);
-		                                        });
-	                                    	 });
+	                                    	loadScript("<?php echo PJ_INSTALL_URL . PJ_JS_PATH; ?>pjTransferResNew.js", function () {
+	                                            TransferResNew_<?php echo $index; ?> = new TransferResNew(options);
+	                                        });
 	                                    });
 	                                });
     							});

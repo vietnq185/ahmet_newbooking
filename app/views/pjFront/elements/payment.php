@@ -27,7 +27,7 @@ $cartIndex = str_replace('pjAction', '', $_GET['action']) . '_' . pjObject::esca
 								{
 									?>
 									<div class="alert alert-success d-flex align-items-center">
-										<i class="fa-solid fa-circle-check"></i><span class="alert-desc"><?php __('front_messages_ARRAY_10');?></span>		
+										<i class="fad fa-check-circle"></i><span class="alert-desc"><?php __('front_messages_ARRAY_10');?></span>		
 									</div>
 									<?php
 								}else{
@@ -42,7 +42,7 @@ $cartIndex = str_replace('pjAction', '', $_GET['action']) . '_' . pjObject::esca
 										<?php
 									} else { ?>
 										<div class="alert alert-warning d-flex align-items-center">
-											<i class="fa-solid fa-triangle-exclamation"></i>
+											<i class="fad fa-exclamation-triangle"></i>
 											<span class="alert-desc">
 												<?php echo $front_messages[7]; ?>
 												<?php 
@@ -68,7 +68,7 @@ $cartIndex = str_replace('pjAction', '', $_GET['action']) . '_' . pjObject::esca
 					</div>		
 					<?php if(empty($tpl['arr']['txn_id']) && !isset($tpl['arr']['allow_saferpay_only'])) { ?>
 						<div class="alert alert-warning d-flex align-items-center">
-							<i class="fa-solid fa-circle-info"></i><span class="alert-desc"><?php echo __('front_select_payment_options_desc'); ?></span>		
+							<i class="fad fa-info-circle"></i><span class="alert-desc"><?php echo __('front_select_payment_options_desc'); ?></span>		
 						</div>
 						<div class="pjSbPaymentInfo pjSbBox">
 							<?php if($tpl['option_arr']['o_payment_disable'] == 'No') { ?>
@@ -80,10 +80,10 @@ $cartIndex = str_replace('pjAction', '', $_GET['action']) . '_' . pjObject::esca
 			                	$pm_sort_arr = array('cash','creditcard_later');
 			                	$payment_methods = __('payment_methods', true);
 			                	$map_pm_icons = array(
-			                		'cash' => '<i class="fa-solid fa-money-bill-1"></i>',
-			                		'creditcard_later' => '<i class="fa-solid fa-credit-card"></i>',
-			                		'saferpay' => '<i class="fa-solid fa-credit-card"></i>',
-			                		'creditcard' => '<i class="fa-solid fa-display"></i>'
+			                		'cash' => '<i class="fad fa-money-bill-alt"></i>',
+			                		'creditcard_later' => '<i class="fad fa-credit-card"></i>',
+			                		'saferpay' => '<i class="fad fa-credit-card"></i>',
+			                		'creditcard' => '<i class="fad fa-tv"></i>'
 			                	);
 			                	$total = round($tpl['arr']['total'] - $tpl['arr']['credit_card_fee']);			                	
 			                	$deposit = in_array($tpl['arr']['payment_method'], array('creditcard', 'paypal', 'authorize', 'saferpay')) || is_null($tpl['arr']['payment_method']) ? (($total * $tpl['option_arr']['o_deposit_payment']) / 100): 0;
@@ -162,27 +162,27 @@ $cartIndex = str_replace('pjAction', '', $_GET['action']) . '_' . pjObject::esca
 						        <div class="summary">
 					                <h5><?php __('front_cart_departure'); ?></h5>
 					                <div class="summary-item d-flex align-items-center">
-					                	<i class="fa-solid fa-calendar-days"></i>
+					                	<i class="fad fa-calendar-alt"></i>
 					                	<span><?php __('front_date'); ?><br/><strong><?php echo date($tpl['option_arr']['o_date_format'], strtotime($tpl['arr']['booking_date'])); ?> (<?php echo @$days[date('w', strtotime($tpl['arr']['booking_date']))];?> <?php echo date('d', strtotime($tpl['arr']['booking_date']));?>, <?php echo @$months[date('n', strtotime($tpl['arr']['booking_date']))];?>)</strong></span>
 					                </div>
 				                	<div class="summary-item d-flex align-items-center">
-					                	<i class="fa-solid fa-clock"></i>
+					                	<i class="fad fa-clock"></i>
 					                	<span><?php __('front_time'); ?><br/><strong><?php echo date($tpl['option_arr']['o_time_format'], strtotime($tpl['arr']['booking_date']));?></strong></span>
 					                </div>
 					                <div class="summary-item d-flex align-items-center">
-					                	<i class="fa-solid fa-location-pin"></i>
+					                	<i class="fad fa-map-marker"></i>
 					                	<span><?php __('front_cart_from'); ?><br/><strong><?php echo $tpl['arr']['dropoff_type'] == 'server' ? pjSanitize::html($tpl['dropoff_arr']['place_name']) : pjSanitize::html($tpl['arr']['dropoff_address']);?></strong></span>
 					                </div>
 					                <div class="summary-item d-flex align-items-center">
-					                	<i class="fa-solid fa-location-pin"></i>
+					                	<i class="fad fa-map-marker"></i>
 					                	<span><?php __('front_cart_to'); ?><br/><strong><?php echo $tpl['arr']['pickup_type'] == 'server' ? pjSanitize::html($tpl['pickup_arr']['pickup_location']) : pjSanitize::html($tpl['arr']['pickup_address']);?></strong></span>
 					                </div>
 					                <div class="summary-item d-flex align-items-center">
-					                	<i class="fa-solid fa-taxi"></i>
+					                	<i class="fad fa-taxi"></i>
 					                	<span><?php __('front_vehicle'); ?><br/><strong><?php echo pjSanitize::html($tpl['fleet']['fleet']);?></strong></span>
 					                </div>
 					                <div class="summary-item d-flex align-items-center">
-					                	<i class="fa-solid fa-user"></i>
+					                	<i class="fad fa-user"></i>
 					                	<span><?php __('front_passengers'); ?><br/><strong><?php echo pjSanitize::html($tpl['arr']['passengers']);?></strong></span>
 					                </div>
 					                <?php if(!empty($tpl['extra_arr'])) { 
@@ -205,27 +205,27 @@ $cartIndex = str_replace('pjAction', '', $_GET['action']) . '_' . pjObject::esca
 							        <div class="summary">
 							        	<h5><?php __('front_cart_return'); ?></h5>
 							        	<div class="summary-item d-flex align-items-center">
-						                	<i class="fa-solid fa-calendar-days"></i>
+						                	<i class="fad fa-calendar-alt"></i>
 						                	<span><?php __('front_date'); ?><br/><strong><?php echo date($tpl['option_arr']['o_date_format'], strtotime($tpl['arr']['return_date'])); ?> (<?php echo @$days[date('w', strtotime($tpl['arr']['return_date']))];?> <?php echo date('d', strtotime($tpl['arr']['return_date']));?>, <?php echo @$months[date('n', strtotime($tpl['arr']['return_date']))];?>)</strong></span>
 						                </div>
 					                	<div class="summary-item d-flex align-items-center">
-						                	<i class="fa-solid fa-clock"></i>
+						                	<i class="fad fa-clock"></i>
 						                	<span><?php __('front_time'); ?><br/><strong><?php echo date($tpl['option_arr']['o_time_format'], strtotime($tpl['arr']['return_date']));?></strong></span>
 						                </div>
 						                <div class="summary-item d-flex align-items-center">
-						                	<i class="fa-solid fa-location-pin"></i>
+						                	<i class="fad fa-map-marker"></i>
 						                	<span><?php __('front_cart_from'); ?><br/><strong><?php echo $tpl['arr']['dropoff_type'] == 'server' ? pjSanitize::html($tpl['dropoff_arr']['place_name']) : pjSanitize::html($tpl['arr']['dropoff_address']);?></strong></span>
 						                </div>
 						                <div class="summary-item d-flex align-items-center">
-						                	<i class="fa-solid fa-location-pin"></i>
+						                	<i class="fad fa-map-marker"></i>
 						                	<span><?php __('front_cart_to'); ?><br/><strong><?php echo $tpl['arr']['pickup_type'] == 'server' ? pjSanitize::html($tpl['pickup_arr']['pickup_location']) : pjSanitize::html($tpl['arr']['pickup_address']);?></strong></span>
 						                </div>
 						                <div class="summary-item d-flex align-items-center">
-						                	<i class="fa-solid fa-taxi"></i>
+						                	<i class="fad fa-taxi"></i>
 						                	<span><?php __('front_vehicle'); ?><br/><strong><?php echo pjSanitize::html($tpl['fleet']['fleet']);?></strong></span>
 						                </div>
 						                <div class="summary-item d-flex align-items-center">
-						                	<i class="fa-solid fa-user"></i>
+						                	<i class="fad fa-user"></i>
 						                	<span><?php __('front_passengers'); ?><br/><strong><?php echo pjSanitize::html($tpl['return_arr']['passengers']);?></strong></span>
 						                </div>
 						                <?php if(!empty($tpl['extra_return_arr'])) { 
@@ -254,7 +254,7 @@ $cartIndex = str_replace('pjAction', '', $_GET['action']) . '_' . pjObject::esca
 					        	<div class="summary">
 					        		<h5><?php __('front_payment'); ?></h5>
 					        		<div class="summary-item d-flex align-items-center">
-					                	<i class="fa-solid fa-money-bill"></i>
+					                	<i class="fad fa-money-bill"></i>
 					                	<span>
 					                		<?php if ($tpl['arr']['payment_method'] == 'creditcard_later' && (float)$tpl['option_arr']['o_creditcard_later_fee'] > 0) { ?>
 					                			<span class="pjSbCartPaymentMethod"><?php echo @$payment_methods[$tpl['arr']['payment_method']]; ?><br/><?php echo sprintf(__('front_credit_card_fee', true), (float)$tpl['option_arr']['o_creditcard_later_fee'].'%', number_format($tpl['arr']['credit_card_fee'], 2, ',', ' ') . ' ' . $tpl['option_arr']['o_currency']);?></span>
@@ -273,7 +273,7 @@ $cartIndex = str_replace('pjAction', '', $_GET['action']) . '_' . pjObject::esca
 					                </div>
 					                <?php if ((float)$tpl['arr']['discount'] > 0) { ?>
 					                <div class="summary-item align-items-center d-flex">
-					                	<i class="fa-solid fa-certificate"></i>
+					                	<i class="fad fa-certificate"></i>
 					                	<span>
 						                	<span><?php __('front_discount');?></span>	
 						                	<br/><span class="pjSbCartDiscountPrint"><?php echo number_format($tpl['arr']['discount'], 2, ',', ' ') . ' ' . $tpl['option_arr']['o_currency'];?></span>
@@ -292,11 +292,11 @@ $cartIndex = str_replace('pjAction', '', $_GET['action']) . '_' . pjObject::esca
 						        </div>
 						        <div class="summary pjSbRouteDetails">
 						        	<div class="summary-item d-flex align-items-center">
-					                	<i class="fa-solid fa-route"></i>
+					                	<i class="fad fa-route"></i>
 					                	<span><strong><?php echo str_replace('{NUMBER}', $tpl['arr']['distance'], __('front_cart_estimated_distance', true, false));?></strong></span>
 					                </div>
 					                <div class="summary-item d-flex align-items-center">
-					                	<i class="fa-solid fa-clock-rotate-left"></i>
+					                	<i class="fad fa-history"></i>
 					                	<span><strong><?php echo str_replace('{NUMBER}', $tpl['arr']['duration'], __('front_cart_estimated_time', true, false));?></strong></span>
 					                </div>
 						        </div>
@@ -308,7 +308,7 @@ $cartIndex = str_replace('pjAction', '', $_GET['action']) . '_' . pjObject::esca
 		</div>
 	<?php } else { ?>
 		<div class="alert alert-warning d-flex align-items-center">
-			<i class="fa-solid fa-circle-info"></i><span class="alert-desc"><span class="alert-title"><?php __('front_error')?></span><?php __('front_search_fleets_error_desc');?></span>   		
+			<i class="fad fa-info-circle"></i><span class="alert-desc"><span class="alert-title"><?php __('front_error')?></span><?php __('front_search_fleets_error_desc');?></span>   		
 		</div>
 	<?php } ?>
 </div>

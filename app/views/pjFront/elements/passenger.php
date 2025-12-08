@@ -10,7 +10,7 @@
 				<form id="trPassengerForm_<?php echo $index;?>" action="" method="post" class="pjSbForm">
 					<input type="hidden" name="step_checkout" value="1"/>
 					<div class="alert alert-warning d-flex align-items-center">
-						<i class="fa-solid fa-circle-info"></i><span class="alert-desc"><?php __('front_passgener_details_desc');?></span>   		
+						<i class="fad fa-info-circle"></i><span class="alert-desc"><?php __('front_passgener_details_desc');?></span>   		
 					</div>
 					<div class="pjSbPassengerInfo pjSbBox">
 						<h3><?php __('front_passgener_details'); ?></h3>
@@ -32,7 +32,7 @@
 									<label class="control-label"><?php __('front_fname'); ?></label>
 									<div class="input-group">
 										<span class="input-group-addon">
-											<span class="fa-solid fa-user" aria-hidden="true"></span>
+											<span class="fad fa-user" aria-hidden="true"></span>
 										</span>				
 										<input type="text" name="fname" id="fname" placeholder="<?php __('front_fname_placeholder', false, true); ?>" class="form-control required" value="<?php echo isset($FORM['fname']) ? pjSanitize::clean($FORM['fname']) : NULL;?>" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 									</div>
@@ -44,7 +44,7 @@
 									<label class="control-label"><?php __('front_lname'); ?></label>
 									<div class="input-group">
 										<span class="input-group-addon">
-											<span class="fa-solid fa-user" aria-hidden="true"></span>
+											<span class="fad fa-user" aria-hidden="true"></span>
 										</span>				
 										<input type="text" name="lname" id="lname" placeholder="<?php __('front_lname_placeholder', false, true); ?>" class="form-control required" value="<?php echo isset($FORM['lname']) ? pjSanitize::clean($FORM['lname']) : NULL;?>" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 									</div>
@@ -59,7 +59,7 @@
 									<label class="control-label"><?php __('front_email'); ?></label>
 									<div class="input-group">
 										<span class="input-group-addon">
-											<span class="fa-solid fa-envelope" aria-hidden="true"></span>
+											<span class="fad fa-envelope" aria-hidden="true"></span>
 										</span>				
 										<input type="email" name="email" id="email" placeholder="<?php __('front_email', false, true); ?>" class="form-control required" value="<?php echo isset($FORM['email']) ? pjSanitize::clean($FORM['email']) : NULL;?>" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>" data-msg-email="<?php echo pjSanitize::clean(__('front_invalid_email', true, false));?>"/>
 									</div>
@@ -71,7 +71,7 @@
 									<label class="control-label"><?php __('front_confirm_email'); ?></label>
 									<div class="input-group">
 										<span class="input-group-addon">
-											<span class="fa-solid fa-envelope-circle-check" aria-hidden="true"></span>
+											<span class="fad fa-envelope-square" aria-hidden="true"></span>
 										</span>				
 										<input type="email" name="email2" id="email2" placeholder="<?php __('front_confirm_email', false, true); ?>" class="form-control required" value="<?php echo isset($FORM['email2']) ? pjSanitize::clean($FORM['email2']) : NULL;?>" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>" data-msg-email="<?php echo pjSanitize::clean(__('front_invalid_email', true, false));?>" data-msg-equalTo="<?php echo pjSanitize::clean(__('front_email_mismatch', true, false));?>"/>
 									</div>
@@ -86,7 +86,7 @@
 									<label class="control-label"><?php __('front_country'); ?></label>
 									<div class="input-group">
 										<span class="input-group-addon">
-											<span class="fa-solid fa-globe" aria-hidden="true"></span>
+											<span class="fad fa-globe" aria-hidden="true"></span>
 										</span>				
 										<select name="country_id" id="trCountryId_<?= $index ?>" class="form-control select2 required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>">
 				                            <option value="" data-code=""><?php __('front_choose', false, false); ?></option>
@@ -129,7 +129,7 @@
 										<label class="control-label"><?php __('front_discount_code'); ?></label>
 										<div class="input-group">
 											<span class="input-group-addon">
-												<span class="fa-solid fa-certificate" aria-hidden="true"></span>
+												<span class="fad fa-certificate" aria-hidden="true"></span>
 											</span>				
 											<input type="text" name="voucher_code" id="voucher_code" autocomplete="off" placeholder="<?php __('front_discount_code', false, true); ?>" class="form-control" value="<?php echo isset($FORM['voucher_code']) ? pjSanitize::clean($FORM['voucher_code']) : NULL;?>"/>
 										</div>
@@ -154,10 +154,10 @@
 		                	} 
 		                	$payment_methods = __('payment_methods', true);
 		                	$map_pm_icons = array(
-		                		'cash' => '<i class="fa-solid fa-money-bill-1"></i>',
-		                		'creditcard_later' => '<i class="fa-solid fa-credit-card"></i>',
-		                		'saferpay' => '<i class="fa-solid fa-credit-card"></i>',
-		                		'creditcard' => '<i class="fa-solid fa-display"></i>'
+		                		'cash' => '<i class="fad fa-money-bill-alt"></i>',
+		                		'creditcard_later' => '<i class="fad fa-credit-card"></i>',
+		                		'saferpay' => '<i class="fad fa-credit-card"></i>',
+		                		'creditcard' => '<i class="fad fa-tv"></i>'
 		                	);
 		                	?>
 						<?php } ?>
@@ -218,7 +218,7 @@
 										<label class="control-label"><?php __('front_cc_owner'); ?></label>
 										<div class="input-group">
 											<span class="input-group-addon">
-												<span class="fa-solid fa-user" aria-hidden="true"></span>
+												<span class="fad fa-user" aria-hidden="true"></span>
 											</span>				
 											<input type="text" name="cc_owner" class="form-control <?php echo isset($FORM['payment_method']) && ($FORM['payment_method'] == 'creditcard' || ($FORM['payment_method'] == 'saferpay' && $controller->defaultPaySafePaymentMethod == 'direct')) ? 'required' : ''; ?>" placeholder="<?php __('front_cc_owner', false, true); ?>" value="<?php echo isset($FORM['cc_owner']) ? pjSanitize::clean($FORM['cc_owner']) : null;?>" autocomplete="off" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 										</div>
@@ -232,7 +232,7 @@
 										<label class="control-label"><?php __('front_cc_num'); ?></label>
 										<div class="input-group">
 											<span class="input-group-addon">
-												<span class="fa-solid fa-credit-card" aria-hidden="true"></span>
+												<span class="fad fa-credit-card" aria-hidden="true"></span>
 											</span>				
 											<input type="text" name="cc_num" class="form-control <?php echo isset($FORM['payment_method']) && ($FORM['payment_method'] == 'creditcard' || ($FORM['payment_method'] == 'saferpay' && $controller->defaultPaySafePaymentMethod == 'direct')) ? 'required' : ''; ?>" placeholder="<?php __('front_cc_num_placeholder', false, true); ?>" value="<?php echo isset($FORM['cc_num']) ? pjSanitize::clean($FORM['cc_num']) : null;?>" autocomplete="off" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 										</div>
@@ -244,7 +244,7 @@
 										<label class="control-label"><?php __('front_cc_expire_date'); ?></label>
 										<div class="input-group">
 											<span class="input-group-addon">
-												<span class="fa-solid fa-calendar-days" aria-hidden="true"></span>
+												<span class="fad fa-calendar-alt" aria-hidden="true"></span>
 											</span>				
 											<input type="text" name="cc_exp" class="form-control <?php echo isset($FORM['payment_method']) && ($FORM['payment_method'] == 'creditcard' || ($FORM['payment_method'] == 'saferpay' && $controller->defaultPaySafePaymentMethod == 'direct')) ? 'required' : ''; ?>" placeholder="MM/YYYY" value="<?php echo isset($FORM['cc_exp']) ? pjSanitize::clean($FORM['cc_exp']) : null;?>" autocomplete="off" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 										</div>
@@ -256,7 +256,7 @@
 										<label class="control-label"><?php __('front_cc_code'); ?></label>
 										<div class="input-group">
 											<span class="input-group-addon">
-												<span class="fa-solid fa-id-card" aria-hidden="true"></span>
+												<span class="fad fa-id-card" aria-hidden="true"></span>
 											</span>				
 											<input type="text" name="cc_code" class="form-control <?php echo isset($FORM['payment_method']) && ($FORM['payment_method'] == 'creditcard' || ($FORM['payment_method'] == 'saferpay' && $controller->defaultPaySafePaymentMethod == 'direct')) ? 'required' : ''; ?>" placeholder="CVV" value="<?php echo isset($FORM['cc_code']) ? pjSanitize::clean($FORM['cc_code']) : null;?>" autocomplete="off" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 										</div>
@@ -281,7 +281,7 @@
 							  <input class="form-check-input required" type="checkbox" id="trAgree_<?php echo $index?>" name="agreement" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>">
 							  <label class="form-check-label" for="trAgree_<?php echo $index?>">
 							    <?php __('front_agree'); ?><?php if(!empty($tpl['terms_conditions'])): ?>
-		                        &nbsp;<a href="#" id="trBtnTerms_<?php echo $index?>"><i class="fa-solid fa-circle-info" aria-hidden="true"></i></a>
+		                        &nbsp;<a href="#" id="trBtnTerms_<?php echo $index?>"><i class="fad fa-info-circle" aria-hidden="true"></i></a>
 		                    <?php endif; ?>
 							  </label>
 							</div>
@@ -294,7 +294,7 @@
 					</div>	
 					
 					<div class="row form-group d-flex align-items-center">
-						<div class="col-sm-6 col-12"><a href="javascript:void(0);" class="pjSbBtnGoBack pjSbLoadDeparture"><i class="fa-solid fa-circle-arrow-left"></i> <?php __('front_button_go_back');?></a></div>
+						<div class="col-sm-6 col-12"><a href="javascript:void(0);" class="pjSbBtnGoBack pjSbLoadDeparture"><i class="fad fa-arrow-circle-left"></i> <?php __('front_button_go_back');?></a></div>
 						<div class="col-sm-6 col-12 text-end"><button type="submit" class="btn btn-primary btnBook" data-html_book="<?php __('front_btn_book_now'); ?>" data-html_book_pay="<?php __('front_btn_book_and_pay'); ?>"><?php echo $selected_pm == 'saferpay' ? __('front_btn_book_now', true) : __('front_btn_book_and_pay', true); ?></button></div>
 					</div>
 					
@@ -304,7 +304,7 @@
 				</form>
 				
 				<div class="pjCrBookingSesstionExpired alert alert-warning" role="alert" style="margin-top: 40px;display: none;">
-                  <span class="alert-title" style="font-size: 16px; font-weight: 600;"><i class="fa fa-info-circle me-2"></i> <?php __('front_booking_sesstion_expired_title');?></span><br/><?php __('front_booking_sesstion_expired_desc');?>
+                  <span class="alert-title" style="font-size: 16px; font-weight: 600;"><i class="fad fa-info-circle me-2"></i> <?php __('front_booking_sesstion_expired_title');?></span><br/><?php __('front_booking_sesstion_expired_desc');?>
                   <p align="center"><button type="button" class="btn btn-primary pjCrRestartBooking"><?php __('front_btn_restart_booking'); ?></button></p>
                 </div>
 			</div>
@@ -314,7 +314,7 @@
 		</div>
 	<?php } else { ?>
 		<div class="alert alert-warning d-flex align-items-center">
-			<i class="fa-solid fa-circle-info"></i><span class="alert-desc"><span class="alert-title"><?php __('front_error')?></span><?php __('front_search_fleets_error_desc');?></span>   		
+			<i class="fad fa-info-circle"></i><span class="alert-desc"><span class="alert-title"><?php __('front_error')?></span><?php __('front_search_fleets_error_desc');?></span>   		
 		</div>
 	<?php } ?>
 </div>

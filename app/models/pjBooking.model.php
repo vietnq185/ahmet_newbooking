@@ -101,6 +101,8 @@ class pjBookingModel extends pjAppModel
 	    array('name' => 'saferpay_token', 'type' => 'varchar', 'default' => ':NULL'),
 	    array('name' => 'locale_id', 'type' => 'int', 'default' => '1'),
 	    array('name' => 'notes_for_support', 'type' => 'text', 'default' => ':NULL'),
+	    array('name' => 'region', 'type' => 'varchar', 'default' => ':NULL'),
+	    array('name' => 'dropoff_region', 'type' => 'varchar', 'default' => ':NULL'),
 	    array('name' => 'paid_via_payment_link', 'type' => 'tinyint', 'default' => '')
 	);
 	

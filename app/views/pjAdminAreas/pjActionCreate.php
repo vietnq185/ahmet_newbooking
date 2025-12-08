@@ -9,6 +9,7 @@ if (isset($tpl['status']))
 			break;
 	}
 } else {
+    include_once PJ_VIEWS_PATH . 'pjLayouts/elements/optmenu.php';
 	pjUtil::printNotice(__('infoAddAreaTitle', true, false), __('infoAddAreaBody', true, false)); 
 	$yesno = __('_yesno', true);
 	$_price_levels = __('_price_levels', true);

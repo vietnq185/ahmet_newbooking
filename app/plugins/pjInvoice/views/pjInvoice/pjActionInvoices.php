@@ -45,8 +45,8 @@ if (isset($tpl['status']))
 			?></select></span><?php
 		}
 		?>
-		
-		<a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjInvoice&amp;action=pjActionIndex" class="pj-button float_right"><?php __('plugin_invoice_config'); ?></a>
+				<?php if ($controller->isAdmin()) { ?>
+		<a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjInvoice&amp;action=pjActionIndex" class="pj-button float_right"><?php __('plugin_invoice_config'); ?></a>		<?php } ?>
 		<br class="clear_both" />
 	</div>
 	
@@ -57,7 +57,7 @@ if (isset($tpl['status']))
 	<script type="text/javascript">
 	var pjGrid = pjGrid || {};
 	pjGrid.jqDateFormat = "<?php echo pjUtil::jqDateFormat($tpl['option_arr']['o_date_format']); ?>";
-	pjGrid.jsDateFormat = "<?php echo pjUtil::jsDateFormat($tpl['option_arr']['o_date_format']); ?>";
+	pjGrid.jsDateFormat = "<?php echo pjUtil::jsDateFormat($tpl['option_arr']['o_date_format']); ?>";	pjGrid.isAdmin = "<?php echo $controller->isAdmin();?>";
 	var myLabel = myLabel || {};
 	myLabel.num = "<?php __('plugin_invoice_i_num'); ?>";
 	myLabel.order_id = "<?php __('plugin_invoice_i_order_id'); ?>";

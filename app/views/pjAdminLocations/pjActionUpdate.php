@@ -15,6 +15,7 @@ if (isset($tpl['status']))
 		$bodies = __('error_bodies', true);
 		pjUtil::printNotice(@$titles[$_GET['err']], @$bodies[$_GET['err']]);
 	}
+	include_once PJ_VIEWS_PATH . 'pjLayouts/elements/optmenu.php';
     $yesno = __('_yesno', true);
     $_price_levels = __('_price_levels', true);
 	?>
@@ -66,6 +67,9 @@ if (isset($tpl['status']))
 										<?php
 									}
 								?>
+							</td>
+							<td>
+								<p><input type="text" name="location_region" placeholder="<?php __('lblTransferRegion');?>" class="pj-form-field w300" value="<?php echo pjSanitize::html($tpl['arr']['region']); ?>" /></p>
 							</td>
 						</tr>
 					</table>
@@ -145,6 +149,7 @@ if (isset($tpl['status']))
 						<td>
 							<label class="tr-column-name"><?php __('lblLocationAreas'); ?></label>
 						</td>
+						<td><?php __('lblTransferRegion'); ?></td>
 						<td>&nbsp;</td>
 					</tr>
 					<?php
@@ -187,6 +192,13 @@ if (isset($tpl['status']))
 					                    ?>
 					                </select>								
 								</td>	
+								<td>
+									<p>
+										<span class="inline_block">
+											<input type="text" id="region_<?php echo $dropoff['id']; ?>" name="region[<?php echo $dropoff['id']; ?>]" class="pj-form-field w100" value="<?php echo $dropoff['region']; ?>"/>
+										</span>
+									</p>
+								</td>
 								<td>
 									<?php if($k > 0) { ?>
 									<p>
@@ -239,7 +251,7 @@ if (isset($tpl['status']))
 							<td>
 								<p>
 									<span class="inline_block">
-										<input type="text" class="pj-form-field w60 field-int" disabled name="order_index[<?php echo $index; ?>]" id="order_index_<?php echo $index; ?>" value="">
+										<input type="text" id="region_<?php echo $index; ?>" name="region[<?php echo $index; ?>]" class="pj-form-field w100" />
 									</span>
 								</p>
 							</td>
@@ -255,7 +267,7 @@ if (isset($tpl['status']))
 				<?php
 				if(!empty($tpl['location_arr']))
 				{ 
-					?><a href="#" id="tr_copy_location"><?php __('lblCopyLocation');?></a><?php
+					/*?><a href="#" id="tr_copy_location"><?php __('lblCopyLocation');?></a><?php*/
 				} 
 				?>
 			</p>
@@ -303,6 +315,13 @@ if (isset($tpl['status']))
                     ?>
                 </select>
 				
+			</td>
+			<td>
+				<p>
+					<span class="inline_block">
+						<input type="text" id="region_{INDEX}" name="region[{INDEX}]" class="pj-form-field w100" />
+					</span>
+				</p>
 			</td>
 			<td>
 				<p>

@@ -13,6 +13,7 @@ class pjEmailThemeModel extends pjAppModel
 	protected $schema = array(
 		array('name' => 'id', 'type' => 'int', 'default' => ':NULL'),
 	    array('name' => 'domain', 'type' => 'varchar', 'default' => ':NULL'),
+	    array('name' => 'type', 'type' => 'enum', 'default' => 'custom'),
 		array('name' => 'status', 'type' => 'enum', 'default' => 'T'),
 		array('name' => 'created', 'type' => 'datetime', 'default' => ':NOW()')
 	);

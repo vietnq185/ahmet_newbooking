@@ -15,6 +15,35 @@ if(strpos($tpl['option_arr']['o_time_format'], 'A') > -1)
 }
 ?>
 <div id="pjWrapperShuttleBooking">
+    <div id="loading-overlay">
+        <!-- Backdrop làm mờ -->
+        <div class="loading-backdrop"></div> 
+        
+        <!-- Container chứa nhiều spinners, căn giữa -->
+        <div class="spinner-container">
+            <!-- Growing Spinners với các màu khác nhau -->
+            
+            <div class="spinner-grow text-light-grey" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            
+            <div class="spinner-grow text-light-grey" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            
+            <div class="spinner-grow text-light-grey" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            
+            <div class="spinner-grow text-light-grey" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            
+            <div class="spinner-grow text-light-grey" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
 	<div id="pjSbContainer_<?php echo $index; ?>" class="container-fluid pjSbContainer"></div>
 </div>
 <script type="text/javascript">
@@ -120,6 +149,7 @@ var pjQ = pjQ || {},
 			no_fleet: "<?php echo pjSanitize::clean(__('front_no_fleet_found', true, false));?>",
 			generic_error: "Error",
 			invalid_date: "<?php echo pjSanitize::clean(__('front_invalid_date', true, false));?>",
+			invalid_time: "<?php echo pjSanitize::clean(__('front_invalid_time', true, false));?>",
 		},
 		message_0: "<?php echo pjSanitize::clean($front_messages[0]); ?>",
 		message_1: "<?php echo pjSanitize::clean($front_messages[1]); ?>",
@@ -168,13 +198,11 @@ var pjQ = pjQ || {},
 							loadScript("<?php echo PJ_INSTALL_URL . $dm->getPath('pj_bootstrap_datetimepicker'); ?>pjQuery.bootstrap-datetimepicker.min.js", function () {
 	                            loadScript("<?php echo PJ_INSTALL_URL . $dm->getPath('pj_select2'); ?>pjQuery.select2.full.js", function () {
 	                                loadScript("<?php echo PJ_INSTALL_URL . $dm->getPath('uniform'); ?>jquery.uniform.min.js", function () {
-	                                    loadScript("https://kit.fontawesome.com/b28ae88bfd.js", function () {
-	                                    	loadScript("<?php echo PJ_INSTALL_URL . PJ_LIBS_PATH; ?>pjQ/tooltipster/js/tooltipster.bundle.min.js", function () {
-		                                    	loadScript("<?php echo PJ_INSTALL_URL . PJ_JS_PATH; ?>pjTransferRes.js", function () {
-		                                        	TransferRes_<?php echo $index; ?> = new TransferRes(options);
-	                                    		});
-	                                    	});
-	                                    });
+                                    	loadScript("<?php echo PJ_INSTALL_URL . PJ_LIBS_PATH; ?>pjQ/tooltipster/js/tooltipster.bundle.min.js", function () {
+	                                    	loadScript("<?php echo PJ_INSTALL_URL . PJ_JS_PATH; ?>pjTransferRes.js", function () {
+	                                        	TransferRes_<?php echo $index; ?> = new TransferRes(options);
+                                    		});
+                                    	});
 	                                });
 	                            });
 	                        });

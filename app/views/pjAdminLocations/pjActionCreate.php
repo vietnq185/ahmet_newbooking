@@ -9,9 +9,7 @@ if (isset($tpl['status']))
 			break;
 	}
 } else {
-	?>
-	
-	<?php
+    include_once PJ_VIEWS_PATH . 'pjLayouts/elements/optmenu.php';
 	pjUtil::printNotice(__('infoAddLocationTitle', true, false), __('infoAddLocationDesc', true, false));
 	
 	$index = 'tr_' . rand(1, 999999);
@@ -60,6 +58,9 @@ if (isset($tpl['status']))
 									}
 								?>
 							</td>
+							<td>
+								<p><input type="text" name="location_region" placeholder="<?php __('lblTransferRegion');?>" class="pj-form-field w300" /></p>
+							</td>
 						</tr>
 					</table>
 				</div>
@@ -107,7 +108,7 @@ if (isset($tpl['status']))
 			<div>
     			<label class="title"><?php __('lblColor'); ?></label>
     			<span class="pj-form-field-custom pj-form-field-custom-after">
-					<input type="text" name="color" class="pj-form-field colorSelector w60" value="<?php echo pjSanitize::html($tpl['arr'][$i]['color']); ?>" />
+					<input type="text" name="color" class="pj-form-field colorSelector w60" value="<?php echo pjSanitize::html(@$tpl['arr'][$i]['color']); ?>" />
 					<span class="pj-form-field-after"></span>
 				</span>
     		</div>
@@ -140,6 +141,7 @@ if (isset($tpl['status']))
 								<label class="tr-column-name"><?php __('lblLocationAreas'); ?></label>
 								
 							</td>
+							<td><?php __('lblTransferRegion'); ?></td>
 							<td>&nbsp;</td>
 						</tr>
 						<tr class="tr-location-row" data-index="<?php echo $index;?>">
@@ -175,7 +177,14 @@ if (isset($tpl['status']))
 				                    }
 				                    ?>
 				                </select>								
-							</td>							
+							</td>		
+							<td>
+								<p>
+									<span class="inline_block">
+										<input type="text" id="region_<?php echo $index; ?>" name="region[<?php echo $index; ?>]" class="pj-form-field w100" />
+									</span>
+								</p>
+							</td>					
 							<td>
 								<p>
 									<span class="inline_block">
@@ -243,6 +252,13 @@ if (isset($tpl['status']))
                     ?>
                 </select>
 				
+			</td>
+			<td>
+				<p>
+					<span class="inline_block">
+						<input type="text" id="region_{INDEX}" name="region[{INDEX}]" class="pj-form-field w100" />
+					</span>
+				</p>
 			</td>
 			<td>
 				<p>

@@ -129,7 +129,7 @@ $payment_methods_desc = __('payment_methods_desc', true);
                     <label for="agreement"><?php __('front_agree'); ?></label>
                     <input id="trAgree_<?php echo $index?>" name="agreement" type="checkbox" class="required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
                     <?php if(!empty($tpl['terms_conditions'])): ?>
-                        &nbsp;<a href="#" id="trBtnTerms_<?php echo $index?>"><i class="fa fa-info-circle" aria-hidden="true"></i></a>
+                        &nbsp;<a href="#" id="trBtnTerms_<?php echo $index?>"><i class="fad fa-info-circle" aria-hidden="true"></i></a>
                     <?php endif; ?>
                 </div>
 

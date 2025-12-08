@@ -70,8 +70,8 @@ $is_return = isset($tpl['search_post']['is_return']) ? (int)$tpl['search_post'][
 			<div class="col-sm-6 col-xs-12 pjSbPickupLocation <?php echo isset($tpl['search_post']['location_id']) && !empty($tpl['search_post']['location_id']) ? 'hasSelected' : '';?>">
 				<div class="form-group">
 					<div class="input-group">
-						<span class="input-group-addon">
-							<span class="fa-solid fa-location-pin" aria-hidden="true"></span>
+						<span class="input-group-addon text-blue">
+							<span class="fad fa-map-marker" aria-hidden="true"></span>
 						</span>
 						<select name="location_id" id="trLocationId_<?php echo $index;?>" class="form-control select2 required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>">
 							<option value=""><?php __('front_from', false, false); ?></option>
@@ -85,18 +85,18 @@ $is_return = isset($tpl['search_post']['is_return']) ? (int)$tpl['search_post'][
 					</div>
 				</div>
 				<div class="d-none d-sm-block">
-					<a href="javascript:void(0);" class="pjSbSwitchLocation pjSbSwitchLocationRightLeft"><i class="fa-solid fa-arrow-right-arrow-left"></i></a>
+					<a href="javascript:void(0);" class="pjSbSwitchLocation pjSbSwitchLocationRightLeft"><span class="input-group-addon text-blue"><i class="fad fa-exchange"></i></span></a>
 				</div>
 				<div class="d-block d-sm-none">
-					<a href="javascript:void(0);" class="pjSbSwitchLocation pjSbSwitchLocationUpDown"><i class="fa-solid fa-arrows-up-down"></i></a>
+					<a href="javascript:void(0);" class="pjSbSwitchLocation pjSbSwitchLocationUpDown"><span class="input-group-addon text-blue"><i class="fad fa-sort-alt"></i></span></a>
 				</div>
 			</div>
 			<div class="col-sm-6 col-xs-12 pjSbDropoffLocation <?php echo isset($tpl['search_post']['dropoff_id']) && !empty($tpl['search_post']['dropoff_id']) ? 'hasSelected' : '';?>">
 				<div id="dropoffBox_<?php echo $index;?>">
 					<div class="form-group">
 						<div class="input-group">
-							<span class="input-group-addon">
-								<span class="fa-solid fa-location-pin" aria-hidden="true"></span>
+							<span class="input-group-addon text-blue">
+								<span class="fad fa-map-marker" aria-hidden="true"></span>
 							</span>
 							<select name="dropoff_id" id="trDropoffId_<?php echo $index;?>" class="form-control select2 required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>">
 								<option value=""><?php __('front_to', false, false); ?></option>
@@ -120,8 +120,8 @@ $is_return = isset($tpl['search_post']['is_return']) ? (int)$tpl['search_post'][
 			<div class="col-md-3 col-sm-6 col-xs-12">
 				<div class="form-group">
 					<div class="input-group pjSbTransferDateContainer">
-						<span class="input-group-addon">
-							<span class="fa-solid fa-calendar-days" aria-hidden="true"></span>
+						<span class="input-group-addon text-blue">
+							<span class="fad fa-calendar-alt" aria-hidden="true"></span>
 						</span>				
 						<input type="text" placeholder="<?php __('front_transfer_date', false, true); ?>" id="trDate_<?php echo $index?>" name="date" readonly value="<?php echo isset($tpl['search_post']) && isset($tpl['search_post']['date']) ? htmlspecialchars($tpl['search_post']['date']) : null; ?>" class="form-control hasDatepicker" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 					</div>
@@ -131,7 +131,7 @@ $is_return = isset($tpl['search_post']['is_return']) ? (int)$tpl['search_post'][
 				<div class="form-group pjSbAddReturnTransfer" style="display: <?php echo $is_return == 1 ? 'none' : '';?>">
 					<div class="input-group">
 						<span class="input-group-addon text-blue">
-							<span class="fa-solid fa-circle-plus" aria-hidden="true"></span>
+							<span class="fad fa-plus-circle" aria-hidden="true"></span>
 						</span>				
 						<input type="text" placeholder="<?php __('front_add_return_transfer', false, true); ?>" id="trAddReturnTransfer_<?php echo $index?>" name="add_return_transfer" readonly class="form-control pjSbAddReturnTransfer" />
 					</div>
@@ -139,8 +139,8 @@ $is_return = isset($tpl['search_post']['is_return']) ? (int)$tpl['search_post'][
 				
 				<div class="form-group pjSbReturnTransferDateWrap" style="display: <?php echo $is_return == 1 ? '' : 'none';?>;">
 					<div class="input-group pjSbReturnTransferDateContainer">
-						<span class="input-group-addon">
-							<span class="fa-solid fa-calendar-days" aria-hidden="true"></span>
+						<span class="input-group-addon text-blue">
+							<span class="fad fa-calendar-alt" aria-hidden="true"></span>
 						</span>				
 						<input type="text" placeholder="<?php __('front_return_transfer_date', false, true); ?>" id="trReturnDate_<?php echo $index?>" name="return_date" readonly value="<?php echo isset($tpl['search_post']) && isset($tpl['search_post']['return_date']) ? htmlspecialchars($tpl['search_post']['return_date']) : null; ?>" class="form-control" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 					</div>
@@ -152,18 +152,18 @@ $is_return = isset($tpl['search_post']['is_return']) ? (int)$tpl['search_post'][
 						<div class="pjSbSpinLeft">
 							<a href="javascript:void(0);" class="pjSbSpin" data-type="minus" data-min="<?php echo (int)$tpl['min_passenger'];?>">
 								<span class="input-group-addon text-blue">
-									<span class="fa-solid fa-circle-minus" aria-hidden="true"></span>
+									<span class="fad fa-minus-circle" aria-hidden="true"></span>
 								</span>		
 							</a>
 						</div>
 						<span class="input-group-addon">
-							<span class="fa-solid fa-user" aria-hidden="true"></span>
+							<span class="fad fa-user" aria-hidden="true"></span>
 						</span>				
 						<input type="text" name="passengers_from_to" id="trNumPassengers_<?php echo $index?>" readonly="readonly" value="<?php echo isset($tpl['search_post']['passengers_from_to']) && (int)$tpl['search_post']['passengers_from_to'] > 0 ? (int)$tpl['search_post']['passengers_from_to'] : 1; ?>" class="form-control text-center required" data-msg-required="<?php echo pjSanitize::clean(__('front_required_field', true, false));?>"/>
 						<div class="pjSbSpinRight">
 							<a href="javascript:void(0);" class="pjSbSpin" data-type="plus" data-max="<?php echo (int)$tpl['max_passenger'];?>">
 								<span class="input-group-addon text-blue">
-									<span class="fa-solid fa-circle-plus" aria-hidden="true"></span>
+									<span class="fad fa-plus-circle" aria-hidden="true"></span>
 								</span>		
 							</a>
 						</div>

@@ -10,7 +10,7 @@ class pjAdminVouchers extends pjAdmin
 	{
 		$this->checkLogin();
 		
-		if ($this->isAdmin())
+		if ($this->isAdmin() || $this->isEditor())
 		{
 			if (isset($_POST['voucher_create']))
 			{
@@ -165,7 +165,7 @@ class pjAdminVouchers extends pjAdmin
 	{
 		$this->checkLogin();
 		
-		if ($this->isAdmin())
+		if ($this->isAdmin() || $this->isEditor())
 		{
 			$this->appendJs('jquery.datagrid.js', PJ_FRAMEWORK_LIBS_PATH . 'pj/js/');
 			$this->appendJs('pjAdminVouchers.js');
@@ -204,7 +204,7 @@ class pjAdminVouchers extends pjAdmin
 	{
 		$this->checkLogin();
 		
-		if ($this->isAdmin())
+		if ($this->isAdmin() || $this->isEditor())
 		{
 			if (isset($_POST['voucher_update']))
 			{
