@@ -242,6 +242,7 @@ class pjAdminBookings extends pjAdmin
 			}
 
 			$paymentMethodsShort = __('payment_methods_short', true);
+			$_yesno = __('_yesno', true);
 			foreach($data as $k => $v)
 			{
 				$client_arr = array();
@@ -294,7 +295,7 @@ class pjAdminBookings extends pjAdmin
 				    $booking_color = '';
 				}
 				$v['booking_color'] = $booking_color;
-				
+				$v['is_synchronized'] = @$_yesno[$v['is_synchronized']];
 				$data[$k] = $v;
 			}
 						
@@ -746,6 +747,13 @@ class pjAdminBookings extends pjAdmin
                         $data['extra_price'] = (float)$_POST['extra_price_return_transfe'];
                         $data['region'] = $dropoff_region;
                         $data['dropoff_region'] = $region;
+                        
+                        $data['pickup_lat'] = $_POST['dropoff_lat'];
+                        $data['pickup_lng'] = $_POST['dropoff_lng'];
+                        
+                        $data['dropoff_lat'] = $_POST['pickup_lat'];
+                        $data['dropoff_lng'] = $_POST['pickup_lng'];
+                        
                         $return_id = $pjBookingModel->reset()->setAttributes($data)->insert()->getInsertId();
                     }
 
@@ -1166,6 +1174,13 @@ class pjAdminBookings extends pjAdmin
                     $data['extra_price'] = (float)$_POST['extra_price_return_transfe'];
                     $data['region'] = $dropoff_region;
                     $data['dropoff_region'] = $region;
+                    
+                    $data['pickup_lat'] = $_POST['dropoff_lat'];
+                    $data['pickup_lng'] = $_POST['dropoff_lng'];
+                    
+                    $data['dropoff_lat'] = $_POST['pickup_lat'];
+                    $data['dropoff_lng'] = $_POST['pickup_lng'];
+                    
 					if($returns)
 					{
                         $return_id = $returns['id'];
@@ -3298,6 +3313,165 @@ class pjAdminBookings extends pjAdmin
 	        }
 	    }
 	    exit;
+	}
+	
+	public function pjActionUpdateLatLng()
+	{
+	    $this->checkLogin();
+	    
+	    if ($this->isAdmin())
+	    {
+	        $pjBookingModel = pjBookingModel::factory();
+	        
+	        $today = date('Y-m-d');
+	        $total = $pjBookingModel
+	        ->where('t1.is_run_update', 0)
+	        ->where('DATE(t1.booking_date)>="'.$today.'"')
+	        ->where('t1.status', 'confirmed')
+	        ->findCount()->getData();
+	        $rowCount = 15;
+	        $pages = ceil($total / $rowCount);
+	        $this->set('pages', $pages);
+	        $this->set('total', $total);
+	        
+	        $this->appendJs('pjAdminBookings.js');
+	    } else {
+	        $this->set('status', 2);
+	    }
+	}
+	
+	public function pjActionProcessUpdateLatLng() {
+	    $this->setAjax(true);
+	    $get = $_GET;
+	    $pjBookingModel = pjBookingModel::factory();
+	    $rowCount = 15;
+	    $page = isset($get['page']) && (int) $get['page'] > 0 ? intval($get['page']) : 1;
+	    $offset = ((int) $page - 1) * $rowCount;
+	    $today = date('Y-m-d');
+	    $data = $pjBookingModel
+	    ->where('t1.is_run_update', 0)
+        ->where('DATE(t1.booking_date)>="'.$today.'"')
+        ->where('t1.status', 'confirmed')
+        ->limit($rowCount, $offset)->findAll()->getData();
+        foreach ($data as $val) {
+            $data_update = array();
+            if ((int)$val['return_id'] > 0) {
+                $data_update['pickup_lat'] = $val['dropoff_lat'];
+                $data_update['pickup_lng'] = $val['dropoff_lng'];
+                
+                $data_update['dropoff_lat'] = $val['pickup_lat'];
+                $data_update['dropoff_lng'] = $val['pickup_lng'];
+                
+                $data_update['region'] = $val['dropoff_region'];
+                $data_update['dropoff_region'] = $val['region'];
+            } else {
+                $data_update['region'] = $val['region'];
+                $data_update['dropoff_region'] = $val['dropoff_region'];
+            }
+            
+            $data_update['is_run_update'] = 1;
+            $pjBookingModel->reset()->set('id', $val['id'])->modify($data_update);
+            
+            $resp = pjApiSync::syncBooking($val['id'], 'update_latlng', $this->option_arr);
+        }
+        
+        pjAppController::jsonResponse(array('next_page' => (int)$get['page'] + 1));
+	}
+	
+	public function getActualTravelTime($params) {
+	    $lat1 = $params['pickup_lat'];
+	    $lon1 = $params['pickup_lng'];
+	    $origin = "{$lat1},{$lon1}";
+	    
+	    $lat2 = $params['dropoff_lat'];
+	    $lon2 = $params['dropoff_lng'];
+	    $destination = "{$lat2},{$lon2}";
+	    
+	    $url = "https://maps.googleapis.com/maps/api/distancematrix/json?" .
+	   	    "origins=" . urlencode($origin) .
+	   	    "&destinations=" . urlencode($destination) .
+	   	    "&key=" . $this->option_arr['o_google_api_key'] .
+	   	    "&mode=driving" .
+	   	    "&departure_time=now";
+	    
+	    $ch = curl_init();
+	    curl_setopt($ch, CURLOPT_URL, $url);
+	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+	    $response = curl_exec($ch);
+	    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	    curl_close($ch);
+	    
+	    if ($http_code !== 200 || $response === false) {
+	        return [
+	            'duration' => 0,
+	            'distance' => 0
+	        ];
+	    }
+	    
+	    $data = json_decode($response, true);
+	    $element = $data['rows'][0]['elements'][0];
+	    
+	    if ($element['status'] !== 'OK') {
+	        return [
+	            'duration' => 0,
+	            'distance' => 0
+	        ];
+	    }
+	    
+	    $actualDuration = round((int)$element['duration']['value']/60);
+	    $actualDistance = round((int)$element['distance']['value']/100);
+	    
+	    return [
+	        'duration' => $actualDuration,
+	        'distance' => $actualDistance
+	    ];
+	    
+	}
+	
+	public function pjActionUpdateFlagSynchronized()
+	{
+	    $this->checkLogin();
+	    
+	    if ($this->isAdmin())
+	    {
+	        $pjBookingModel = pjBookingModel::factory();
+	        
+	        //$pjBookingModel->where('DATE(booking_date)>="'.$today.'"')->modifyAll(array('is_run_update' => 0));
+	        
+	        $total = $pjBookingModel->reset()
+	        ->where('t1.is_synchronized', 0)
+	        ->findCount()->getData();
+	        $rowCount = 15;
+	        $pages = ceil($total / $rowCount);
+	        $this->set('pages', $pages);
+	        $this->set('total', $total);
+	        
+	        $this->appendJs('pjAdminBookings.js');
+	    } else {
+	        $this->set('status', 2);
+	    }
+	}
+	
+	public function pjActionProcessUpdateFlagSynchronized() {
+	    $this->setAjax(true);
+	    $get = $_GET;
+	    $pjBookingModel = pjBookingModel::factory();
+	    $rowCount = 15;
+	    $page = isset($get['page']) && (int) $get['page'] > 0 ? intval($get['page']) : 1;
+	    $offset = ((int) $page - 1) * $rowCount;
+	    $today = date('Y-m-d');
+	    $data = $pjBookingModel
+	    ->where('t1.is_synchronized', 0)
+	    ->limit($rowCount, $offset)->findAll()->getData();
+	    foreach ($data as $val) {
+	        $resp = pjApiSync::syncBooking($val['id'], 'update_flag_synchronized', $this->option_arr);
+	        if (isset($resp['status']) && $resp['status'] == 'OK') {
+	            $pjBookingModel->reset()->set('id', $val['id'])->modify(array('is_synchronized' => 1));
+	        }
+	    }
+	    
+	    pjAppController::jsonResponse(array('next_page' => (int)$get['page'] + 1));
 	}
 }
 ?>

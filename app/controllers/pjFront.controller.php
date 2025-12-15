@@ -2892,6 +2892,13 @@ class pjFront extends pjAppController
 					$data['dropoff_is_airport'] = $search_post['pickup_is_airport'];
 					$data['region'] = $dropoff_region;
 					$data['dropoff_region'] = $region;
+					
+					$data['pickup_lat'] = $search_post['dropoff_lat'];
+					$data['pickup_lng'] = $search_post['dropoff_lng'];
+					
+					$data['dropoff_lat'] = $search_post['pickup_lat'];
+					$data['dropoff_lng'] = $search_post['pickup_lng'];
+					
 					$return_id = $pjBookingModel->reset()->setAttributes($data)->insert()->getInsertId();
 				}
 
@@ -3707,9 +3714,9 @@ class pjFront extends pjAppController
     	                        } else {
     	                            pjAppController::pjActionConfirmSend($this->option_arr, $arr, PJ_SALT, 'confirm', $arr['locale_id']);
     	                        }
+	                        } else { 
+	                           pjAppController::pjActionConfirmSend($this->option_arr, $arr, PJ_SALT, 'payment', $arr['locale_id']);
 	                        }
-	                        
-	                        pjAppController::pjActionConfirmSend($this->option_arr, $arr, PJ_SALT, 'payment', $arr['locale_id']);
 	                        if ($arr['status'] == 'confirmed') {
 	                            $resp = pjApiSync::syncBooking($arr['id'], 'create', $this->option_arr);
     	                        if (isset($return_id) && (int)$return_id > 0) {

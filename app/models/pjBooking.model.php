@@ -103,7 +103,9 @@ class pjBookingModel extends pjAppModel
 	    array('name' => 'notes_for_support', 'type' => 'text', 'default' => ':NULL'),
 	    array('name' => 'region', 'type' => 'varchar', 'default' => ':NULL'),
 	    array('name' => 'dropoff_region', 'type' => 'varchar', 'default' => ':NULL'),
-	    array('name' => 'paid_via_payment_link', 'type' => 'tinyint', 'default' => '')
+	    array('name' => 'paid_via_payment_link', 'type' => 'tinyint', 'default' => ''),
+	    array('name' => 'is_run_update', 'type' => 'tinyint', 'default' => '0'),
+	    array('name' => 'is_synchronized', 'type' => 'tinyint', 'default' => '0')
 	);
 	
 	

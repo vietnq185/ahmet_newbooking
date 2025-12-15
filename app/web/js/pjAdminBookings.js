@@ -198,10 +198,11 @@ var jQuery_1_8_2 = jQuery_1_8_2 || $.noConflict();
 				                                                                                     {label: myLabel.in_progress, value: "in_progress"}, 
 				                                                                                     {label: myLabel.confirmed, value: "confirmed"},
 				                                                                                     {label: myLabel.cancelled, value: "cancelled"}
-				                                                                                     ], applyClass: "pj-status"}],
+				                                                                                     ], applyClass: "pj-status"},
+                         {text: myLabel.is_synchronized, type: "text", sortable: true, width:100, align: "center"}],
 				dataUrl: "index.php?controller=pjAdminBookings&action=pjActionGetBooking" + pjGrid.queryString,
 				dataType: "json",
-				fields: ['client', 'booking_date', 'pickup_dropoff', 'fleet', 'passengers', 'extras', 'payment_method', 'status'],
+				fields: ['client', 'booking_date', 'pickup_dropoff', 'fleet', 'passengers', 'extras', 'payment_method', 'status', 'is_synchronized'],
 				paginator: {
 					actions: [
 					   {text: myLabel.delete_selected, url: "index.php?controller=pjAdminBookings&action=pjActionDeleteBookingBulk", render: true, confirmation: myLabel.delete_confirmation},
@@ -1317,5 +1318,40 @@ var jQuery_1_8_2 = jQuery_1_8_2 || $.noConflict();
 	            }).trigger('change');
             }
         });
+        
+        $(document).on("click", ".btnStartUpdateLatLng", function (e) {
+			if (e && e.preventDefault) {
+				e.preventDefault();
+			}
+			startUpdateLatLng();
+		}).on("click", ".btnStartUpdateFlagSynchronized", function (e) {
+			if (e && e.preventDefault) {
+				e.preventDefault();
+			}
+			startUpdateFlagSynchronized();
+		});
+        
+        function startUpdateLatLng($page=1) {
+			$('.pjUpdateLatLngWrapper').html('Please wait while updating....Do not refresh page.');
+			$.get("index.php?controller=pjAdminBookings&action=pjActionProcessUpdateLatLng&page=" + $page, function(data) {
+				if (data.next_page <= myLabel.totalPages) {
+					startUpdateLatLng(data.next_page);
+				} else {
+					$('.pjUpdateLatLngWrapper').html('Bookings have been updated!');
+				}
+			});
+		}
+        
+        function startUpdateFlagSynchronized($page=1) {
+			$('.pjUpdateFlagSynchronizedWrapper').html('Please wait while updating....Do not refresh page.');
+			$.get("index.php?controller=pjAdminBookings&action=pjActionProcessUpdateFlagSynchronized&page=" + $page, function(data) {
+				if (data.next_page <= myLabel.totalPages) {
+					startUpdateFlagSynchronized(data.next_page);
+				} else {
+					$('.pjUpdateFlagSynchronizedWrapper').html('Bookings have been updated!');
+				}
+			});
+		}
+        
 	});
 })(jQuery_1_8_2);

@@ -157,6 +157,7 @@ if (isset($tpl['status']))
 	myLabel.fleet = "<?php __('lblFleet'); ?>";
 	myLabel.payment_method = "<?php __('lblPaymentMethod', false, true); ?>";
 	myLabel.status = "<?php __('lblStatus'); ?>";
+	myLabel.is_synchronized = "<?php __('lblSynchronized'); ?>";
 	myLabel.exported = "<?php __('lblExport', false, true); ?>";
 	myLabel.print = "<?php __('lblPrint', false, true); ?>";
 	myLabel.print_reservation_details = "<?php __('lblPrintReservationDetails', false, true); ?>";
