@@ -1126,9 +1126,11 @@ class pjFront extends pjAppController
 					$duration = round($search_post['duration']/60);
 					$tblFleetFee = pjFleetFeeModel::factory()->getTable();
 					
-					$station_fee_arr = $this->getStationFee($STORE['search']['pickup_lat'], $STORE['search']['pickup_lng'], @$STORE['search']['dropoff_lat'], @$STORE['search']['dropoff_lng']);
-                	$pjFleetModel->where('t1.station_id', (int)$station_fee_arr['station_id']);
-                	
+					$station_fee_arr = $this->getStationFee($STORE['search']['pickup_lat'], $STORE['search']['pickup_lng'], @$STORE['search']['dropoff_lat'], @$STORE['search']['dropoff_lng'], $dropoff_id);
+					$pjFleetModel->where('t1.station_id', (int)$station_fee_arr['station_id']);
+                	if (!isset($search_post['date']) || (isset($search_post['date']) && empty($search_post['date']))) {
+                	    $pjFleetModel->where('t1.status_on_preselected_route', 1);
+                	}
 					if (($search_post['pickup_type'] == 'google' && (int)$search_post['custom_pickup_id'] <= 0) || ($search_post['dropoff_type'] == 'google' && (int)$search_post['custom_dropoff_id'] <= 0)) {
 					    $data_latlng = array(
 					        'dropoff_lat' => $search_post['dropoff_lat'],
@@ -2120,7 +2122,7 @@ class pjFront extends pjAppController
 				}
 				$data = array_merge($_POST, $data, array('is_airport' => $is_airport));
 				if ($is_check_station_fee) {
-					$station_arr = $this->getStationFee($data['pickup_lat'], $data['pickup_lng'], $data['dropoff_lat'], $data['dropoff_lng']);
+				    $station_arr = $this->getStationFee($data['pickup_lat'], $data['pickup_lng'], $data['dropoff_lat'], $data['dropoff_lng'], $dropoff_id);
 					if ($is_check_max_base_station_distance && (float)$station_arr['station_distance'] > (float)$station_arr['max_base_station_distance']) {
 						pjAppController::jsonResponse(array('code' => 102, 'text' => sprintf($front_check_transfer_msg[1], $station_arr['max_base_station_distance'].'km')));
 					}
@@ -2260,7 +2262,7 @@ class pjFront extends pjAppController
 				}
 				$data = array_merge($_POST, $data, array('is_airport' => $is_airport));
 				if ($is_check_station_fee) {
-					$station_arr = $this->getStationFee($data['pickup_lat'], $data['pickup_lng'], $data['dropoff_lat'], $data['dropoff_lng']);
+				    $station_arr = $this->getStationFee($data['pickup_lat'], $data['pickup_lng'], $data['dropoff_lat'], $data['dropoff_lng'], $dropoff_id);
 					if ($is_check_max_base_station_distance && (float)$station_arr['station_distance'] > (float)$station_arr['max_base_station_distance']) {
 						pjAppController::jsonResponse(array('code' => 102, 'text' => sprintf($front_check_transfer_msg[1], $station_arr['max_base_station_distance'].'km')));
 					}

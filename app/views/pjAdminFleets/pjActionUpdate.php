@@ -111,6 +111,17 @@ if (isset($tpl['status']))
 					<input type="text" class="pj-form-field w60 field-int" name="order_index" id="order_index" value="<?php echo $tpl['arr']['order_index']; ?>">
 				</span>
 			</p>
+			
+			<p>
+				<label class="title" for="order_index"><?php __('lblStatusOnPreSelectedRoutes'); ?></label>
+				<span class="inline_block">
+					<select name="status_on_preselected_route" class="pj-form-field">
+						<?php foreach (__('_status_on_preselected_route', true) as $k => $v) { ?>
+							<option value="<?php echo $k;?>" <?php echo $tpl['arr']['status_on_preselected_route'] == $k ? 'selected="selected"' : '';?>><?php echo $v;?></option>
+						<?php } ?>
+					</select>
+				</span>
+			</p>
 
             <?php /*foreach($days as $dayIndex => $dayName): 
 				$date_from = $date_to = NULL;

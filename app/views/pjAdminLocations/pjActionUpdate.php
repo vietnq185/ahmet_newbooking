@@ -132,6 +132,9 @@ if (isset($tpl['status']))
 							<label class="tr-column-name">&nbsp;</label>
 						</td>
 						<td>
+							<label class="tr-column-name">&nbsp;</label>
+						</td>
+						<td>
 							<label class="tr-column-name"><?php __('lblLocation');?></label>
 							<?php 
 							foreach ($tpl['lp_arr'] as $v)
@@ -159,6 +162,16 @@ if (isset($tpl['status']))
 						{
 							?>
 							<tr class="tr-location-row" data-index="<?php echo $dropoff['id'];?>">
+								<td>
+									<div>
+										<select name="base_station[<?php echo $dropoff['id']; ?>]" class="pj-form-field w150">
+											<option value="">-- <?php __('lblBaseStation');?> --</option>
+											<?php foreach ($tpl['station_arr'] as $station) { ?>
+												<option value="<?php echo $station['id'];?>" <?php echo $station['id'] == $dropoff['base_station_id'] ? 'selected="selected"' : '';?>><?php echo pjSanitize::html($station['name']); ?></option>
+											<?php } ?>
+										</select>
+									</div>
+								</td>
 								<td>
 									<div>
 										<select name="price_level[<?php echo $dropoff['id']; ?>]" class="pj-form-field required">
@@ -215,6 +228,16 @@ if (isset($tpl['status']))
 						$index = 'tr_' . rand(1, 999999);
 						?>
 						<tr class="tr-location-row" data-index="<?php echo $index;?>">
+							<td>
+								<div>
+									<select name="base_station[<?php echo $index; ?>]" class="pj-form-field w150">
+										<option value="">-- <?php __('lblBaseStation');?> --</option>
+										<?php foreach ($tpl['station_arr'] as $station) { ?>
+											<option value="<?php echo $station['id'];?>"><?php echo pjSanitize::html($station['name']); ?></option>
+										<?php } ?>
+									</select>
+								</div>
+							</td>
 							<td>
 								<div>
 									<select name="price_level[<?php echo $index; ?>]" class="pj-form-field required">
@@ -282,6 +305,16 @@ if (isset($tpl['status']))
 	
 	<table id="tr_dropoff_table_clone" style="display: none;">
 		<tr class="tr-location-row" data-index="{INDEX}">
+			<td>
+				<div>
+					<select name="base_station[{INDEX}]" class="pj-form-field w150">
+						<option value="">-- <?php __('lblBaseStation');?> --</option>
+						<?php foreach ($tpl['station_arr'] as $station) { ?>
+							<option value="<?php echo $station['id'];?>"><?php echo pjSanitize::html($station['name']); ?></option>
+						<?php } ?>
+					</select>
+				</div>
+			</td>
 			<td>
 				<div>
 					<select name="price_level[{INDEX}]" class="pj-form-field required">

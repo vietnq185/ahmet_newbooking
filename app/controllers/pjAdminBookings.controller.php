@@ -3473,5 +3473,58 @@ class pjAdminBookings extends pjAdmin
 	    
 	    pjAppController::jsonResponse(array('next_page' => (int)$get['page'] + 1));
 	}
+	
+	public function pjActionGetVehiles() {
+	    $this->setAjax(true);
+	    
+	    $pjFleetModel = pjFleetModel::factory();
+	    
+	    list($pickup_type, $pickup_id) = explode('~::~', $_POST['location_id']);
+	    list($dropoff_type, $dropoff_place_id, $dropoff_id) = explode('~::~', $_POST['dropoff_id']);
+	    if ($_POST['dropoff_type'] == 'google' && (int)$_POST['custom_dropoff_id'] > 0) {
+	        $dropoff_id = (int)$_POST['custom_dropoff_id'];
+	    }
+	    
+	    if ($pickup_type == 'server' || (int)$_POST['pickup_id'] > 0) {
+	        if ((int)$_POST['pickup_id'] > 0) {
+	            $pickup_place_arr = pjLocationModel::factory()->find((int)$_POST['pickup_id'])->getData();
+	        } else {
+	            $pickup_place_arr = pjLocationModel::factory()->find($pickup_id)->getData();
+	        }
+	        $_POST['pickup_lat'] = $pickup_place_arr['lat'];
+	        $_POST['pickup_lng'] = $pickup_place_arr['lng'];
+	        if ((int)$_POST['pickup_id'] > 0) {
+	            $pickup_place_arr = $this->getGooglePlaceDetails($pickup_id, $this->option_arr);
+	            if ($pickup_place_arr['status'] == 'OK') {
+	                $_POST['pickup_lat'] = $pickup_place_arr['result']['geometry']['location']['lat'];
+	                $_POST['pickup_lng'] = $pickup_place_arr['result']['geometry']['location']['lng'];
+	            }
+	        }
+	    } else {
+	        $pickup_place_arr = $this->getGooglePlaceDetails($pickup_id, $this->option_arr);
+	        if ($pickup_place_arr['status'] == 'OK') {
+	            $_POST['pickup_lat'] = $pickup_place_arr['result']['geometry']['location']['lat'];
+	            $_POST['pickup_lng'] = $pickup_place_arr['result']['geometry']['location']['lng'];
+	        }
+	    }
+	    
+	    if ($dropoff_type == 'google') {
+	        $dropoff_place_arr = $this->getGooglePlaceDetails($dropoff_place_id, $this->option_arr);
+	        if ($dropoff_place_arr['status'] == 'OK') {
+	            $_POST['dropoff_lat'] = $dropoff_place_arr['result']['geometry']['location']['lat'];
+	            $_POST['dropoff_lng'] = $dropoff_place_arr['result']['geometry']['location']['lng'];
+	        }
+	    }
+	    
+	    $station_fee_arr = $this->getStationFee($_POST['pickup_lat'], $_POST['pickup_lng'], $_POST['dropoff_lat'], $_POST['dropoff_lng'], $dropoff_id);
+	    $pjFleetModel->where('t1.station_id', (int)$station_fee_arr['station_id']);
+	    $this->set('fleet_arr', $pjFleetModel
+	        ->join('pjMultiLang', "t2.model='pjFleet' AND t2.foreign_id=t1.id AND t2.field='fleet' AND t2.locale='".$this->getLocaleId()."'", 'left outer')
+	        ->join('pjMultiLang', "t3.model='pjStation' AND t3.foreign_id=t1.station_id AND t3.field='name' AND t3.locale='".$this->getLocaleId()."'", 'left outer')
+	        ->select("t1.*, t2.content as fleet, t3.content as station_name")
+	        ->where('t1.status', 'T')
+	        ->orderBy("fleet ASC")
+	        ->findAll()->getData());
+	}
 }
 ?>

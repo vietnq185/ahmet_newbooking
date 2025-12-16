@@ -591,7 +591,7 @@ var jQuery_1_8_2 = jQuery_1_8_2 || $.noConflict();
 						}
 						$('#dropoff_lat').val($lat);
 						$('#dropoff_lng').val($lng);
-						
+						getVehicles($form);
 						calPrice($form);
     				}).fail(function () {
     					calPrice($form);
@@ -670,7 +670,8 @@ var jQuery_1_8_2 = jQuery_1_8_2 || $.noConflict();
 	    										break;
 	    								}
 	    							}
-	    	                    }        	           
+	    	                    }
+	    	                    getVehicles($form);
 	    	                    calPrice($form);
 	    	                }).fail(function () {
 	    	                    
@@ -1352,6 +1353,13 @@ var jQuery_1_8_2 = jQuery_1_8_2 || $.noConflict();
 				}
 			});
 		}
+        
+        function getVehicles($form) {
+        	$.post('index.php?controller=pjAdminBookings&action=pjActionGetVehiles', $form.serialize()).done(function (data) {
+        		$('.pjVehiclesContainer').html(data);
+        		$("#fleet_id").select2();
+			});
+        }
         
 	});
 })(jQuery_1_8_2);

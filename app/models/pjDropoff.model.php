@@ -19,7 +19,8 @@ class pjDropoffModel extends pjAppModel
 		array('name' => 'icon', 'type' => 'varchar', 'default' => ':NULL'),
 		array('name' => 'order_index', 'type' => 'int', 'default' => ':NULL'),
 	    array('name' => 'region', 'type' => 'varchar', 'default' => ':NULL'),
-	    array('name' => 'price_level', 'type' => 'tinyint', 'default' => '1')
+	    array('name' => 'price_level', 'type' => 'tinyint', 'default' => '1'),
+	    array('name' => 'base_station_id', 'type' => 'int', 'default' => ':NULL')
 	);
 	
 	public $i18n = array('location', 'address');

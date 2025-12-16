@@ -98,6 +98,7 @@ class pjAdminLocations extends pjAdmin
 								$d_data['is_airport'] = @$STORE['airport'][$v];
 								$d_data['icon'] = @$STORE['icon'][$v];
 								$d_data['price_level'] = $STORE['price_level'][$v];
+								$d_data['base_station_id'] = $STORE['base_station'][$v];
 								$d_data['order_index'] = (!empty($STORE['order_index'][$v])) ? $STORE['order_index'][$v] : ':NULL';
 								$d_data['region'] = isset($STORE['region'][$v]) ? $STORE['region'][$v] : ':NULL';
 								$dropoff_id = $pjDropoffModel->reset()->setAttributes($d_data)->insert()->getInsertId();
@@ -239,6 +240,7 @@ class pjAdminLocations extends pjAdmin
 								$d_data['is_airport'] = @$STORE['airport'][$v];
 								$d_data['icon'] = @$STORE['icon'][$v];
 								$d_data['price_level'] = $STORE['price_level'][$v];
+								$d_data['base_station_id'] = $STORE['base_station'][$v];
 								$d_data['order_index'] = (!empty($STORE['order_index'][$v])) ? $STORE['order_index'][$v] : ':NULL';
 								$d_data['region'] = isset($STORE['region'][$v]) ? $STORE['region'][$v] : ':NULL';
 								$dropoff_id = $pjDropoffModel->reset()->setAttributes($d_data)->insert()->getInsertId();
@@ -281,6 +283,7 @@ class pjAdminLocations extends pjAdmin
 								$d_data['is_airport'] = @$STORE['airport'][$v];
 								$d_data['icon'] = @$STORE['icon'][$v];
 								$d_data['price_level'] = $STORE['price_level'][$v];
+								$d_data['base_station_id'] = $STORE['base_station'][$v];
 								$d_data['order_index'] = (!empty($STORE['order_index'][$v])) ? $STORE['order_index'][$v] : ':NULL';
 								$d_data['region'] = isset($STORE['region'][$v]) ? $STORE['region'][$v] : ':NULL';
 								$pjDropoffModel->reset()->where('id', $v)->limit(1)->modifyAll($d_data);
@@ -752,6 +755,13 @@ class pjAdminLocations extends pjAdmin
 					->findAll()->getData();
 				$this->set('area_arr', $area_arr);
 				
+				$station_arr = pjStationModel::factory()->select('t1.*, t2.content AS `name`')
+				->join('pjMultiLang', "t2.model='pjStation' AND t2.foreign_id=t1.id AND t2.field='name' AND t2.locale='".$this->getLocaleId()."'", 'left outer')
+				->orderBy('t2.content ASC')
+				->findAll()->getData();
+				$this->set('station_arr', $station_arr);
+				
+				
 				$this->appendJs('jquery.validate.min.js', PJ_THIRD_PARTY_PATH . 'validate/');
 				$this->appendJs('additional-methods.js', PJ_THIRD_PARTY_PATH . 'validate/');
 				$this->appendJs('jquery.multilang.js', PJ_FRAMEWORK_LIBS_PATH . 'pj/js/');
@@ -768,18 +778,93 @@ class pjAdminLocations extends pjAdmin
 		}
 	}
 	
+	public function getRepresentativeCoordinate($type, $data) {
+	    $representative_point = null;
+	    $clean_data = str_replace(['(', ')', ' '], '', $data);
+	    
+	    if ($type === 'circle') {
+	        list($coord_str, ) = explode('|', $data);
+	        $clean_coord = str_replace(['(', ')', ' '], '', $coord_str);
+	        list($lat, $lng) = explode(',', $clean_coord);
+	        
+	        $representative_point = [
+	            'lat' => (float)$lat,
+	            'lng' => (float)$lng,
+	            'source' => 'explicit_center'
+	        ];
+	        
+	    } elseif ($type === 'rectangle' || $type === 'polygon') {
+	        $parts = explode(',', $clean_data);
+	        $num_coords = count($parts);
+	        
+	        if ($num_coords >= 4 && $num_coords % 2 === 0) {
+	            $total_lat = 0;
+	            $total_lng = 0;
+	            $N = $num_coords / 2;
+	            
+	            for ($i = 0; $i < $num_coords; $i += 2) {
+	                $total_lat += (float)$parts[$i]; 
+	                $total_lng += (float)$parts[$i + 1];
+	            }
+	            
+	            $center_lat = $total_lat / $N;
+	            $center_lng = $total_lng / $N;
+	            
+	            $representative_point = [
+	                'lat' => $center_lat,
+	                'lng' => $center_lng,
+	                'source' => 'calculated_centroid_N=' . $N
+	            ];
+	        }
+	    }
+	    
+	    return $representative_point;
+	}
+	
 	public function pjActionPrice()
 	{
 		$this->checkLogin();
 		
 		if ($this->isAdmin() || $this->isEditor())
 		{
+		    $pjFleetModel = pjFleetModel::factory();
+		    
+		    $pickup_arr = pjLocationModel::factory()->find($_GET['id'])->getData();
 			$dropoff_arr = pjDropoffModel::factory()
 				->join('pjMultiLang', "t2.model='pjDropoff' AND t2.foreign_id=t1.id AND t2.field='location' AND t2.locale='".$this->getLocaleId()."'", 'left outer')
 				->select('t1.*, t2.content as location')
 				->where('location_id', $_GET['id'])
 				->findAll()->getData();	
-			$fleet_arr = pjFleetModel::factory()
+			$dropoff_ids_arr = array();
+			foreach ($dropoff_arr as $drop) {
+			    $dropoff_ids_arr[] = $drop['id'];
+			}
+			if ($dropoff_ids_arr) {
+			    $dropoff_place_arr = pjDropoffAreaModel::factory()->select('t1.dropoff_id, t4.*, t5.content AS area_name, t6.content AS place_name')
+			    ->join('pjDropoff', 't2.id=t1.dropoff_id', 'inner')
+			    ->join('pjArea', 't3.id=t1.area_id', 'inner')
+			    ->join('pjAreaCoord', 't4.area_id=t3.id', 'inner')
+			    ->join('pjMultiLang', "t5.model='pjArea' AND t5.foreign_id=t1.area_id AND t5.field='name' AND t5.locale='".$this->getLocaleId()."'", 'left outer')
+			    ->join('pjMultiLang', "t6.model='pjAreaCoord' AND t6.foreign_id=t4.id AND t6.field='place_name' AND t6.locale='".$this->getLocaleId()."'", 'left outer')
+			    ->whereIn('t1.dropoff_id', $dropoff_ids_arr)
+			    ->where('t4.is_disabled', 0)
+			    ->orderBy('t1.dropoff_id ASC, t3.order_index ASC, t5.content ASC')
+			    ->findAll()
+			    ->getData();
+			    $station_ids_arr = array();
+			    foreach ($dropoff_place_arr as $place) {
+			        $resp = $this->getRepresentativeCoordinate($place['type'], $place['data']);
+			        $station_fee_arr = $this->getStationFee($pickup_arr['lat'], $pickup_arr['lng'], @$resp['lat'], @$resp['lng'], $place['dropoff_id']);
+			        if (!in_array($station_fee_arr['station_id'], $station_ids_arr)) {
+			            $station_ids_arr[] = $station_fee_arr['station_id'];
+			        }
+			    }
+			    if ($station_ids_arr) {
+			        $pjFleetModel->whereIn('t1.station_id', $station_ids_arr);
+			    }
+			}
+				
+			$fleet_arr = $pjFleetModel
 					->join('pjMultiLang', "t2.model='pjFleet' AND t2.foreign_id=t1.id AND t2.field='fleet' AND t2.locale='".$this->getLocaleId()."'", 'left outer')
 					->join('pjMultiLang', "t3.model='pjStation' AND t3.foreign_id=t1.station_id AND t3.field='name' AND t3.locale='".$this->getLocaleId()."'", 'left outer')
 					->select('t1.*, t2.content as fleet, t3.content as station')

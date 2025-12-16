@@ -272,7 +272,7 @@ if (isset($tpl['status']))
 				</p>
 				<p>
 					<label class="title"><?php __('lblFleet'); ?>:</label>
-					<span class="inline-block">
+					<span class="inline-block pjVehiclesContainer">
 						<select name="fleet_id" id="fleet_id" class="pj-form-field w500 required">
 							<option value="">-- <?php __('lblChoose'); ?>--</option>
 							<?php

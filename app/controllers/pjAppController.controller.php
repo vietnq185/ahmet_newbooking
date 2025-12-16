@@ -1231,9 +1231,35 @@ class pjAppController extends pjController
 		return $data;
 	}
 	
-	public function getStationFee($pickup_lat, $pickup_lng, $dropoff_lat, $dropoff_lng) {
+	public function getStationFee($pickup_lat, $pickup_lng, $dropoff_lat, $dropoff_lng, $dropoff_id=0) {
+	    $station_arr = array();
 		$station_id = $station_fee = $station_distance = $max_base_station_distance = $min_travel_distance = 0;
-		if (!empty($pickup_lat) && !empty($pickup_lng) && !empty($dropoff_lat) && !empty($dropoff_lng)) {
+		if ((int)$dropoff_id > 0) {
+		    $dropoff_arr = pjDropoffModel::factory()->find($dropoff_id)->getData();
+		    if ($dropoff_arr && (int)$dropoff_arr['base_station_id'] > 0) {
+		        $lat = $dropoff_lat;
+		        $lng = $dropoff_lng;
+		        $addDistanceSubQuery = ",
+		        (6373 * 2 *
+		        atan2(
+		        sqrt(
+		        pow((sin(0.0174*(t1.lat-$lat)/2)),2) +
+		        cos(0.0174*$lat) * cos(0.0174*t1.lat) *
+		        pow((sin(0.0174*(t1.lng-$lng)/2)),2)
+		        )
+		        ,
+		        sqrt(1-
+		        (
+		        pow((sin(0.0174*(t1.lat-$lat)/2)),2) +
+		        cos(0.0174*$lat) * cos(0.0174*t1.lat) *
+		        pow((sin(0.0174*(t1.lng-$lng)/2)),2)
+		        )
+		        )
+		        )) AS distance";
+		        $station_arr = pjStationModel::factory()->select("t1.*". $addDistanceSubQuery)->find((int)$dropoff_arr['base_station_id'])->getData();
+		    }
+		}
+		if (!$station_arr && !empty($pickup_lat) && !empty($pickup_lng) && !empty($dropoff_lat) && !empty($dropoff_lng)) {
 			$lat = $pickup_lat;
 			$lng = $pickup_lng;
 			$addDistanceSubQuery = ", 
@@ -1289,24 +1315,26 @@ class pjAppController extends pjController
 				->where('t1.status', 'T')
 				->orderBy('distance_from_pickup_to_dropoff ASC, distance ASC')
 				->limit(1)->findAll()->getDataIndex(0);
-			if ($station_arr) {
-				$station_distance = $station_arr['distance'];
-				$station_id = $station_arr['id'];
-				if ($station_distance >= 1 && $station_distance > $station_arr['free_starting_fee_in_km']) {
-					$station_fee += $station_arr['start_fee'];
-				}
-				$station_fee_arr = pjStationFeeModel::factory()
-					->where('t1.station_id', $station_arr['id'])
-					->where('"'.$station_distance.'" BETWEEN t1.start and t1.end')
-					->limit(1)->findAll()->getDataIndex(0);
-				if ($station_fee_arr) {
-					$station_fee += $station_fee_arr['price'] * $station_distance;
-				}
-				$station_fee = round($station_fee);
-				$max_base_station_distance = $station_arr['max_base_station_distance'];
-				$min_travel_distance = $station_arr['min_travel_distance'];
-			}
 		}
+		
+		if ($station_arr) {
+		    $station_distance = $station_arr['distance'];
+		    $station_id = $station_arr['id'];
+		    if ($station_distance >= 1 && $station_distance > $station_arr['free_starting_fee_in_km']) {
+		        $station_fee += $station_arr['start_fee'];
+		    }
+		    $station_fee_arr = pjStationFeeModel::factory()
+		    ->where('t1.station_id', $station_arr['id'])
+		    ->where('"'.$station_distance.'" BETWEEN t1.start and t1.end')
+		    ->limit(1)->findAll()->getDataIndex(0);
+		    if ($station_fee_arr) {
+		        $station_fee += $station_fee_arr['price'] * $station_distance;
+		    }
+		    $station_fee = round($station_fee);
+		    $max_base_station_distance = $station_arr['max_base_station_distance'];
+		    $min_travel_distance = $station_arr['min_travel_distance'];
+		}
+		
 		return array('station_fee' => $station_fee, 'station_id' => $station_id, 'station_distance' => $station_distance, 'max_base_station_distance' => $max_base_station_distance, 'min_travel_distance' => $min_travel_distance);
 	}
 	
