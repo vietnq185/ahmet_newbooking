@@ -4,6 +4,11 @@ if (!defined("ROOT_PATH"))
 	header("HTTP/1.1 403 Forbidden");
 	exit;
 }
+
+require_once PJ_INSTALL_PATH. 'dompdf/vendor/autoload.php';
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
 class pjAppController extends pjController
 {
 	public $models = array();
@@ -331,18 +336,24 @@ class pjAppController extends pjController
             ->where('t1.booking_id', $booking_arr['id'])
             ->findAll()
             ->getData();
-        $extras = array();
-        $extra_price = 0;
-        foreach($extra_arr as $extra)
-        {
-            $extras[] = "{$extra['quantity']} x {$extra['name']}" . (!empty($extra['info'])? " ({$extra['info']})": null);
-            if ((float)$extra['price'] > 0) {
-            	$extra_price += $extra['quantity'] * (float)$extra['price'];
-            }
-        }
-        $extras = implode(', ', $extras);
         
-        $return_extras = array();
+        $extras = '';
+        $extra_price = 0;
+        if ($extra_arr) {
+            $extras = '<table border="0">';
+            foreach($extra_arr as $extra)
+            {
+                if ((float)$extra['price'] > 0) {
+                	$extra_price += $extra['quantity'] * (float)$extra['price'];
+                }
+                
+                $str_extra = "{$extra['quantity']} x {$extra['name']}" . (!empty($extra['info'])? " ({$extra['info']})": null);
+                $extras .= '<tr><td>'.$str_extra.'</td></tr>';
+            }
+            $extras .= '</table>';
+        }
+        
+        $return_extras = '';
         if ($return_arr) {
             $return_extra_arr = pjBookingExtraModel::factory()->reset()
             ->select('t1.quantity, t1.price, t2.content as name, t3.content as info')
@@ -351,15 +362,20 @@ class pjAppController extends pjController
             ->where('t1.booking_id', $return_arr['id'])
             ->findAll()
             ->getData();
-            foreach($return_extra_arr as $extra)
-            {
-                $return_extras[] = "{$extra['quantity']} x {$extra['name']}" . (!empty($extra['info'])? " ({$extra['info']})": null);
-                if ((float)$extra['price'] > 0) {
-                    $extra_price += $extra['quantity'] * (float)$extra['price'];
+            if ($return_extra_arr) {
+                $return_extras = '<table border="0">';
+                foreach($return_extra_arr as $extra)
+                {
+                    if ((float)$extra['price'] > 0) {
+                        $extra_price += $extra['quantity'] * (float)$extra['price'];
+                    }
+                    
+                    $str_extra = "{$extra['quantity']} x {$extra['name']}" . (!empty($extra['info'])? " ({$extra['info']})": null);
+                    $return_extras .= '<tr><td>'.$str_extra.'</td></tr>';
                 }
+                $return_extras .= '</table>';
             }
         }
-        $return_extras = implode(', ', $return_extras);
 
 		$price_first_transfer = pjUtil::formatCurrencySign(number_format($price_first_transfer, 2), $option_arr['o_currency']);
 		$price_return_transfer = pjUtil::formatCurrencySign(number_format($price_return_transfer, 2), $option_arr['o_currency']);
@@ -1830,6 +1846,353 @@ class pjAppController extends pjController
         } else {
             return round($priceAfterTax, 2, PHP_ROUND_HALF_UP);
         }
+    }
+    
+    
+    public static function generateInvoicePdf($invoice_id, $option_arr, $salt, $locale_id, $open=false) {
+        $arr = pjInvoiceModel::factory()
+        ->join('pjMultiLang', sprintf("t2.model='pjCountry' AND t2.foreign_id=t1.y_country AND t2.field='name' AND t2.locale='%u'", $locale_id), 'left outer')
+        ->join('pjMultiLang', sprintf("t3.model='pjCountry' AND t3.foreign_id=t1.b_country AND t3.field='name' AND t3.locale='%u'", $locale_id), 'left outer')
+        ->join('pjMultiLang', sprintf("t4.model='pjCountry' AND t4.foreign_id=t1.s_country AND t4.field='name' AND t4.locale='%u'", $locale_id), 'left outer')
+        ->select("t1.*, t2.content as y_country_title, t3.content as b_country_title, t3.content as s_country_title,
+			AES_DECRYPT(t1.cc_type, '".$salt."') AS cc_type,
+			AES_DECRYPT(t1.cc_num, '".$salt."') AS cc_num,
+			AES_DECRYPT(t1.cc_exp_month, '".$salt."') AS cc_exp_month,
+			AES_DECRYPT(t1.cc_exp_year, '".$salt."') AS cc_exp_year,
+			AES_DECRYPT(t1.cc_code, '".$salt."') AS cc_code")
+			->find($invoice_id)
+			->getData();
+			if ($arr) {
+			    $arr['items'] = pjInvoiceItemModel::factory()
+			    ->select('t1.*, t2.tax')
+			    ->join('pjInvoiceTax', 't2.id=t1.tax_id', 'left outer')
+			    ->where('t1.invoice_id', $arr['id'])->findAll()->getData();
+			    
+			    $config = pjInvoiceConfigModel::factory()->getConfigData($locale_id);
+			    $arr['y_logo'] = '<img src="'.PJ_INSTALL_URL.$config['y_logo'].'" />';
+			    $arr['o_use_qty_unit_price'] = $config['o_use_qty_unit_price'];
+			    $a = $arr;
+			    $payment_methods = __('payment_methods', true);
+			    $pm = isset($config[$a['payment_method']]) && !empty($config[$a['payment_method']]) ? $config[$a['payment_method']] : $payment_methods[$a['payment_method']];
+			    $tax_rate = 0;
+			    $tax_rate_arr = pjInvoiceTaxModel::factory()->where('t1.is_default', 1)->limit(1)->findAll()->getDataIndex(0);
+			    if ($tax_rate_arr) {
+			        $tax_rate = $tax_rate_arr['tax'];
+			    }
+			    
+			    $items = "";
+			    $items_tax = array();
+			    if (isset($a['items']) && is_array($a['items']) && !empty($a['items']))
+			    {
+			        $items .= '<table style="width: 100%; border-collapse: collapse">';
+			        $items .= '<tr>';
+			        $items .= '<td style="border-bottom: solid 1px #000; font-weight: 600;">'.__('plugin_invoice_i_description', true).'</td>';
+			        if($a['o_use_qty_unit_price'] == 1)
+			        {
+			            $items .= '<td style="border-bottom: solid 1px #000; text-align: right; font-weight: 600;">'.__('plugin_invoice_i_qty', true).'</td>';
+			            $items .= '<td style="border-bottom: solid 1px #000; text-align: right; font-weight: 600;">'.__('plugin_invoice_i_unit', true).'</td>';
+			        }
+			        $items .= '<td></td>';
+			        $items .= '<td style="border-bottom: solid 1px #000; text-align: right; font-weight: 600;">'.__('plugin_invoice_i_amount', true).'</td>';
+			        $items .= '</tr>';
+			        foreach ($a['items'] as $item)
+			        {
+			            $items .= '<tr>';
+			            $description = !empty($item['description']) ? nl2br($item['description']) : '';
+			            $items .= sprintf('<td style="border-top: solid 1px #000; ">%s<br>%s</td>', $item['name'], $description);
+			            if($a['o_use_qty_unit_price'] == 1)
+			            {
+			                $items .= sprintf('<td style="text-align: right; border-top: solid 1px #000; ">%s</td>', number_format($item['qty'], (int) $config['o_qty_is_int'] === 0 ? 2 : 0));
+			                $items .= sprintf('<td style="text-align: right; border-top: solid 1px #000; ">%s</td>', number_format($item['unit_price'], 2));
+			            }
+			            if ((float)$item['amount'] > 0) {
+			                $items .= sprintf('<td style="text-align: right; border-top: solid 1px #000; ">%s</td>', $item['tax'].'%');
+			            } else {
+			                $items .= sprintf('<td style="text-align: right; border-top: solid 1px #000; ">%s</td>', '');
+			            }
+			            $items .= sprintf('<td style="text-align: right; border-top: solid 1px #000; ">%s</td>', number_format($item['amount'], 2));
+			            
+			            $items .= '</tr>';
+			            if ((float)$item['tax'] > 0) {
+			                if (!isset($items_tax[$item['tax']])) {
+			                    $items_tax[$item['tax']] = 0;
+			                }
+			                $price = pjAppController::getPriceBeforeTax($item['amount'], $item['tax']);
+			                $items_tax[$item['tax']] += $item['amount'] - $price;
+			            }
+			        }
+			        $items .= '</table>';
+			    }
+			    
+			    $tax_rates = '';
+			    foreach ($items_tax as $k => $v) {
+			        $tax_rates .= '<tr>
+                <td class="label">'.__('lblInvoiceTax', true).' '.$k.'%:</td>
+                <td class="value">'.round($v, 2, PHP_ROUND_HALF_UP).'</td>
+                </tr>';
+			    }
+			    
+			    $statuses = __('plugin_invoice_statuses', true);
+			    $_yesno = __('plugin_invoice_yesno', true);
+			    $y_logo = '';
+			    if (!empty($config['y_logo'])) {
+			        $y_logo = '<img src="'.PJ_INSTALL_URL.$config['y_logo'].'" style="max-height: 100%;" />';
+			    }
+			    $content = str_replace(
+			        array(
+			            '{uuid}',
+			            '{order_id}',
+			            '{issue_date}',
+			            '{due_date}',
+			            '{created}',
+			            '{modified}',
+			            '{status}',
+			            '{subtotal}',
+			            '{discount}',
+			            '{tax}',
+			            '{shipping}',
+			            '{total}',
+			            '{paid_deposit}',
+			            '{amount_due}',
+			            '{currency}',
+			            '{notes}',
+			            '{y_logo}',
+			            '{y_company}',
+			            '{y_name}',
+			            '{y_street_address}',
+			            '{y_country}',
+			            '{y_city}',
+			            '{y_state}',
+			            '{y_zip}',
+			            '{y_phone}',
+			            '{y_fax}',
+			            '{y_email}',
+			            '{y_url}',
+			            '{b_billing_address}',
+			            '{b_company}',
+			            '{b_name}',
+			            '{b_address}',
+			            '{b_street_address}',
+			            '{b_country}',
+			            '{b_city}',
+			            '{b_state}',
+			            '{b_zip}',
+			            '{b_phone}',
+			            '{b_fax}',
+			            '{b_email}',
+			            '{b_url}',
+			            '{s_shipping_address}',
+			            '{s_company}',
+			            '{s_name}',
+			            '{s_address}',
+			            '{s_street_address}',
+			            '{s_country}',
+			            '{s_city}',
+			            '{s_state}',
+			            '{s_zip}',
+			            '{s_phone}',
+			            '{s_fax}',
+			            '{s_email}',
+			            '{s_url}',
+			            '{s_date}',
+			            '{s_terms}',
+			            '{s_is_shipped}',
+			            '{items}',
+			            '{y_tax_number}',
+			            '{y_bank_name}',
+			            '{y_iban}',
+			            '{y_bic}',
+			            '{b_company_name}',
+			            '{b_tax_number}',
+			            '{payment_method}',
+			            '{y_company_reg_no}',
+			            '{tax_rate}',
+			            '{tax_rates}'
+			        ),
+			        
+			        array(
+			            $a['uuid'],
+			            $a['order_id'],
+			            pjUtil::formatDate($a['issue_date'], 'Y-m-d', $option_arr['o_date_format']),
+			            pjUtil::formatDate($a['due_date'], 'Y-m-d', $option_arr['o_date_format']),
+			            !empty($a['created']) ? date($option_arr['o_date_format'] . " H:i:s", strtotime($a['created'])) : NULL,
+			            !empty($a['modified']) ? date($option_arr['o_date_format'] . " H:i:s", strtotime($a['modified'])) : NULL,
+			            $statuses[$a['status']],
+			            number_format($a['subtotal'], 2),
+			            number_format($a['discount'], 2),
+			            number_format($a['tax'], 2),
+			            number_format($a['shipping'], 2),
+			            number_format($a['total'], 2),
+			            number_format($a['paid_deposit'], 2),
+			            number_format($a['amount_due'], 2),
+			            $a['currency'],
+			            $a['notes'],
+			            $y_logo,
+			            $config['y_company'],
+			            $config['y_name'],
+			            $config['y_street_address'],
+			            $a['y_country_title'],
+			            $config['y_city'],
+			            $config['y_state'],
+			            $config['y_zip'],
+			            $config['y_phone'],
+			            $config['y_fax'],
+			            $config['y_email'],
+			            $config['y_url'],
+			            $a['b_billing_address'],
+			            $a['b_company'],
+			            $a['b_name'],
+			            $a['b_address'],
+			            $a['b_street_address'],
+			            $a['b_country_title'],
+			            $a['b_city'],
+			            $a['b_state'],
+			            $a['b_zip'],
+			            $a['b_phone'],
+			            $a['b_fax'],
+			            $a['b_email'],
+			            $a['b_url'],
+			            $a['s_shipping_address'],
+			            $a['s_company'],
+			            $a['s_name'],
+			            $a['s_address'],
+			            $a['s_street_address'],
+			            $a['s_country_title'],
+			            $a['s_city'],
+			            $a['s_state'],
+			            $a['s_zip'],
+			            $a['s_phone'],
+			            $a['s_fax'],
+			            $a['s_email'],
+			            $a['s_url'],
+			            pjUtil::formatDate($a['s_date'], 'Y-m-d', $option_arr['o_date_format']),
+			            $a['s_terms'],
+			            $_yesno[$a['s_is_shipped']],
+			            $items,
+			            $config['y_tax_number'],
+			            $config['y_bank_name'],
+			            $config['y_iban'],
+			            $config['y_bic'],
+			            $a['b_company'],
+			            $a['b_tax_number'],
+			            $pm,
+			            $config['y_company_reg_no'],
+			            $tax_rate,
+			            $tax_rates
+			        ),
+			        $config['y_template']
+			        );
+			    
+			    
+			    
+			    $html = <<<ENDHTML
+		<html>
+		<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<style type="text/css">
+			html,body{margin:0;padding:0;font-size: 12px !important;}
+            .section-title{margin: 10px 0 6px 0 !important;}
+            .seller-block{
+                float: left;
+            }
+            .invoice-meta h1{
+                font-size: 18px !important;
+            }
+            .invoice-meta:after{
+                content: "";
+                display: table;
+                clear: both;
+            }
+            .seller-details{
+                font-size: 11px !important;
+            }
+            .meta-row{
+                font-size: 11px !important;
+            }
+            .address-box{
+                float: left;
+                width: 41% !important;
+                font-size: 11px !important;
+                min-height: 200px;
+            }
+            .address-box:first-child{
+                margin-right: 10%;
+            }
+            .addresses:after{
+                content: "";
+                display: table;
+                clear: both;
+            }
+            .notes-box{
+                float: left;
+                width: 41% !important;
+            }
+            .totals-box{
+                float: right;
+                width: 41% !important;
+            }
+            .totals-section:after{
+                content: "";
+                display: table;
+                clear: both;
+            }
+            .totals-table{
+                font-size: 11px !important;
+            }
+            .grand-total{
+                font-size: 11px !important;
+            }
+            .payment-details{
+                font-size: 11px !important;
+            }
+            .payment-section{margin-top: 14px !important;}
+            .totals-table td{padding: 0 !important;}
+            .footer{
+                font-size: 10px !important;
+            }
+			.secondPage {
+			   page-break-after: always;
+			}
+		</style>
+		<body>
+		 <div>{$content}</div>
+		</body>
+		</html>
+ENDHTML;
+			    
+			    $css_vars = [
+			        '--bg-page' => '#f3f4f6;',
+			        '--bg-card' => '#ffffff;',
+			        '--border-soft' => '#e5e7eb;',
+			        '--text-main' => '#111827;',
+			        '--text-muted' => '#6b7280;',
+			        '--accent' => '#2563eb;',
+			        '--accent-soft' => '#eff6ff;'
+			    ];
+			    foreach ($css_vars as $var => $value) {
+			        $html = str_replace("var($var)", $value, $html);
+			    }
+			    $options = new Options();
+			    $options->set('isRemoteEnabled', true);
+			    $dompdf = new Dompdf($options);
+			    $dompdf = new Dompdf();
+			    $dompdf->loadHtml($html);
+			    $dompdf->setPaper('A4', 'portrait');
+			    $dompdf->render();
+			    $filename = 'inv_'. $arr['uuid'] . '.pdf';
+			    $filepath = PJ_UPLOAD_PATH . 'invoices/'. $filename;
+			    $output = $dompdf->output();
+			    file_put_contents($filepath, $output);
+			    
+			    if ($open) {
+			        $dompdf->stream('inv_'. $arr['uuid'] . '.pdf', [
+			            "Attachment" => false
+			        ]);
+			        
+			        exit;
+			    }
+			    return $filename;
+			}
     }
 }
 ?>

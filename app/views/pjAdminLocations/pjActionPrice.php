@@ -105,12 +105,16 @@ if (isset($tpl['status']))
                                                     ?>
                                                     <td class="<?php echo $j == 1 ? 'first-col' : null;?>" >
                                                         <?php
-                                                        ?>
-                                                            <span class="pj-form-field-custom pj-form-field-custom-before">
-                                                                <span class="pj-form-field-before"><abbr class="pj-form-field-icon-text"><?php echo pjUtil::formatCurrencySign(NULL, $tpl['option_arr']['o_currency'], ""); ?></abbr></span>
-                                                                <input type="text" name="price_<?php echo $pair_id;?>[<?= $dayIndex ?>]" class="pj-form-field number pj-grid-field w50" value="<?php echo isset($tpl['price_arr'][$pair_id][$dayIndex]) ? $tpl['price_arr'][$pair_id][$dayIndex] : null;?>" />
-                                                            </span>
-                                                        <?php
+                                                        if (isset($tpl['dropoff_station_ids_arr'][$row['id']]) && in_array($col['station_id'], $tpl['dropoff_station_ids_arr'][$row['id']])) { 
+                                                            ?>
+                                                                <span class="pj-form-field-custom pj-form-field-custom-before">
+                                                                    <span class="pj-form-field-before"><abbr class="pj-form-field-icon-text"><?php echo pjUtil::formatCurrencySign(NULL, $tpl['option_arr']['o_currency'], ""); ?></abbr></span>
+                                                                    <input type="text" name="price_<?php echo $pair_id;?>[<?= $dayIndex ?>]" class="pj-form-field number pj-grid-field w50" value="<?php echo isset($tpl['price_arr'][$pair_id][$dayIndex]) ? $tpl['price_arr'][$pair_id][$dayIndex] : null;?>" />
+                                                                </span>
+                                                            <?php
+                                                        } else {
+                                                            echo '&nbsp;';   
+                                                        }
                                                         ?>
                                                     </td>
                                                     <?php

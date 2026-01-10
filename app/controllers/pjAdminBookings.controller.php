@@ -1402,7 +1402,8 @@ class pjAdminBookings extends pjAdmin
 				
 				pjUtil::redirect(PJ_INSTALL_URL. "index.php?controller=pjAdminBookings&action=pjActionIndex&err=$err");
 			}else{
-			    $pjBookingModel = pjBookingModel::factory();
+			    $pjBookingModel = pjBookingModel::factory()
+			    ->join('pjFleet', 't2.id=t1.fleet_id', 'left outer');
 			    // TODO: If it comes from the calendar in Dashboard and if the ID is for a return booking (without UUID etc) we should redirect to the first booking
 			    if (isset($_REQUEST['id']) && (int) $_REQUEST['id'] > 0)
 			    {
@@ -1411,7 +1412,7 @@ class pjAdminBookings extends pjAdmin
 			        $pjBookingModel->where('t1.uuid', $_GET['uuid']);
 			    }
 			    
-			    $arr = $pjBookingModel->limit(1)->findAll()->getDataIndex(0);
+			    $arr = $pjBookingModel->select('t1.*, t2.station_id')->limit(1)->findAll()->getDataIndex(0);
 
 			    if(!$arr)
 				{
@@ -1489,6 +1490,7 @@ class pjAdminBookings extends pjAdmin
                     ->join('pjMultiLang', "t3.model='pjStation' AND t3.foreign_id=t1.station_id AND t3.field='name' AND t3.locale='".$this->getLocaleId()."'", 'left outer')
                     ->select("t1.*, t2.content as fleet, t3.content as station_name")
                     ->where('t1.status', 'T')
+				    ->where('t1.station_id', (int)$arr['station_id'])
                     ->orderBy("fleet ASC")
                     ->findAll()->getData());
 
@@ -1553,7 +1555,7 @@ class pjAdminBookings extends pjAdmin
 				->join('pjMultiLang', "t6.model='pjArea' AND t6.foreign_id=t5.area_id AND t6.field='name' AND t6.locale=t1.locale_id", 'left outer')
 				->find($arr['id'])
 				->getData();
-				
+				 
 				$booking_extra_arr = pjBookingExtraModel::factory()->reset()
 				->select('t1.*, t3.content as name, t4.content as info, t5.price')
 				->join('pjBooking', 't2.id=t1.booking_id', 'inner')
@@ -1865,6 +1867,16 @@ class pjAdminBookings extends pjAdmin
                     ;
                 }
                 $locale_id = isset($_POST['locale_id']) && (int)$_POST['locale_id'] > 0 ? (int)$_POST['locale_id'] : $this->getLocaleId();
+                
+                if (isset($_POST['invoice_id']) && (int)$_POST['invoice_id'] > 0) {
+                    $pdf_invoice = $this->generateInvoicePdf($_POST['invoice_id'], $this->option_arr, PJ_SALT, $locale_id, false);
+                    $pdf_invoice = PJ_INSTALL_PATH.'app/web/upload/invoices/'. $pdf_invoice;
+                    if (is_file($pdf_invoice)) {
+                        $pjEmail->detach($pdf_invoice);
+                        $pjEmail->attach($pdf_invoice);
+                    }
+                }
+                
                 $pjEmail->setContentType('text/html');
                 $pjEmail
                     ->setTo($_POST['to'])
@@ -1879,11 +1891,23 @@ class pjAdminBookings extends pjAdmin
                     );
                     pjBookingHistoryModel::factory()->setAttributes($data_history)->insert();
                     
-                    $err = 'AB09';
+                    if (isset($_POST['invoice_id']) && (int)$_POST['invoice_id'] > 0) {
+                        $err = 'AB48';
+                    } else {
+                        $err = 'AB09';
+                    }
                 } else {
-                    $err = 'AB10';
+                    if (isset($_POST['invoice_id']) && (int)$_POST['invoice_id'] > 0) {
+                        $err = 'AB49';
+                    } else {
+                        $err = 'AB10';
+                    }
                 }
-                pjUtil::redirect($_SERVER['PHP_SELF'] . "?controller=pjAdminBookings&action=pjActionIndex&err=$err");
+                if (isset($_POST['invoice_id']) && (int)$_POST['invoice_id'] > 0) {
+                    pjUtil::redirect($_SERVER['PHP_SELF'] . "?controller=pjInvoice&action=pjActionUpdate&id=".$_POST['invoice_id']."&err=$err");
+                } else {
+                    pjUtil::redirect($_SERVER['PHP_SELF'] . "?controller=pjAdminBookings&action=pjActionIndex&err=$err");
+                }
             } else {
 
                 $arr = pjBookingModel::factory()
@@ -2627,7 +2651,7 @@ class pjAdminBookings extends pjAdmin
 			$_POST['duration_formated'] = $_POST['duration'].' '.strtolower(__('lblMinutes', true, false));
 			$price_by_distance = 'F';
 			$fleet = pjFleetModel::factory()->find($_POST['fleet_id'])->getData();
-			if(($_POST['pickup_type'] == 'google' && (int)$_POST['pickup_id'] <= 0) || ($_POST['dropoff_type'] == 'google' && (int)$_POST['custom_dropoff_id'] <= 0)) {
+			if($fleet['price_per'] == 'distance' || (($_POST['pickup_type'] == 'google' && (int)$_POST['pickup_id'] <= 0) || ($_POST['dropoff_type'] == 'google' && (int)$_POST['custom_dropoff_id'] <= 0))) {
 				$params = array(
 					'pickup_lat' => $_POST['pickup_lat'],
 					'pickup_lng' => $_POST['pickup_lng'],
@@ -2681,12 +2705,10 @@ class pjAdminBookings extends pjAdmin
 						$one_way_price = $one_way_price - (($one_way_price * $fleet_discount_arr['discount']) / 100);
 					}
 				} else {
-				    if ($price_by_distance == 'F') { 
-    					if ($fleet_discount_arr['type'] == 'amount') {
-    						$one_way_price = $one_way_price + $fleet_discount_arr['discount'];
-    					} else {
-    						$one_way_price = $one_way_price + (($one_way_price * $fleet_discount_arr['discount']) / 100);
-    					}
+				    if ($fleet_discount_arr['type'] == 'amount') {
+				        $one_way_price = $one_way_price + $fleet_discount_arr['discount'];
+				    } else {
+				        $one_way_price = $one_way_price + (($one_way_price * $fleet_discount_arr['discount']) / 100);
 				    }
 				}
 				if ($one_way_price < 0) {
@@ -3525,6 +3547,11 @@ class pjAdminBookings extends pjAdmin
 	        ->where('t1.status', 'T')
 	        ->orderBy("fleet ASC")
 	        ->findAll()->getData());
+	}
+	
+	public function testInvoice() {
+	    $pdf = $this->generateInvoicePdf($_GET['id'], $this->option_arr, PJ_SALT, $this->getLocaleId(), true);
+	    exit;
 	}
 }
 ?>

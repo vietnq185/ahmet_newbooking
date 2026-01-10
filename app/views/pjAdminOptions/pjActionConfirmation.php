@@ -171,6 +171,17 @@ if (isset($tpl['status']))
                                                                 break;
                                                         }
                                                     }
+                                                    if (in_array($tpl['arr'][$i]['key'], array('o_email_send_pdf_subject', 'o_email_send_pdf_message')))
+                                                    {
+                                                        $rowClass = " boxClientSendPdf";
+                                                        $rowStyle = "display: none";
+                                                        switch ($tpl['option_arr']['o_email_send_pdf'])
+                                                        {
+                                                            case '1':
+                                                                $rowStyle = NULL;
+                                                                break;
+                                                        }
+                                                    }
 													?>
 													<tr class="pj-table-row-odd<?php echo $rowClass; ?>" style="<?php echo $rowStyle; ?>">
 														<td width="35%" valign="top">
@@ -189,7 +200,7 @@ if (isset($tpl['status']))
 															switch ($tpl['arr'][$i]['type'])
 															{
 																case 'string':
-																    if(in_array($tpl['arr'][$i]['key'], array('o_email_confirmation_subject','o_email_payment_subject','o_email_cancel_subject', 'o_email_client_account_subject', 'o_email_forgot_subject', 'o_email_reminder_subject', 'o_email_return_reminder_subject', 'o_email_rating_subject', 'o_email_arrival_confirmation_subject', 'o_email_payment_link_subject')))
+																    if(in_array($tpl['arr'][$i]['key'], array('o_email_confirmation_subject','o_email_payment_subject','o_email_cancel_subject', 'o_email_client_account_subject', 'o_email_forgot_subject', 'o_email_reminder_subject', 'o_email_return_reminder_subject', 'o_email_rating_subject', 'o_email_arrival_confirmation_subject', 'o_email_payment_link_subject', 'o_email_send_pdf_subject')))
 																	{
 																	?>
 																		<?php
@@ -215,7 +226,7 @@ if (isset($tpl['status']))
 																	break;
 																case 'text':
 																	
-																    if(in_array($tpl['arr'][$i]['key'], array('o_email_confirmation_message','o_email_payment_message','o_email_cancel_message', 'o_email_client_account_message', 'o_email_forgot_message', 'o_email_reminder_message', 'o_email_return_reminder_message', 'o_email_rating_message', 'o_email_arrival_confirmation_message', 'o_email_payment_link_message')))
+																    if(in_array($tpl['arr'][$i]['key'], array('o_email_confirmation_message','o_email_payment_message','o_email_cancel_message', 'o_email_client_account_message', 'o_email_forgot_message', 'o_email_reminder_message', 'o_email_return_reminder_message', 'o_email_rating_message', 'o_email_arrival_confirmation_message', 'o_email_payment_link_message','o_email_send_pdf_message')))
 																	{
 																	?>
 																		<?php

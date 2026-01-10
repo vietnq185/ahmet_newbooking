@@ -395,7 +395,7 @@ class pjAdminInquiryGenerator extends pjAdmin
 	        $_POST['duration_formated'] = $_POST['duration'].' '.strtolower(__('lblMinutes', true, false));
 	        $price_by_distance = 'F';
 	        $fleet = pjFleetModel::factory()->find($_POST['fleet_id'])->getData();
-	        if(($_POST['pickup_type'] == 'google' && (int)$_POST['pickup_id'] <= 0) || ($_POST['dropoff_type'] == 'google' && (int)$_POST['custom_dropoff_id'] <= 0)) {
+	        if($fleet['price_per'] == 'distance' || (($_POST['pickup_type'] == 'google' && (int)$_POST['pickup_id'] <= 0) || ($_POST['dropoff_type'] == 'google' && (int)$_POST['custom_dropoff_id'] <= 0))) {
 	            $params = array(
 	                'pickup_lat' => $_POST['pickup_lat'],
 	                'pickup_lng' => $_POST['pickup_lng'],
@@ -449,12 +449,10 @@ class pjAdminInquiryGenerator extends pjAdmin
 	                    $one_way_price = $one_way_price - (($one_way_price * $fleet_discount_arr['discount']) / 100);
 	                }
 	            } else {
-	                if ($price_by_distance == 'F') {
-	                    if ($fleet_discount_arr['type'] == 'amount') {
-	                        $one_way_price = $one_way_price + $fleet_discount_arr['discount'];
-	                    } else {
-	                        $one_way_price = $one_way_price + (($one_way_price * $fleet_discount_arr['discount']) / 100);
-	                    }
+	                if ($fleet_discount_arr['type'] == 'amount') {
+	                    $one_way_price = $one_way_price + $fleet_discount_arr['discount'];
+	                } else {
+	                    $one_way_price = $one_way_price + (($one_way_price * $fleet_discount_arr['discount']) / 100);
 	                }
 	            }
 	            if ($one_way_price < 0) {

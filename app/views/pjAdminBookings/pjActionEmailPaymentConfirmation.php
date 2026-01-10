@@ -36,13 +36,20 @@ if (isset($tpl['status']))
 	?>
 	<div class="ui-tabs ui-widget ui-widget-content ui-corner-all b10">
 		<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
-			<li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionEmailPaymentConfirmation&amp;id=<?php echo $tpl['arr']['id']; ?>"><?php __('lblSendPaymentConfirmation'); ?></a></li>
+			<?php if (isset($_GET['invoice_id']) && (int)$_GET['invoice_id'] > 0) { ?>
+    			<li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionEmailPaymentConfirmation&amp;id=<?php echo $tpl['arr']['id']; ?>&amp;invoice_id=<?php echo $_GET['invoice_id']; ?>"><?php __('lblSendPdfInvoice'); ?></a></li>
+    		<?php } else { ?>
+				<li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active"><a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionEmailPaymentConfirmation&amp;id=<?php echo $tpl['arr']['id']; ?>"><?php __('lblSendPaymentConfirmation'); ?></a></li>
+			<?php } ?>
 		</ul>
 	</div>
 	<form action="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionEmailPaymentConfirmation&amp;id=<?php echo $tpl['arr']['id']; ?>" method="post" class="form pj-form" id="frmBookingEmailPaymentConfirmation">
 		<input type="hidden" name="email_payment_confirmation" value="1" />
 		<input type="hidden" name="id" value="<?php echo $tpl['arr']['id']; ?>" />
 		<input type="hidden" name="locale_id" id="locale_id" value="<?php echo $locale; ?>" />
+		<?php if (isset($_GET['invoice_id']) && (int)$_GET['invoice_id'] > 0) { ?>
+			<input type="hidden" name="invoice_id" id="invoice_id" value="<?php echo (int)$_GET['invoice_id']; ?>" />
+		<?php } ?>
 		<?php if ((int) $tpl['option_arr']['o_multi_lang'] === 1 && count($tpl['lp_arr']) > 1) : ?>
 		<div class="multilang b10"></div>
 		<?php endif;?>
@@ -88,7 +95,11 @@ if (isset($tpl['status']))
 			<p>
 				<label class="title">&nbsp;</label>
 				<input type="submit" value="<?php __('btnSend', false, true); ?>" class="pj-button" />&nbsp;
-				<a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionUpdate&amp;id=<?php echo $tpl['arr']['id']; ?>" class="pj-back"><?php __('btnBack', false, true);?></a>
+				<?php if (isset($_GET['invoice_id']) && (int)$_GET['invoice_id'] > 0) { ?>
+					<a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjInvoice&amp;action=pjActionUpdate&amp;id=<?php echo $_GET['invoice_id']; ?>" class="pj-back"><?php __('btnBack', false, true);?></a>
+				<?php } else { ?>
+					<a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionUpdate&amp;id=<?php echo $tpl['arr']['id']; ?>" class="pj-back"><?php __('btnBack', false, true);?></a>
+				<?php } ?>
 			</p>
 		</div>
 	</form>

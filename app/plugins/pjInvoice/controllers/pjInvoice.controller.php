@@ -1048,7 +1048,7 @@ class pjInvoice extends pjInvoiceAppController
 		if (empty($arr))
 		{
 			pjUtil::redirect(PJ_INSTALL_URL . "index.php?controller=pjInvoice&action=pjActionInvoices&err=PIN04");
-		}
+		}		$booking_arr = pjBookingModel::factory()->where('t1.uuid', $arr['order_id'])->limit(1)->findAll()->getDataIndex(0);		$this->set('booking_arr', $booking_arr);
 		$this->set('country_arr', pjCountryModel::factory()
 			->select('t1.*, t2.content AS `name`')
 			->join('pjMultiLang', "t2.model='pjCountry' AND t2.foreign_id=t1.id AND t2.field='name' AND t2.locale='".$this->getLocaleId()."'", 'left outer')

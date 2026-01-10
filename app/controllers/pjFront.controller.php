@@ -665,7 +665,7 @@ class pjFront extends pjAppController
                 ->find($this->_get('fleet_id'))
                 ->getData();
             $cart['fleet'] = $fleet['fleet'];            
-            if(($search_post['pickup_type'] == 'google' && (int)$search_post['custom_pickup_id'] <= 0) || ($search_post['dropoff_type'] == 'google' && (int)$search_post['custom_dropoff_id'] <= 0)) {
+            if($fleet['price_per'] == 'distance' || (($search_post['pickup_type'] == 'google' && (int)$search_post['custom_pickup_id'] <= 0) || ($search_post['dropoff_type'] == 'google' && (int)$search_post['custom_dropoff_id'] <= 0))) {
             	$params = array(
 					'pickup_lat' => $search_post['pickup_lat'],
 					'pickup_lng' => $search_post['pickup_lng'],
@@ -708,12 +708,10 @@ class pjFront extends pjAppController
 							$one_way_price = $one_way_price - (($one_way_price * $fleet_discount_arr['discount']) / 100);
 						}
 					} else {
-					    if ($price_by_distance == 0) {
-    						if ($fleet_discount_arr['type'] == 'amount') {
-    							$one_way_price = $one_way_price + $fleet_discount_arr['discount'];
-    						} else {
-    							$one_way_price = $one_way_price + (($one_way_price * $fleet_discount_arr['discount']) / 100);
-    						}
+					    if ($fleet_discount_arr['type'] == 'amount') {
+					        $one_way_price = $one_way_price + $fleet_discount_arr['discount'];
+					    } else {
+					        $one_way_price = $one_way_price + (($one_way_price * $fleet_discount_arr['discount']) / 100);
 					    }
 					}
 					if ($one_way_price < 0) {
@@ -1115,10 +1113,12 @@ class pjFront extends pjAppController
 					$dropoff_id = 0;
 					$passengers_from_to = (int)$search_post['passengers_from_to'];
 					if ($search_post['dropoff_type'] == 'server') {
-						$pjFleetModel->where('t4.dropoff_id', $search_post['dropoff_id']);
+						//$pjFleetModel->where('t4.dropoff_id', $search_post['dropoff_id']);
+					    $pjFleetModel->where('(t4.dropoff_id="'.(int)$search_post['dropoff_id'].'" OR t1.price_per="distance")');
 						$dropoff_id = (int)$search_post['dropoff_id'];
 					} elseif ($search_post['dropoff_type'] == 'google' && (int)$search_post['custom_dropoff_id'] > 0) {
-						$pjFleetModel->where('t4.dropoff_id', (int)$search_post['custom_dropoff_id']);
+						//$pjFleetModel->where('t4.dropoff_id', (int)$search_post['custom_dropoff_id']);
+						$pjFleetModel->where('(t4.dropoff_id="'.(int)$search_post['custom_dropoff_id'].'" OR t1.price_per="distance")');
 						$dropoff_id = (int)$search_post['custom_dropoff_id'];
 					}
 					
@@ -1169,7 +1169,7 @@ class pjFront extends pjAppController
                         $drop_arr = pjDropoffModel::factory()->find((int)$dropoff_id)->getData();
                         $price_level = $drop_arr ? $drop_arr['price_level'] : 1;
 					}		
-					$total = $pjFleetModel->findCount()->getData();
+					/* $total = $pjFleetModel->findCount()->getData();
 					$rowCount = (int) $this->option_arr['o_vehicle_per_page'] > 0 ? $this->option_arr['o_vehicle_per_page'] : 5;
 					$pages = ceil($total / $rowCount);
 					$page = isset($_GET['page']) && (int) $_GET['page'] > 0 ? intval($_GET['page']) : 1;
@@ -1177,16 +1177,16 @@ class pjFront extends pjAppController
 					if ($page > $pages)
 					{
 						$page = $pages;
-					}
+					} */
 					//$pjFleetModel->limit($rowCount, $offset);
 						
 					$fleet_arr = $pjFleetModel
 						->orderBy("t1.order_index ASC, fleet ASC")
 						->findAll()
-						->getData();
+						->getDataPair('id');
 
 					$this->set('fleet_arr', $fleet_arr);
-					$this->set('paginator', array('pages' => $pages, 'page' => $page, 'offset' => $offset, 'total' => $total));
+					//$this->set('paginator', array('pages' => $pages, 'page' => $page, 'offset' => $offset, 'total' => $total));
 					$this->set('no_date_selected', $date === false);
 					$this->set('store', $STORE);
 					
@@ -2062,9 +2062,11 @@ class pjFront extends pjAppController
                 $_POST['dropoff_place_id'] = $dropoff_place_id;
                 	
 				if (($pickup_type == 'server' || (int)$_POST['custom_pickup_id'] > 0) && $dropoff_type == 'server') {
-					$pjFleetModel->where('t2.dropoff_id', $dropoff_id);
+					//$pjFleetModel->where('t2.dropoff_id', $dropoff_id);
+				    $pjFleetModel->where('(t2.dropoff_id="'.(int)$dropoff_id.'" OR t1.price_per="distance")');
 				} elseif ($dropoff_type == 'google' && (int)$_POST['custom_dropoff_id'] > 0) {
-					$pjFleetModel->where('t2.dropoff_id', (int)$_POST['custom_dropoff_id']);
+					//$pjFleetModel->where('t2.dropoff_id', (int)$_POST['custom_dropoff_id']);
+				    $pjFleetModel->where('(t2.dropoff_id="'.(int)$_POST['custom_dropoff_id'].'" OR t1.price_per="distance")');
 				}
 				$passengers_from_to = (int)$_POST['passengers_from_to'];
 				$is_check_station_fee = $is_check_max_base_station_distance = false;
@@ -2625,7 +2627,7 @@ class pjFront extends pjAppController
                 ->find($data['fleet_id'])
                 ->getData();
             $price_calculated_by_distance = false;
-			if (($search_post['pickup_type'] == 'google' && (int)$search_post['custom_pickup_id'] <= 0) || ($search_post['dropoff_type'] == 'google' && (int)$search_post['custom_dropoff_id'] <= 0)) {            
+            if ($fleet['price_per'] == 'distance' || (($search_post['pickup_type'] == 'google' && (int)$search_post['custom_pickup_id'] <= 0) || ($search_post['dropoff_type'] == 'google' && (int)$search_post['custom_dropoff_id'] <= 0))) {            
 				$params = array(
 					'pickup_lat' => $search_post['pickup_lat'],
 					'pickup_lng' => $search_post['pickup_lng'],
@@ -2653,12 +2655,10 @@ class pjFront extends pjAppController
 						$one_way_price = $one_way_price - (($one_way_price * $fleet_discount_arr['discount']) / 100);
 					}
 				} else {
-				    if (!$price_calculated_by_distance) { 
-    					if ($fleet_discount_arr['type'] == 'amount') {
-    						$one_way_price = $one_way_price + $fleet_discount_arr['discount'];
-    					} else {
-    						$one_way_price = $one_way_price + (($one_way_price * $fleet_discount_arr['discount']) / 100);
-    					}
+				    if ($fleet_discount_arr['type'] == 'amount') {
+				        $one_way_price = $one_way_price + $fleet_discount_arr['discount'];
+				    } else {
+				        $one_way_price = $one_way_price + (($one_way_price * $fleet_discount_arr['discount']) / 100);
 				    }
 				}
 				if ($one_way_price < 0) {

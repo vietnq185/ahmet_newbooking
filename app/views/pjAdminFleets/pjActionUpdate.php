@@ -87,6 +87,23 @@ if (isset($tpl['status']))
 				?>
 			</div>
 			<div class="float_left" style="width: 50%">
+				<label class="title"><?php __('lblVehiclePricePer'); ?></label>
+				<span class="inline_block">
+					<select name="price_per" class="pj-form-field">
+						<?php foreach (__('_vehicle_price_per', true) as $k => $v) { ?>
+							<option value="<?php echo $k;?>" <?php echo $tpl['arr']['price_per'] == $k ? 'selected="selected"' : '';?>><?php echo $v;?></option>
+						<?php } ?>
+					</select>
+				</span>
+			</div>
+			<br class="clear_both">
+			<div class="float_left" style="width: 50%">
+				<label class="title" for="order_index"><?php __('lblOrderIndex'); ?></label>
+				<span class="inline_block">
+					<input type="text" class="pj-form-field w60 field-int" name="order_index" id="order_index" value="<?php echo $tpl['arr']['order_index']; ?>">
+				</span>
+			</div>
+			<div class="float_left" style="width: 50%">
 				<?php
 				foreach ($tpl['lp_arr'] as $v)
 				{
@@ -105,12 +122,6 @@ if (isset($tpl['status']))
 				?>
 			</div>
 			<br class="clear_both">
-			<p>
-				<label class="title" for="order_index"><?php __('lblOrderIndex'); ?></label>
-				<span class="inline_block">
-					<input type="text" class="pj-form-field w60 field-int" name="order_index" id="order_index" value="<?php echo $tpl['arr']['order_index']; ?>">
-				</span>
-			</p>
 			
 			<p>
 				<label class="title" for="order_index"><?php __('lblStatusOnPreSelectedRoutes'); ?></label>

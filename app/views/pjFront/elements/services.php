@@ -26,7 +26,7 @@
 		foreach($tpl['fleet_arr'] as $k => $v)
 		{
 			$allow_book = 1;
-			if (($STORE['search']['pickup_type'] == 'google' && (int)$STORE['search']['custom_pickup_id'] <= 0) || ($STORE['search']['dropoff_type'] == 'google' && (int)$STORE['search']['custom_dropoff_id'] <= 0)) {
+			if ($v['price_per'] == 'distance' || (($STORE['search']['pickup_type'] == 'google' && (int)$STORE['search']['custom_pickup_id'] <= 0) || ($STORE['search']['dropoff_type'] == 'google' && (int)$STORE['search']['custom_dropoff_id'] <= 0))) {
 				$params = array(
 					'pickup_lat' => $STORE['search']['pickup_lat'],
 					'pickup_lng' => $STORE['search']['pickup_lng'],
@@ -54,12 +54,10 @@
 						$one_way_price = $one_way_price - (($one_way_price * $fleet_discount_arr['discount']) / 100);
 					}
 				} else {
-				    if ($price_by_distance == 0) {
-    					if ($fleet_discount_arr['type'] == 'amount') {
-    						$one_way_price = $one_way_price + $fleet_discount_arr['discount'];
-    					} else {
-    						$one_way_price = $one_way_price + (($one_way_price * $fleet_discount_arr['discount']) / 100);
-    					}
+				    if ($fleet_discount_arr['type'] == 'amount') {
+				        $one_way_price = $one_way_price + $fleet_discount_arr['discount'];
+				    } else {
+				        $one_way_price = $one_way_price + (($one_way_price * $fleet_discount_arr['discount']) / 100);
 				    }
 				}
 				if ($one_way_price < 0) {

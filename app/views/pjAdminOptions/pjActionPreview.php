@@ -14,7 +14,7 @@
 
     <body bgcolor="#F7F7F7">
         <div style="max-width: 1000px; margin: 10px auto;">
-        	<link href="<?php echo PJ_INSTALL_URL; ?>index.php?controller=pjFront&action=pjActionLoadCss" type="text/css" rel="stylesheet" />
+        	<link href="<?php echo PJ_INSTALL_URL; ?>index.php?controller=pjFront&action=pjActionLoadCss&original=1" type="text/css" rel="stylesheet" />
 	        <script type="text/javascript" src="<?php echo PJ_INSTALL_URL; ?>index.php?controller=pjFront&action=pjActionLoad<?php echo isset($_GET['locale']) ? '&locale=' . $_GET['locale'] : null;?>"></script>
         </div>
     </body>

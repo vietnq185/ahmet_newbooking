@@ -105,7 +105,7 @@ if (isset($tpl['status']))
 						<input type="submit" value="<?php __('plugin_invoice_save'); ?>" class="pj-button" />
 						<input type="button" value="<?php __('plugin_invoice_view'); ?>" class="pj-button btnInvoiceView" />
 						<input type="button" value="<?php __('plugin_invoice_print'); ?>" class="pj-button btnInvoicePrint" />
-						<input type="button" value="<?php __('plugin_invoice_send'); ?>" class="pj-button btnInvoiceSend" data-id="<?php echo $tpl['arr']['uuid']; ?>" data-uuid="<?php echo $tpl['arr']['order_id']; ?>" />
+						<input type="button" value="<?php __('plugin_invoice_send'); ?>" class="pj-button btnInvoiceSend" data-id="<?php echo $tpl['arr']['uuid']; ?>" data-uuid="<?php echo $tpl['arr']['order_id']; ?>" />						<a href="<?php echo $_SERVER['PHP_SELF']; ?>?controller=pjAdminBookings&amp;action=pjActionEmailPaymentConfirmation&amp;id=<?php echo $tpl['booking_arr']['id']; ?>&amp;invoice_id=<?php echo $tpl['arr']['id'];?>" class="pj-button" style="display: inline-block;color: inherit;text-transform: uppercase;font-weight: normal;"><?php __('btnSendPdf');?></a>
 					</p>
 				</fieldset>
 				

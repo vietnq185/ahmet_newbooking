@@ -11,13 +11,19 @@ foreach($tpl['extra_arr'] as $extra) {
 	{
 		continue;
 	}
-	$image_url = !empty($extra['image_path'])? PJ_INSTALL_URL . $extra['image_path']: PJ_INSTALL_URL . PJ_IMG_PATH . 'frontend/no-image.png';
+	$image_url = !empty($extra['image_path'])? PJ_INSTALL_URL . $extra['image_path']: '';
 	?>
 	<li class="row d-flex align-items-center">
 		<div class="<?php echo $STORE['is_return'] == 0 ? 'col-sm-9' : 'col-sm-6';?> col-12">
 			<table>
 				<tr>
-					<td width="50" align="center"><img src="<?php echo $image_url;?>" class="img-responsive" /></td>
+					<td width="50" align="center">
+						<?php if (!empty($image_url)) { ?>
+							<img src="<?php echo $image_url;?>" class="img-responsive" />
+						<?php } else { ?>
+							&nbsp;
+						<?php } ?>
+					</td>
 					<td>
 						<div class="pjSbExtraName">
 						<?php if ((float)$extra['price'] > 0) { ?>

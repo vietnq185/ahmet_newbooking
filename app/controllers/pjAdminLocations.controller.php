@@ -839,6 +839,8 @@ class pjAdminLocations extends pjAdmin
 			foreach ($dropoff_arr as $drop) {
 			    $dropoff_ids_arr[] = $drop['id'];
 			}
+			
+			$dropoff_station_ids_arr = array();
 			if ($dropoff_ids_arr) {
 			    $dropoff_place_arr = pjDropoffAreaModel::factory()->select('t1.dropoff_id, t4.*, t5.content AS area_name, t6.content AS place_name')
 			    ->join('pjDropoff', 't2.id=t1.dropoff_id', 'inner')
@@ -858,11 +860,19 @@ class pjAdminLocations extends pjAdmin
 			        if (!in_array($station_fee_arr['station_id'], $station_ids_arr)) {
 			            $station_ids_arr[] = $station_fee_arr['station_id'];
 			        }
+			        
+			        if (!isset($dropoff_station_ids_arr[$place['dropoff_id']])) {
+			            $dropoff_station_ids_arr[$place['dropoff_id']] = array();
+			        }
+			        if (!in_array($station_fee_arr['station_id'], $dropoff_station_ids_arr[$place['dropoff_id']])) {
+			            $dropoff_station_ids_arr[$place['dropoff_id']][] = $station_fee_arr['station_id'];
+			        }
 			    }
 			    if ($station_ids_arr) {
 			        $pjFleetModel->whereIn('t1.station_id', $station_ids_arr);
 			    }
 			}
+			$this->set('dropoff_station_ids_arr', $dropoff_station_ids_arr);
 				
 			$fleet_arr = $pjFleetModel
 					->join('pjMultiLang', "t2.model='pjFleet' AND t2.foreign_id=t1.id AND t2.field='fleet' AND t2.locale='".$this->getLocaleId()."'", 'left outer')
